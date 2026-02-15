@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обучение — Квизы и тренажёры</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh; color: #e0e0e0;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .page { max-width: 500px; width: 100%; }
+        h1 {
+            text-align: center; font-size: 1.6em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #666; font-size: 0.85em; margin-bottom: 28px; }
+        .cards { display: flex; flex-direction: column; gap: 14px; }
+        a.card {
+            display: block; padding: 18px 22px; border-radius: 12px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none; color: #e0e0e0; transition: all 0.25s;
+        }
+        a.card:hover {
+            background: rgba(0,210,255,0.1); border-color: rgba(0,210,255,0.4);
+            transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,210,255,0.15);
+        }
+        .card-title { font-size: 1.15em; font-weight: 700; margin-bottom: 4px; color: #00d2ff; }
+        .card-desc { font-size: 0.82em; color: #999; line-height: 1.4; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7em;
+               background: rgba(123,47,247,0.15); color: #b388ff; margin-top: 6px; }
+    </style>
+</head>
+<body>
+<div class="page">
+    <h1>Квизы и тренажёры</h1>
+    <div class="subtitle">Химия для подготовки к ЕГЭ/ОГЭ</div>
+    <div class="cards">
+        <a class="card" href="chemistry-quiz-1.html">
+            <div class="card-title">Квиз по химии</div>
+            <div class="card-desc">Основные понятия и строение атома. Темы 1–2.</div>
+            <span class="tag">тест</span>
+        </a>
+        <a class="card" href="orbital-trainer.html">
+            <div class="card-title">Заполнение орбиталей</div>
+            <div class="card-desc">Тренажёр: расставь электроны по правилам Клечковского, Хунда и Паули. Анимация проскока электронов.</div>
+            <span class="tag">тренажёр</span>
+        </a>
+    </div>
+</div>
+</body>
+</html>
