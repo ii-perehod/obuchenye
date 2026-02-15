@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Квиз: Темы 1-2</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        .progress-bar {
+            background: #1a1a2e;
+            border-radius: 12px;
+            height: 8px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            border-radius: 12px;
+            transition: width 0.4s ease;
+        }
+        .progress-text {
+            text-align: center;
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+        .question-card.hidden { display: none; }
+        .topic-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .topic-1 { background: rgba(0,210,255,0.2); color: #00d2ff; }
+        .topic-2 { background: rgba(123,47,247,0.2); color: #b57bff; }
+        .question-text {
+            font-size: 1.15em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-size: 1em;
+            line-height: 1.4;
+            background: rgba(255,255,255,0.03);
+        }
+        .option:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+        .option.selected { border-color: #00d2ff; background: rgba(0,210,255,0.1); }
+        .option.correct { border-color: #00e676; background: rgba(0,230,118,0.15); color: #00e676; }
+        .option.wrong { border-color: #ff5252; background: rgba(255,82,82,0.15); color: #ff5252; }
+        .option.disabled { pointer-events: none; }
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid #7b2ff7;
+            font-size: 0.9em;
+            line-height: 1.5;
+            display: none;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.25s;
+            color: #fff;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,210,255,0.3); }
+        .btn-container { text-align: center; margin-top: 20px; }
+        .results {
+            text-align: center;
+            padding: 40px;
+        }
+        .results h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .score-circle {
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 25px auto;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .score-great { background: rgba(0,230,118,0.15); border: 3px solid #00e676; color: #00e676; }
+        .score-ok { background: rgba(255,193,7,0.15); border: 3px solid #ffc107; color: #ffc107; }
+        .score-bad { background: rgba(255,82,82,0.15); border: 3px solid #ff5252; color: #ff5252; }
+        .stats { display: flex; justify-content: center; gap: 40px; margin: 20px 0; }
+        .stat-item { text-align: center; }
+        .stat-num { font-size: 1.8em; font-weight: 700; }
+        .stat-label { font-size: 0.85em; color: #888; }
+        .formula { font-family: 'Times New Roman', serif; font-style: italic; }
+        sub { font-size: 0.7em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Химия: Основы</h1>
+    <div class="subtitle">Темы 1-2: Основные понятия + Строение атома</div>
+
+    <div class="progress-text" id="progressText">Вопрос 1 из 20</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:5%"></div></div>
+
+    <div id="quizArea"></div>
+    <div id="resultsArea" class="question-card hidden"></div>
+</div>
+
+<script>
+const questions = [
+    // ТЕМА 1: Основные понятия
+    {
+        topic: 1,
+        question: "Что изучает химия?",
+        options: [
+            "Движение и взаимодействие тел",
+            "Состав, строение, свойства и превращения веществ",
+            "Строение и развитие Земли",
+            "Наследственность и изменчивость организмов"
+        ],
+        correct: 1,
+        explanation: "Химия — наука о составе, строении, свойствах, превращениях веществ и элементов, их окружающих."
+    },
+    {
+        topic: 1,
+        question: "Что такое молекула?",
+        options: [
+            "Наименьшая частица химического элемента",
+            "Наименьшая частица вещества, сохраняющая его химические свойства",
+            "Совокупность атомов одного элемента",
+            "Заряженная частица, образованная из атома"
+        ],
+        correct: 1,
+        explanation: "Молекула — наименьшая частица вещества, сохраняющая его химические свойства."
+    },
+    {
+        topic: 1,
+        question: "Что такое атом?",
+        options: [
+            "Наименьшая частица вещества, сохраняющая его химические свойства",
+            "Наименьшая частица химического элемента, входящая в состав молекул",
+            "Совокупность атомов одного элемента",
+            "Электронейтральная частица, состоящая из ядра"
+        ],
+        correct: 1,
+        explanation: "Атом — наименьшая частица химического элемента, входящая в состав молекул."
+    },
+    {
+        topic: 1,
+        question: "Чем простое вещество отличается от сложного?",
+        options: [
+            "Простое имеет меньшую молярную массу",
+            "Простое состоит из атомов одного элемента, сложное — из разных",
+            "Простое всегда газообразное",
+            "Простое не вступает в реакции"
+        ],
+        correct: 1,
+        explanation: "Простое вещество — совокупность атомов одного элемента (H\u2082, O\u2082, N\u2082). Сложное — совокупность атомов разных элементов (H\u2082O)."
+    },
+    {
+        topic: 1,
+        question: "Что такое аллотропия?",
+        options: [
+            "Способность атомов образовывать ионы",
+            "Существование элемента в виде нескольких простых веществ",
+            "Изменение агрегатного состояния вещества",
+            "Способность вещества растворяться в воде"
+        ],
+        correct: 1,
+        explanation: "Аллотропия — существование элемента в виде нескольких простых веществ. Например, углерод: алмаз, графит, аллотроп. Кислород: O\u2082 и O\u2083 (озон)."
+    },
+    {
+        topic: 1,
+        question: "Чему равна молекулярная масса M<sub>r</sub>(H<sub>2</sub>O)?",
+        options: [
+            "16 а.е.м.",
+            "18 а.е.м.",
+            "20 а.е.м.",
+            "17 а.е.м."
+        ],
+        correct: 1,
+        explanation: "M\u1d63(H\u2082O) = 2\u00b7A\u1d63(H) + A\u1d63(O) = 2\u00b71 + 16 = 18 а.е.м."
+    },
+    {
+        topic: 1,
+        question: "Что такое моль?",
+        options: [
+            "Масса одной молекулы вещества",
+            "Единица измерения количества вещества",
+            "Объём газа при нормальных условиях",
+            "Число электронов в атоме"
+        ],
+        correct: 1,
+        explanation: "Моль — единица количества вещества. 1 моль любого вещества числено равен его молярной массе."
+    },
+    {
+        topic: 1,
+        question: "Что гласит закон сохранения масс?",
+        options: [
+            "Масса ядра равна сумме масс протонов и нейтронов",
+            "Масса веществ, вступивших в реакцию, равна массе продуктов реакции",
+            "Масса газа пропорциональна его объёму",
+            "Масса молекулы равна сумме масс составляющих её атомов"
+        ],
+        correct: 1,
+        explanation: "Закон сохранения масс: масса веществ, вступивших в реакцию, равна массе веществ, образовавшихся в результате реакции."
+    },
+    {
+        topic: 1,
+        question: "Какой объём занимает 1 моль любого газа при н.у. (T=273K, P=1атм)?",
+        options: [
+            "11,2 л",
+            "44,8 л",
+            "22,4 л",
+            "33,6 л"
+        ],
+        correct: 2,
+        explanation: "По закону Авогадро, 1 моль любого газа при нормальных условиях занимает объём 22,4 л."
+    },
+    {
+        topic: 1,
+        question: "Как вычислить эквивалент кислоты?",
+        options: [
+            "Молярная масса / число атомов кислорода",
+            "Молярная масса / число атомов водорода",
+            "Молярная масса / заряд металла",
+            "Молярная масса / валентность"
+        ],
+        correct: 1,
+        explanation: "Эквивалент кислоты = молярная масса кислоты / число атомов водорода. Например, Э(H\u2082SO\u2084) = 98/2 = 49 г/моль."
+    },
+    // ТЕМА 2: Строение атома
+    {
+        topic: 2,
+        question: "Из чего состоит ядро атома?",
+        options: [
+            "Из электронов и протонов",
+            "Из протонов и нейтронов",
+            "Из нейтронов и электронов",
+            "Только из протонов"
+        ],
+        correct: 1,
+        explanation: "Ядро состоит из положительно заряженных протонов (заряд +1) и нейтральных нейтронов (заряд \u22480)."
+    },
+    {
+        topic: 2,
+        question: "Что такое изотопы?",
+        options: [
+            "Атомы разных элементов с одинаковой массой",
+            "Атомы одного элемента с одинаковым зарядом ядра, но разным массовым числом",
+            "Атомы с одинаковым числом нейтронов",
+            "Молекулы одного вещества разного размера"
+        ],
+        correct: 1,
+        explanation: "Изотопы — атомы одного и того же химического элемента, имеющие одинаковый заряд ядра, но разные массовые числа (разное число нейтронов). Например, \u00b9\u2075Cl и \u00b3\u2077Cl."
+    },
+    {
+        topic: 2,
+        question: "На чём основано современное представление о строении атома?",
+        options: [
+            "На планетарной модели",
+            "На квантово-механической модели",
+            "На модели «пудинг с изюмом»",
+            "На классической механике Ньютона"
+        ],
+        correct: 1,
+        explanation: "Современные представления о строении атома базируются на квантово-механической модели. Электрон ведёт себя и как частица, и как волна."
+    },
+    {
+        topic: 2,
+        question: "Что такое атомная орбиталь?",
+        options: [
+            "Траектория движения электрона вокруг ядра",
+            "Область пространства, в которой наиболее вероятно нахождение электрона",
+            "Расстояние от ядра до электрона",
+            "Энергия электрона на данном уровне"
+        ],
+        correct: 1,
+        explanation: "Атомная орбиталь — область пространства, в которой наиболее вероятно нахождение электрона. Описывается волновой функцией (уравнение Шрёдингера, 1924)."
+    },
+    {
+        topic: 2,
+        question: "Сколько квантовых чисел характеризуют состояние электрона в атоме?",
+        options: [
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        correct: 2,
+        explanation: "4 квантовых числа: главное (n), орбитальное (l), магнитное (m\u2097) и спиновое (m\u209b)."
+    },
+    {
+        topic: 2,
+        question: "Какие формы имеют s- и p-орбитали?",
+        options: [
+            "s — сфера, p — гантель (восьмёрка)",
+            "s — гантель, p — сфера",
+            "Обе сферические",
+            "s — куб, p — сфера"
+        ],
+        correct: 0,
+        explanation: "s-орбиталь имеет сферическую форму, p-орбиталь — форму гантели (восьмёрки)."
+    },
+    {
+        topic: 2,
+        question: "Сколько электронов максимально вмещает d-подуровень?",
+        options: [
+            "2",
+            "6",
+            "10",
+            "14"
+        ],
+        correct: 2,
+        explanation: "Электронная ёмкость подуровней: s = 2, p = 6, d = 10, f = 14. Формула ёмкости: 2(2l+1)."
+    },
+    {
+        topic: 2,
+        question: "Что гласит принцип Паули?",
+        options: [
+            "Электроны заполняют орбитали с наименьшей энергией",
+            "В атоме не может быть двух электронов с одинаковыми значениями всех четырёх квантовых чисел",
+            "Электроны сначала заполняют орбитали по одному",
+            "Электроны всегда движутся по круговым орбитам"
+        ],
+        correct: 1,
+        explanation: "Принцип Паули: в атоме не может быть 2-х электронов с одинаковыми значениями всех четырёх квантовых чисел. Поэтому на одной орбитали максимум 2 электрона с противоположными спинами."
+    },
+    {
+        topic: 2,
+        question: "По правилу Клечковского, что заполняется раньше — 3d или 4s?",
+        options: [
+            "3d, потому что n меньше",
+            "4s, потому что сумма n+l меньше",
+            "Одновременно",
+            "Зависит от элемента"
+        ],
+        correct: 1,
+        explanation: "По правилу Клечковского: 4s (n+l = 4+0 = 4) заполняется раньше 3d (n+l = 3+2 = 5), так как сумма n+l меньше. При равных n+l первым заполняется подуровень с меньшим n."
+    },
+    {
+        topic: 2,
+        question: "Какая электронная формула у натрия (Na, Z=11)?",
+        options: [
+            "1s\u00b2 2s\u00b2 2p\u2076 3s\u00b9",
+            "1s\u00b2 2s\u00b2 2p\u2076 3p\u00b9",
+            "1s\u00b2 2s\u00b2 2p\u2075 3s\u00b2",
+            "1s\u00b2 2s\u00b2 2p\u2076 3s\u00b2"
+        ],
+        correct: 0,
+        explanation: "Na (11 электронов): 1s\u00b2 2s\u00b2 2p\u2076 3s\u00b9. Последний электрон находится на 3s-подуровне."
+    }
+];
+
+let current = 0;
+let score = 0;
+let answers = [];
+
+function render() {
+    const area = document.getElementById('quizArea');
+    const q = questions[current];
+    const topicClass = q.topic === 1 ? 'topic-1' : 'topic-2';
+    const topicName = q.topic === 1 ? 'Тема 1: Основные понятия' : 'Тема 2: Строение атома';
+
+    area.innerHTML = `
+        <div class="question-card">
+            <span class="topic-tag ${topicClass}">${topicName}</span>
+            <div class="question-text">${q.question}</div>
+            <div class="options">
+                ${q.options.map((opt, i) => `<div class="option" onclick="answer(${i})" id="opt${i}">${opt}</div>`).join('')}
+            </div>
+            <div class="explanation" id="explanation">${q.explanation}</div>
+            <div class="btn-container hidden" id="nextBtn">
+                <button class="btn btn-primary" onclick="next()">${current < questions.length - 1 ? 'Следующий вопрос' : 'Результаты'}</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('progressText').textContent = `Вопрос ${current + 1} из ${questions.length}`;
+    document.getElementById('progressFill').style.width = ((current + 1) / questions.length * 100) + '%';
+}
+
+function answer(idx) {
+    const q = questions[current];
+    const options = document.querySelectorAll('.option');
+
+    options.forEach(opt => opt.classList.add('disabled'));
+
+    if (idx === q.correct) {
+        document.getElementById('opt' + idx).classList.add('correct');
+        score++;
+    } else {
+        document.getElementById('opt' + idx).classList.add('wrong');
+        document.getElementById('opt' + q.correct).classList.add('correct');
+    }
+
+    answers.push({ question: current, selected: idx, correct: q.correct });
+
+    document.getElementById('explanation').style.display = 'block';
+    document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function next() {
+    current++;
+    if (current < questions.length) {
+        render();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    document.getElementById('quizArea').innerHTML = '';
+    document.getElementById('progressText').textContent = 'Готово!';
+    document.getElementById('progressFill').style.width = '100%';
+
+    const pct = Math.round(score / questions.length * 100);
+    let grade, scoreClass, emoji;
+    if (pct >= 80) { grade = 'Отлично!'; scoreClass = 'score-great'; emoji = '' }
+    else if (pct >= 60) { grade = 'Хорошо!'; scoreClass = 'score-ok'; emoji = '' }
+    else { grade = 'Нужно повторить'; scoreClass = 'score-bad'; emoji = '' }
+
+    const t1correct = answers.filter((a,i) => questions[i].topic === 1 && a.selected === a.correct).length;
+    const t1total = questions.filter(q => q.topic === 1).length;
+    const t2correct = answers.filter((a,i) => questions[i].topic === 2 && a.selected === a.correct).length;
+    const t2total = questions.filter(q => q.topic === 2).length;
+
+    const area = document.getElementById('resultsArea');
+    area.classList.remove('hidden');
+    area.innerHTML = `
+        <div class="results">
+            <h2>${grade}</h2>
+            <div class="score-circle ${scoreClass}">${pct}%</div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-num" style="color:#00e676">${score}</div>
+                    <div class="stat-label">Правильных</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num" style="color:#ff5252">${questions.length - score}</div>
+                    <div class="stat-label">Ошибок</div>
+                </div>
+            </div>
+            <div style="margin:20px 0; color:#aaa;">
+                <div>Тема 1 (Основные понятия): ${t1correct}/${t1total}</div>
+                <div>Тема 2 (Строение атома): ${t2correct}/${t2total}</div>
+            </div>
+            <button class="btn btn-primary" onclick="restart()">Пройти заново</button>
+        </div>
+    `;
+}
+
+function restart() {
+    current = 0;
+    score = 0;
+    answers = [];
+    document.getElementById('resultsArea').classList.add('hidden');
+    document.getElementById('resultsArea').innerHTML = '';
+    render();
+}
+
+render();
+</script>
+</body>
+</html>
