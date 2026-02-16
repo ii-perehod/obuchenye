@@ -460,22 +460,13 @@ function tryPlace(si,bi,arrow) {
         selectedArrow=null;updateArrowBtns();
         if(mode===1){updateFreeElement();renderPT(totalPlaced);}
 
-        // Check for completion or exception
+        // Check for exception (proскок fires automatically, but no auto-stop)
         if(mode===0 && totalPlaced===currentZ){
             const exc=EXCEPTIONS[currentZ];
             if(exc){
                 pendingException=true;
                 forceShowZero.add(exc.srcSi);
                 setTimeout(()=>animateException(exc,finishException),500);
-            } else {
-                finished=true;scoreTotal++;scoreCorrect++;
-                const fb=document.getElementById('feedback');
-                fb.className='feedback correct show';
-                fb.innerHTML=`Правильно! ${currentZ}e\u207B`+(piuCount===0?' Идеально!':`  (промахов: ${piuCount})`);
-                playDing();
-                document.getElementById('scoreCorrect').textContent=scoreCorrect;
-                document.getElementById('scoreTotal').textContent=scoreTotal;
-                document.getElementById('nextBtn').classList.remove('hidden');
             }
         }
         if(mode===1){
@@ -504,6 +495,25 @@ function tryPlace(si,bi,arrow) {
 
 function showHint(t){const fb=document.getElementById('feedback');fb.className='feedback hint show';fb.textContent=t;setTimeout(()=>{fb.className='feedback';},2500);}
 function updateArrowBtns(){document.getElementById('srcUp').classList.toggle('selected',selectedArrow==='up');document.getElementById('srcDown').classList.toggle('selected',selectedArrow==='down');}
+
+function checkDone(){
+    if(finished||pendingException)return;
+    const fb=document.getElementById('feedback');
+    if(totalPlaced===currentZ){
+        finished=true;scoreTotal++;scoreCorrect++;
+        fb.className='feedback correct show';
+        fb.innerHTML=`Правильно! ${ELEMENTS[currentZ].s} \u2014 ${currentZ}e\u207B`+(piuCount===0?' Идеально!':`  (промахов: ${piuCount})`);
+        playDing();
+        document.getElementById('scoreCorrect').textContent=scoreCorrect;
+        document.getElementById('scoreTotal').textContent=scoreTotal;
+        document.getElementById('nextBtn').classList.remove('hidden');
+    } else {
+        const el=ELEMENTS[currentZ];
+        fb.className='feedback wrong show';
+        fb.innerHTML=`Не готово! У ${el.s} (${el.n}) \u2014 ${currentZ} электронов. Поставлено: ${totalPlaced}`;
+        playPiu();
+    }
+}
 
 function flashExcBoxes(exc){
     const src=document.getElementById(`box_${exc.srcSi}_${exc.srcBi}`);
