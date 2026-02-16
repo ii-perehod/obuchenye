@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Формы орбиталей — s, p, d</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh; color: #e0e0e0;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .page { max-width: 520px; width: 100%; text-align: center; }
+        h1 {
+            font-size: 1.5em; margin-bottom: 4px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #888; font-size: 0.82em; margin-bottom: 24px; }
+        .back-link { display: inline-block; margin-bottom: 18px; color: #00d2ff; text-decoration: none; font-size: 0.82em; opacity: 0.7; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 1; }
+
+        .svg-wrap {
+            background: rgba(0,0,0,0.25); border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 20px; margin-bottom: 20px;
+        }
+        svg { display: block; margin: 0 auto; overflow: visible; }
+
+        .buttons { display: flex; gap: 10px; justify-content: center; margin-bottom: 18px; }
+        .btn {
+            padding: 8px 28px; border-radius: 22px; cursor: pointer;
+            font-size: 0.95em; font-weight: 700; border: 2px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.04); color: #888; transition: all 0.25s;
+            letter-spacing: 0.5px;
+        }
+        .btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+        .btn.active-s { border-color: #00d2ff; color: #00d2ff; background: rgba(0,210,255,0.12); box-shadow: 0 0 16px rgba(0,210,255,0.2); }
+        .btn.active-p { border-color: #ff9800; color: #ff9800; background: rgba(255,152,0,0.12); box-shadow: 0 0 16px rgba(255,152,0,0.2); }
+        .btn.active-d { border-color: #e040fb; color: #e040fb; background: rgba(224,64,251,0.12); box-shadow: 0 0 16px rgba(224,64,251,0.2); }
+
+        .info { min-height: 48px; }
+        .info .label {
+            font-size: 1.2em; font-weight: 700; margin-bottom: 4px; transition: color 0.4s;
+        }
+        .info .desc { font-size: 0.82em; color: #999; transition: opacity 0.3s; }
+
+        /* SVG morph transition */
+        #orbital-path {
+            transition: d 0.8s ease-in-out, fill 0.8s ease-in-out, filter 0.8s ease-in-out;
+        }
+        .glow-s { filter: url(#glow-s); }
+        .glow-p { filter: url(#glow-p); }
+        .glow-d { filter: url(#glow-d); }
+    </style>
+</head>
+<body>
+<div class="page">
+    <a href="index.html" class="back-link">&larr; На главную</a>
+    <h1>Формы орбиталей</h1>
+    <div class="subtitle">Нажми кнопку — посмотри, как меняется форма электронного облака</div>
+
+    <div class="svg-wrap">
+        <svg viewBox="-150 -150 300 300" width="280" height="280">
+            <defs>
+                <filter id="glow-s" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="8" result="blur"/>
+                    <feFlood flood-color="#00d2ff" flood-opacity="0.4"/>
+                    <feComposite in2="blur" operator="in"/>
+                    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="glow-p" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="8" result="blur"/>
+                    <feFlood flood-color="#ff9800" flood-opacity="0.4"/>
+                    <feComposite in2="blur" operator="in"/>
+                    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="glow-d" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="8" result="blur"/>
+                    <feFlood flood-color="#e040fb" flood-opacity="0.4"/>
+                    <feComposite in2="blur" operator="in"/>
+                    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+            </defs>
+
+            <!-- Coordinate axes -->
+            <line x1="-130" y1="0" x2="130" y2="0" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <line x1="0" y1="-130" x2="0" y2="130" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+            <!-- Orbital shape -->
+            <path id="orbital-path" class="glow-s" fill="rgba(0,210,255,0.25)" stroke="#00d2ff" stroke-width="2"/>
+
+            <!-- Nucleus -->
+            <circle cx="0" cy="0" r="5" fill="#fff" opacity="0.9"/>
+            <circle cx="0" cy="0" r="3" fill="#ffeb3b"/>
+        </svg>
+    </div>
+
+    <div class="buttons">
+        <button class="btn active-s" data-type="s">s</button>
+        <button class="btn" data-type="p">p</button>
+        <button class="btn" data-type="d">d</button>
+    </div>
+
+    <div class="info">
+        <div class="label" id="info-label" style="color:#00d2ff;">s-орбиталь</div>
+        <div class="desc" id="info-desc">Сферическая форма. Электронное облако равномерно окружает ядро.</div>
+    </div>
+</div>
+
+<script>
+const path = document.getElementById('orbital-path');
+const label = document.getElementById('info-label');
+const desc = document.getElementById('info-desc');
+const buttons = document.querySelectorAll('.btn');
+
+// Generate circle path with N points for consistent morph
+function circlePath(r, n) {
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+        const a = (2 * Math.PI * i) / n;
+        pts.push([Math.cos(a) * r, Math.sin(a) * r]);
+    }
+    return smoothClosed(pts);
+}
+
+// Dumbbell (p-orbital): two lobes along Y axis
+function dumbbellPath(n) {
+    const pts = [];
+    const half = n / 2;
+    // Top lobe
+    for (let i = 0; i < half; i++) {
+        const t = i / half; // 0..1
+        const a = Math.PI * t; // 0..PI
+        const x = Math.sin(a) * 50;
+        const y = -15 - Math.sin(a) * 90;
+        pts.push([x, y]);
+    }
+    // Bottom lobe
+    for (let i = 0; i < half; i++) {
+        const t = i / half;
+        const a = Math.PI * t;
+        const x = -Math.sin(a) * 50;
+        const y = 15 + Math.sin(a) * 90;
+        pts.push([x, y]);
+    }
+    return smoothClosed(pts);
+}
+
+// Clover (d-orbital dxy): four lobes at 45 degrees
+function cloverPath(n) {
+    const pts = [];
+    const quarter = n / 4;
+    const lobeAngles = [Math.PI * 0.25, Math.PI * 0.75, Math.PI * 1.25, Math.PI * 1.75];
+    for (let l = 0; l < 4; l++) {
+        const center = lobeAngles[l];
+        for (let i = 0; i < quarter; i++) {
+            const t = i / quarter;
+            const a = center - 0.35 + t * 0.7;
+            const dist = 20 + Math.sin(t * Math.PI) * 80;
+            pts.push([Math.cos(a) * dist, Math.sin(a) * dist]);
+        }
+    }
+    return smoothClosed(pts);
+}
+
+// Smooth closed path from points using cubic bezier
+function smoothClosed(pts) {
+    const n = pts.length;
+    if (n < 3) return '';
+    const parts = [`M ${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`];
+    for (let i = 0; i < n; i++) {
+        const p0 = pts[(i - 1 + n) % n];
+        const p1 = pts[i];
+        const p2 = pts[(i + 1) % n];
+        const p3 = pts[(i + 2) % n];
+        const tension = 0.3;
+        const cp1x = p1[0] + (p2[0] - p0[0]) * tension;
+        const cp1y = p1[1] + (p2[1] - p0[1]) * tension;
+        const cp2x = p2[0] - (p3[0] - p1[0]) * tension;
+        const cp2y = p2[1] - (p3[1] - p1[1]) * tension;
+        parts.push(`C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`);
+    }
+    parts.push('Z');
+    return parts.join(' ');
+}
+
+const N = 64; // Same point count for all shapes — required for smooth morph
+
+const shapes = {
+    s: { path: circlePath(80, N), color: '#00d2ff', fill: 'rgba(0,210,255,0.25)', label: 's-орбиталь', desc: 'Сферическая форма. Электронное облако равномерно окружает ядро.', glow: 'glow-s' },
+    p: { path: dumbbellPath(N), color: '#ff9800', fill: 'rgba(255,152,0,0.25)', label: 'p-орбиталь', desc: 'Форма «гантели». Две доли по обе стороны от ядра, между ними — узловая плоскость.', glow: 'glow-p' },
+    d: { path: cloverPath(N), color: '#e040fb', fill: 'rgba(224,64,251,0.25)', label: 'd-орбиталь', desc: 'Форма «клевера» (dxy). Четыре доли, расположенные между осями координат.', glow: 'glow-d' },
+};
+
+let current = 's';
+
+function setShape(type) {
+    if (type === current) return;
+    current = type;
+    const s = shapes[type];
+
+    // Update path via CSS d property for transition
+    path.style.d = `path("${s.path}")`;
+    path.setAttribute('fill', s.fill);
+    path.setAttribute('stroke', s.color);
+    path.className.baseVal = s.glow;
+
+    label.textContent = s.label;
+    label.style.color = s.color;
+    desc.textContent = s.desc;
+
+    buttons.forEach(b => {
+        b.className = 'btn';
+        if (b.dataset.type === type) b.classList.add('active-' + type);
+    });
+}
+
+// Init
+path.style.d = `path("${shapes.s.path}")`;
+
+buttons.forEach(b => b.addEventListener('click', () => setShape(b.dataset.type)));
+</script>
+</body>
+</html>

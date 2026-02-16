@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажёр: Молярная масса</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scrollbar-gutter: stable; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh; color: #e0e0e0; padding: 10px;
+            user-select: none; overflow-y: scroll;
+        }
+        .page { max-width: 900px; margin: 0 auto; }
+        .back-link { display: inline-block; margin-bottom: 8px; color: #00d2ff; text-decoration: none; font-size: 0.82em; opacity: 0.7; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 1; }
+        h1 {
+            text-align: center; font-size: 1.35em; margin-bottom: 2px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; font-size: 0.78em; margin-bottom: 8px; }
+
+        .tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; }
+        .tab {
+            padding: 4px 12px; border-radius: 16px; font-size: 0.75em; cursor: default;
+            border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: #888;
+        }
+        .tab.active { background: rgba(0,210,255,0.15); border-color: #00d2ff; color: #00d2ff; }
+        .tab.locked { opacity: 0.4; cursor: not-allowed; }
+
+        .progress-row { display: flex; gap: 3px; justify-content: center; margin-bottom: 8px; flex-wrap: wrap; }
+        .dot {
+            width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05); transition: all 0.3s;
+        }
+        .dot.done { background: #00e676; border-color: #00e676; }
+        .dot.fail { background: #ff5252; border-color: #ff5252; }
+        .dot.cur { border-color: #00d2ff; box-shadow: 0 0 6px rgba(0,210,255,0.5); }
+
+        .top-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 8px; flex-wrap: wrap; }
+        .task-card {
+            flex: 1 1 220px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 10px 16px; text-align: center;
+        }
+        .task-label { font-size: 0.7em; color: #888; margin-bottom: 2px; }
+        .task-formula { font-size: 1.6em; font-weight: 700; color: #00d2ff; line-height: 1.4; }
+        .task-formula .fname { color: #00d2ff; }
+
+        /* Interactive formula parts */
+        .f-el { color: #00d2ff; }
+        .f-sub {
+            color: #ff9800; cursor: pointer; font-size: 0.65em; vertical-align: sub;
+            padding: 1px 3px; border-radius: 4px; border: 1px solid transparent;
+            transition: all 0.15s; font-weight: 700; position: relative; top: 2px;
+        }
+        .f-sub:hover { border-color: #ff9800; background: rgba(255,152,0,0.15); }
+        .f-sub:active { transform: scale(0.9); }
+        .f-sub.used { border-color: rgba(255,152,0,0.3); background: rgba(255,152,0,0.08); }
+        .f-par {
+            color: #e040fb; cursor: pointer; font-weight: 400;
+            padding: 0 2px; border-radius: 3px; border: 1px solid transparent;
+            transition: all 0.15s;
+        }
+        .f-par:hover { border-color: #e040fb; background: rgba(224,64,251,0.15); }
+        .f-par:active { transform: scale(0.9); }
+        .f-label { font-size: 0.45em; color: #888; font-weight: 400; vertical-align: baseline; }
+
+        .score-card {
+            flex: 0 0 auto; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 10px 16px; text-align: center; display: flex; flex-direction: column; justify-content: center;
+        }
+        .score-label { font-size: 0.7em; color: #888; }
+        .score-val { font-size: 1.2em; font-weight: 700; color: #00d2ff; }
+
+        /* Expression */
+        .expr-wrap {
+            background: rgba(0,0,0,0.35); border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; min-height: 44px;
+            display: flex; align-items: center; flex-wrap: wrap; gap: 3px;
+            font-size: 1.2em; font-family: 'Consolas', 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .tok { padding: 1px 3px; border-radius: 4px; white-space: nowrap; }
+        .tok-ar { color: #00d2ff; background: rgba(0,210,255,0.1); }
+        .tok-sub { color: #ff9800; background: rgba(255,152,0,0.1); }
+        .tok-op { color: #999; padding: 0 2px; }
+        .tok-par { color: #e040fb; }
+        .cursor-blink { display: inline-block; width: 2px; height: 1.1em; background: #00d2ff; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 2px; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Operator buttons only */
+        .controls { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; justify-content: center; }
+        .ctrl-btn {
+            width: 50px; height: 42px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06); color: #ccc; font-size: 1.1em; font-weight: 600;
+            cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-1px); }
+        .ctrl-btn:active { transform: scale(0.95); }
+        .ctrl-btn.op { color: #ff9800; }
+        .ctrl-btn.eq { background: rgba(0,210,255,0.2); border-color: #00d2ff; color: #00d2ff; width: 64px; font-size: 1.15em; }
+        .ctrl-btn.eq:hover { background: rgba(0,210,255,0.35); }
+        .ctrl-btn.del { color: #ff5252; }
+        .ctrl-btn.clr { color: #ff5252; font-size: 0.78em; }
+
+        /* ── Short-form periodic table (Russian style) ── */
+        .table-wrap { overflow-x: auto; margin-bottom: 8px; }
+        .ptable {
+            display: grid;
+            grid-template-columns: 30px repeat(7, 1fr) repeat(3, 1fr);
+            gap: 2px; min-width: 650px;
+        }
+        .pt-hdr {
+            text-align: center; font-size: 0.65em; font-weight: 700; color: #888;
+            padding: 2px 0; display: flex; align-items: center; justify-content: center;
+        }
+        .pt-hdr.grp { color: #7b2ff7; }
+        .pt-per {
+            font-size: 0.65em; font-weight: 700; color: #555; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .pcell {
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 4px;
+            background: rgba(255,255,255,0.03); padding: 0;
+            text-align: center; position: relative; min-height: 48px;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .pcell .zone-z {
+            cursor: pointer; padding: 2px 2px 0; font-size: 0.6em; font-weight: 700;
+            color: #ef5350; transition: all 0.15s; border-radius: 3px 3px 0 0; line-height: 1.2;
+        }
+        .pcell .zone-z:hover { background: rgba(239,83,80,0.2); color: #ff8a80; }
+        .pcell .zone-z:active { transform: scale(0.92); }
+        .pcell .sym {
+            font-size: 0.82em; font-weight: 700; color: #ddd; line-height: 1.1;
+            padding: 0 2px; pointer-events: none; flex: 1; display: flex; align-items: center; justify-content: center;
+        }
+        .pcell .zone-ar {
+            cursor: pointer; padding: 0 2px 2px; font-size: 0.6em; font-weight: 700;
+            color: #4fc3f7; transition: all 0.15s; border-radius: 0 0 3px 3px; line-height: 1.2;
+        }
+        .pcell .zone-ar:hover { background: rgba(79,195,247,0.2); color: #81d4fa; }
+        .pcell .zone-ar:active { transform: scale(0.92); }
+        .pcell.empty { border-color: transparent; background: transparent; pointer-events: none; }
+        .pcell.flash .zone-ar { background: rgba(0,210,255,0.3); color: #fff; }
+        .pcell.hint { animation: hint-pulse 1.5s ease 3; }
+        .pcell.hint-z .zone-z { animation: hint-z-pulse 1s ease 2; }
+        @keyframes hint-pulse { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 14px rgba(255,82,82,0.6); border-color: #ff5252; } }
+        @keyframes hint-z-pulse { 0%,100% { background: transparent; } 50% { background: rgba(239,83,80,0.3); } }
+
+        /* color coding by type */
+        .pcell.type-s { border-left: 2px solid rgba(0,210,255,0.3); }
+        .pcell.type-p { border-left: 2px solid rgba(255,152,0,0.3); }
+        .pcell.type-d { border-left: 2px solid rgba(224,64,251,0.3); }
+
+        /* Feedback */
+        .feedback { border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; display: none; font-size: 0.85em; line-height: 1.6; }
+        .feedback.correct { display: block; background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3); }
+        .feedback.wrong { display: block; background: rgba(255,82,82,0.1); border: 1px solid rgba(255,82,82,0.3); }
+        .feedback .fb-title { font-weight: 700; margin-bottom: 4px; }
+        .feedback.correct .fb-title { color: #00e676; }
+        .feedback.wrong .fb-title { color: #ff5252; }
+        .feedback .fb-breakdown { color: #bbb; }
+        .feedback .fb-breakdown b { color: #00d2ff; }
+        .fb-next {
+            margin-top: 8px; padding: 7px 22px; border-radius: 18px; border: 1px solid #00d2ff;
+            background: rgba(0,210,255,0.15); color: #00d2ff; cursor: pointer; font-size: 0.88em; transition: all 0.2s;
+        }
+        .fb-next:hover { background: rgba(0,210,255,0.3); }
+    </style>
+</head>
+<body>
+<div class="page">
+    <a href="index.html" class="back-link">&larr; На главную</a>
+    <h1>Молярная масса</h1>
+    <div class="subtitle">Нажимай на индексы в формуле и элементы в таблице &mdash; собирай выражение</div>
+
+    <div class="tabs">
+        <div class="tab active">Молярная масса</div>
+        <div class="tab locked">Концентрация 🔒</div>
+        <div class="tab locked">Растворы 🔒</div>
+    </div>
+
+    <div class="progress-row" id="progressRow"></div>
+
+    <div class="top-row">
+        <div class="task-card">
+            <div class="task-label">Вычислите</div>
+            <div class="task-formula">M<sub>r</sub>(<span id="formula"></span>) = ?</div>
+        </div>
+        <div class="score-card">
+            <div class="score-label">Верно</div>
+            <div class="score-val"><span id="scoreNum">0</span>/<span id="scoreTotal">0</span></div>
+        </div>
+    </div>
+
+    <div class="expr-wrap" id="exprWrap"><span class="cursor-blink"></span></div>
+
+    <div class="controls">
+        <button class="ctrl-btn op" data-o="×">×</button>
+        <button class="ctrl-btn op" data-o="+">+</button>
+        <button class="ctrl-btn op" data-o="−">−</button>
+        <button class="ctrl-btn op" data-o="/">/</button>
+        <button class="ctrl-btn del" data-act="del">⌫</button>
+        <button class="ctrl-btn clr" data-act="clr">AC</button>
+        <button class="ctrl-btn eq" data-act="eq">=</button>
+    </div>
+
+    <div class="table-wrap">
+        <div class="ptable" id="ptable"></div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+/* ── Element data ── */
+const EL = {};
+[
+    {z:1,sym:'H',ar:1,t:'s'},{z:2,sym:'He',ar:4,t:'s'},
+    {z:3,sym:'Li',ar:7,t:'s'},{z:4,sym:'Be',ar:9,t:'s'},{z:5,sym:'B',ar:11,t:'p'},{z:6,sym:'C',ar:12,t:'p'},{z:7,sym:'N',ar:14,t:'p'},{z:8,sym:'O',ar:16,t:'p'},{z:9,sym:'F',ar:19,t:'p'},{z:10,sym:'Ne',ar:20,t:'p'},
+    {z:11,sym:'Na',ar:23,t:'s'},{z:12,sym:'Mg',ar:24,t:'s'},{z:13,sym:'Al',ar:27,t:'p'},{z:14,sym:'Si',ar:28,t:'p'},{z:15,sym:'P',ar:31,t:'p'},{z:16,sym:'S',ar:32,t:'p'},{z:17,sym:'Cl',ar:35.5,t:'p'},{z:18,sym:'Ar',ar:40,t:'p'},
+    {z:19,sym:'K',ar:39,t:'s'},{z:20,sym:'Ca',ar:40,t:'s'},{z:21,sym:'Sc',ar:45,t:'d'},{z:22,sym:'Ti',ar:48,t:'d'},{z:23,sym:'V',ar:51,t:'d'},{z:24,sym:'Cr',ar:52,t:'d'},{z:25,sym:'Mn',ar:55,t:'d'},{z:26,sym:'Fe',ar:56,t:'d'},{z:27,sym:'Co',ar:59,t:'d'},{z:28,sym:'Ni',ar:59,t:'d'},{z:29,sym:'Cu',ar:64,t:'d'},{z:30,sym:'Zn',ar:65,t:'d'},{z:31,sym:'Ga',ar:70,t:'p'},{z:32,sym:'Ge',ar:73,t:'p'},{z:33,sym:'As',ar:75,t:'p'},{z:34,sym:'Se',ar:79,t:'p'},{z:35,sym:'Br',ar:80,t:'p'},{z:36,sym:'Kr',ar:84,t:'p'},
+    {z:37,sym:'Rb',ar:85,t:'s'},{z:38,sym:'Sr',ar:88,t:'s'},{z:39,sym:'Y',ar:89,t:'d'},{z:40,sym:'Zr',ar:91,t:'d'},{z:41,sym:'Nb',ar:93,t:'d'},{z:42,sym:'Mo',ar:96,t:'d'},{z:43,sym:'Tc',ar:98,t:'d'},{z:44,sym:'Ru',ar:101,t:'d'},{z:45,sym:'Rh',ar:103,t:'d'},{z:46,sym:'Pd',ar:106,t:'d'},{z:47,sym:'Ag',ar:108,t:'d'},{z:48,sym:'Cd',ar:112,t:'d'},{z:49,sym:'In',ar:115,t:'p'},{z:50,sym:'Sn',ar:119,t:'p'},{z:51,sym:'Sb',ar:122,t:'p'},{z:52,sym:'Te',ar:128,t:'p'},{z:53,sym:'I',ar:127,t:'p'},{z:54,sym:'Xe',ar:131,t:'p'}
+].forEach(e => EL[e.sym] = e);
+
+/* ── Short-form table layout (Russian style) ──
+   Columns: [period] [I] [II] [III] [IV] [V] [VI] [VII] [VIII-1] [VIII-2] [VIII-3]
+   Rows per period: small periods = 1 row, large periods = 2 rows */
+const tableRows = [
+    // Period 1
+    { per: '1', cells: ['H', '', '', '', '', '', '', '', '', 'He'] },
+    // Period 2
+    { per: '2', cells: ['Li', 'Be', 'B', 'C', 'N', 'O', 'F', '', '', 'Ne'] },
+    // Period 3
+    { per: '3', cells: ['Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', '', '', 'Ar'] },
+    // Period 4 row 1 (K,Ca + d-block Sc-Mn + VIII triad)
+    { per: '4', cells: ['K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni'] },
+    // Period 4 row 2 (Cu,Zn + p-block Ga-Br + Kr)
+    { per: '',  cells: ['Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', '', '', 'Kr'] },
+    // Period 5 row 1
+    { per: '5', cells: ['Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd'] },
+    // Period 5 row 2
+    { per: '',  cells: ['Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', '', '', 'Xe'] },
+];
+
+/* ── Tasks with interactive formula parts ──
+   Part types: el (element text), sub (clickable subscript), par (clickable parenthesis), label (info text) */
+const tasks = [
+    // Simple inorganic
+    { mr:18, elems:['H','O'], breakdown:'A<sub>r</sub>(H)×2 + A<sub>r</sub>(O) = <b>1</b>×2 + <b>16</b> = 18',
+      parts:[{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'O'}] },
+    { mr:44, elems:['C','O'], breakdown:'A<sub>r</sub>(C) + A<sub>r</sub>(O)×2 = <b>12</b> + <b>16</b>×2 = 44',
+      parts:[{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'2'}] },
+    { mr:58.5, elems:['Na','Cl'], breakdown:'A<sub>r</sub>(Na) + A<sub>r</sub>(Cl) = <b>23</b> + <b>35.5</b> = 58.5',
+      parts:[{t:'el',v:'Na'},{t:'el',v:'Cl'}] },
+    { mr:36.5, elems:['H','Cl'], breakdown:'A<sub>r</sub>(H) + A<sub>r</sub>(Cl) = <b>1</b> + <b>35.5</b> = 36.5',
+      parts:[{t:'el',v:'H'},{t:'el',v:'Cl'}] },
+    // Acids
+    { mr:63, elems:['H','N','O'], breakdown:'A<sub>r</sub>(H)+A<sub>r</sub>(N)+A<sub>r</sub>(O)×3 = <b>1</b>+<b>14</b>+<b>16</b>×3 = 63',
+      parts:[{t:'el',v:'H'},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
+    { mr:98, elems:['H','S','O'], breakdown:'A<sub>r</sub>(H)×2+A<sub>r</sub>(S)+A<sub>r</sub>(O)×4 = <b>1</b>×2+<b>32</b>+<b>16</b>×4 = 98',
+      parts:[{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}] },
+    { mr:98, elems:['H','P','O'], breakdown:'A<sub>r</sub>(H)×3+A<sub>r</sub>(P)+A<sub>r</sub>(O)×4 = <b>1</b>×3+<b>31</b>+<b>16</b>×4 = 98',
+      parts:[{t:'el',v:'H'},{t:'sub',v:'3'},{t:'el',v:'P'},{t:'el',v:'O'},{t:'sub',v:'4'}] },
+    { mr:62, elems:['H','C','O'], breakdown:'A<sub>r</sub>(H)×2+A<sub>r</sub>(C)+A<sub>r</sub>(O)×3 = <b>1</b>×2+<b>12</b>+<b>16</b>×3 = 62',
+      parts:[{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
+    { mr:78, elems:['H','Si','O'], breakdown:'A<sub>r</sub>(H)×2+A<sub>r</sub>(Si)+A<sub>r</sub>(O)×3 = <b>1</b>×2+<b>28</b>+<b>16</b>×3 = 78',
+      parts:[{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'Si'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
+    // Bases & oxides
+    { mr:40, elems:['Na','O','H'], breakdown:'A<sub>r</sub>(Na)+A<sub>r</sub>(O)+A<sub>r</sub>(H) = <b>23</b>+<b>16</b>+<b>1</b> = 40',
+      parts:[{t:'el',v:'Na'},{t:'el',v:'O'},{t:'el',v:'H'}] },
+    { mr:74, elems:['Ca','O','H'], breakdown:'A<sub>r</sub>(Ca)+(A<sub>r</sub>(O)+A<sub>r</sub>(H))×2 = <b>40</b>+(<b>16</b>+<b>1</b>)×2 = 74',
+      parts:[{t:'el',v:'Ca'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'2'}] },
+    { mr:160, elems:['Fe','O'], breakdown:'A<sub>r</sub>(Fe)×2+A<sub>r</sub>(O)×3 = <b>56</b>×2+<b>16</b>×3 = 160',
+      parts:[{t:'el',v:'Fe'},{t:'sub',v:'2'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
+    { mr:80, elems:['Cu','O'], breakdown:'A<sub>r</sub>(Cu)+A<sub>r</sub>(O) = <b>64</b>+<b>16</b> = 80',
+      parts:[{t:'el',v:'Cu'},{t:'el',v:'O'}] },
+    // Salts
+    { mr:100, elems:['Ca','C','O'], breakdown:'A<sub>r</sub>(Ca)+A<sub>r</sub>(C)+A<sub>r</sub>(O)×3 = <b>40</b>+<b>12</b>+<b>16</b>×3 = 100',
+      parts:[{t:'el',v:'Ca'},{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
+    { mr:142, elems:['Na','S','O'], breakdown:'A<sub>r</sub>(Na)×2+A<sub>r</sub>(S)+A<sub>r</sub>(O)×4 = <b>23</b>×2+<b>32</b>+<b>16</b>×4 = 142',
+      parts:[{t:'el',v:'Na'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}] },
+    { mr:158, elems:['K','Mn','O'], breakdown:'A<sub>r</sub>(K)+A<sub>r</sub>(Mn)+A<sub>r</sub>(O)×4 = <b>39</b>+<b>55</b>+<b>16</b>×4 = 158',
+      parts:[{t:'el',v:'K'},{t:'el',v:'Mn'},{t:'el',v:'O'},{t:'sub',v:'4'}] },
+    { mr:95, elems:['Mg','Cl'], breakdown:'A<sub>r</sub>(Mg)+A<sub>r</sub>(Cl)×2 = <b>24</b>+<b>35.5</b>×2 = 95',
+      parts:[{t:'el',v:'Mg'},{t:'el',v:'Cl'},{t:'sub',v:'2'}] },
+    { mr:162.5, elems:['Fe','Cl'], breakdown:'A<sub>r</sub>(Fe)+A<sub>r</sub>(Cl)×3 = <b>56</b>+<b>35.5</b>×3 = 162.5',
+      parts:[{t:'el',v:'Fe'},{t:'el',v:'Cl'},{t:'sub',v:'3'}] },
+    { mr:294, elems:['K','Cr','O'], breakdown:'A<sub>r</sub>(K)×2+A<sub>r</sub>(Cr)×2+A<sub>r</sub>(O)×7 = <b>39</b>×2+<b>52</b>×2+<b>16</b>×7 = 294',
+      parts:[{t:'el',v:'K'},{t:'sub',v:'2'},{t:'el',v:'Cr'},{t:'sub',v:'2'},{t:'el',v:'O'},{t:'sub',v:'7'}] },
+    // With parentheses
+    { mr:148, elems:['Mg','N','O'], breakdown:'A<sub>r</sub>(Mg)+(A<sub>r</sub>(N)+A<sub>r</sub>(O)×3)×2 = <b>24</b>+(<b>14</b>+<b>16</b>×3)×2 = 148',
+      parts:[{t:'el',v:'Mg'},{t:'par',v:'('},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'},{t:'par',v:')'},{t:'sub',v:'2'}] },
+    { mr:342, elems:['Al','S','O'], breakdown:'A<sub>r</sub>(Al)×2+(A<sub>r</sub>(S)+A<sub>r</sub>(O)×4)×3 = <b>27</b>×2+(<b>32</b>+<b>16</b>×4)×3 = 342',
+      parts:[{t:'el',v:'Al'},{t:'sub',v:'2'},{t:'par',v:'('},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'},{t:'par',v:')'},{t:'sub',v:'3'}] },
+    { mr:107, elems:['Fe','O','H'], breakdown:'A<sub>r</sub>(Fe)+(A<sub>r</sub>(O)+A<sub>r</sub>(H))×3 = <b>56</b>+(<b>16</b>+<b>1</b>)×3 = 107',
+      parts:[{t:'el',v:'Fe'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'3'}] },
+    { mr:188, elems:['Cu','N','O'], breakdown:'A<sub>r</sub>(Cu)+(A<sub>r</sub>(N)+A<sub>r</sub>(O)×3)×2 = <b>64</b>+(<b>14</b>+<b>16</b>×3)×2 = 188',
+      parts:[{t:'el',v:'Cu'},{t:'par',v:'('},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'},{t:'par',v:')'},{t:'sub',v:'2'}] },
+    // Organic
+    { mr:16, elems:['C','H'], breakdown:'A<sub>r</sub>(C)+A<sub>r</sub>(H)×4 = <b>12</b>+<b>1</b>×4 = 16',
+      parts:[{t:'el',v:'C'},{t:'el',v:'H'},{t:'sub',v:'4'},{t:'label',v:'метан'}] },
+    { mr:30, elems:['C','H'], breakdown:'A<sub>r</sub>(C)×2+A<sub>r</sub>(H)×6 = <b>12</b>×2+<b>1</b>×6 = 30',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'6'},{t:'label',v:'этан'}] },
+    { mr:44, elems:['C','H'], breakdown:'A<sub>r</sub>(C)×3+A<sub>r</sub>(H)×8 = <b>12</b>×3+<b>1</b>×8 = 44',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'3'},{t:'el',v:'H'},{t:'sub',v:'8'},{t:'label',v:'пропан'}] },
+    { mr:58, elems:['C','H'], breakdown:'A<sub>r</sub>(C)×4+A<sub>r</sub>(H)×10 = <b>12</b>×4+<b>1</b>×10 = 58',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'4'},{t:'el',v:'H'},{t:'sub',v:'10'},{t:'label',v:'бутан'}] },
+    { mr:46, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)×2+A<sub>r</sub>(H)×6+A<sub>r</sub>(O) = <b>12</b>×2+<b>1</b>×6+<b>16</b> = 46',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'6'},{t:'el',v:'O'},{t:'label',v:'этанол'}] },
+    { mr:60, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)×2+A<sub>r</sub>(H)×4+A<sub>r</sub>(O)×2 = <b>12</b>×2+<b>1</b>×4+<b>16</b>×2 = 60',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'4'},{t:'el',v:'O'},{t:'sub',v:'2'},{t:'label',v:'уксусная к-та'}] },
+    { mr:180, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)×6+A<sub>r</sub>(H)×12+A<sub>r</sub>(O)×6 = <b>12</b>×6+<b>1</b>×12+<b>16</b>×6 = 180',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'6'},{t:'el',v:'H'},{t:'sub',v:'12'},{t:'el',v:'O'},{t:'sub',v:'6'},{t:'label',v:'глюкоза'}] },
+];
+
+/* ── State ── */
+let tokens = [];
+let current = 0;
+let score = 0;
+let results = [];
+let locked = false;
+
+/* ── Build periodic table ── */
+const cellMap = {};
+(function buildTable() {
+    const pt = document.getElementById('ptable');
+    // Header row: period + group names
+    const hdr = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+    hdr.forEach(h => {
+        const d = document.createElement('div');
+        d.className = 'pt-hdr' + (h ? ' grp' : '');
+        d.textContent = h;
+        pt.appendChild(d);
+    });
+    // VIII header spans 3 columns
+    const viii = document.createElement('div');
+    viii.className = 'pt-hdr grp';
+    viii.textContent = 'VIII';
+    viii.style.gridColumn = 'span 3';
+    pt.appendChild(viii);
+
+    // Data rows
+    tableRows.forEach(row => {
+        // Period number
+        const pCell = document.createElement('div');
+        pCell.className = 'pt-per';
+        pCell.textContent = row.per;
+        pt.appendChild(pCell);
+
+        // 10 element cells
+        row.cells.forEach(sym => {
+            const cell = document.createElement('div');
+            if (!sym) {
+                cell.className = 'pcell empty';
+                cell.innerHTML = '&nbsp;';
+                pt.appendChild(cell);
+                return;
+            }
+            const el = EL[sym];
+            cell.className = 'pcell type-' + el.t;
+            const zoneZ = document.createElement('div');
+            zoneZ.className = 'zone-z';
+            zoneZ.textContent = el.z;
+            zoneZ.addEventListener('click', () => onZoneClick(el, 'z'));
+            const symSpan = document.createElement('div');
+            symSpan.className = 'sym';
+            symSpan.textContent = el.sym;
+            const zoneAr = document.createElement('div');
+            zoneAr.className = 'zone-ar';
+            zoneAr.textContent = el.ar;
+            zoneAr.addEventListener('click', () => onZoneClick(el, 'ar'));
+            cell.appendChild(zoneZ);
+            cell.appendChild(symSpan);
+            cell.appendChild(zoneAr);
+            cellMap[sym] = cell;
+            pt.appendChild(cell);
+        });
+    });
+})();
+
+/* ── Render interactive formula ── */
+function renderFormula() {
+    const el = document.getElementById('formula');
+    const task = tasks[current];
+    let html = '';
+    task.parts.forEach((p, i) => {
+        if (p.t === 'el') {
+            html += `<span class="f-el">${p.v}</span>`;
+        } else if (p.t === 'sub') {
+            html += `<span class="f-sub" data-idx="${i}" data-val="${p.v}">${p.v}</span>`;
+        } else if (p.t === 'par') {
+            html += `<span class="f-par" data-idx="${i}" data-val="${p.v}">${p.v}</span>`;
+        } else if (p.t === 'label') {
+            html += ` <span class="f-label">(${p.v})</span>`;
+        }
+    });
+    el.innerHTML = html;
+
+    // Attach click handlers for subscripts and parentheses
+    el.querySelectorAll('.f-sub').forEach(span => {
+        span.addEventListener('click', () => {
+            if (locked) return;
+            tokens.push({ type: 'sub', value: span.dataset.val });
+            span.classList.add('used');
+            renderExpr();
+        });
+    });
+    el.querySelectorAll('.f-par').forEach(span => {
+        span.addEventListener('click', () => {
+            if (locked) return;
+            tokens.push({ type: 'par', value: span.dataset.val });
+            renderExpr();
+        });
+    });
+}
+
+/* ── Render expression ── */
+function renderExpr() {
+    const wrap = document.getElementById('exprWrap');
+    let html = '';
+    tokens.forEach(t => {
+        if (t.type === 'ar') html += `<span class="tok tok-ar" title="Ar(${t.sym})">${t.value}</span>`;
+        else if (t.type === 'sub') html += `<span class="tok tok-sub">${t.value}</span>`;
+        else if (t.type === 'par') html += `<span class="tok tok-par">${t.value}</span>`;
+        else html += `<span class="tok tok-op">${t.value}</span>`;
+    });
+    if (!locked) html += '<span class="cursor-blink"></span>';
+    wrap.innerHTML = html;
+}
+
+/* ── Element click (two zones) ── */
+function onZoneClick(el, zone) {
+    if (locked) return;
+    if (zone === 'ar') {
+        tokens.push({ type: 'ar', value: String(el.ar), sym: el.sym });
+    } else {
+        // Clicked Z (atomic number) — wrong number for Mr, but let them learn
+        tokens.push({ type: 'ar', value: String(el.z), sym: el.sym + '(Z!)' });
+    }
+    flashCell(el.sym);
+    renderExpr();
+}
+
+/* ── Controls ── */
+document.querySelector('.controls').addEventListener('click', e => {
+    const btn = e.target.closest('.ctrl-btn');
+    if (!btn || locked) return;
+    const act = btn.dataset.act;
+    const op = btn.dataset.o;
+    if (op) {
+        tokens.push({ type: 'op', value: op });
+    } else if (act === 'del') {
+        tokens.pop();
+    } else if (act === 'clr') {
+        tokens = [];
+        document.querySelectorAll('.f-sub.used').forEach(s => s.classList.remove('used'));
+    } else if (act === 'eq') {
+        evaluate();
+        return;
+    }
+    renderExpr();
+});
+
+/* ── Keyboard ── */
+document.addEventListener('keydown', e => {
+    if (locked) { if (e.key === 'Enter') retryTask(); return; }
+    if (e.key === '+') { tokens.push({type:'op',value:'+'}); renderExpr(); }
+    else if (e.key === '-') { tokens.push({type:'op',value:'−'}); renderExpr(); }
+    else if (e.key === '*' || e.key === 'х' || e.key === 'Х') { tokens.push({type:'op',value:'×'}); renderExpr(); }
+    else if (e.key === '/') { tokens.push({type:'op',value:'/'}); renderExpr(); }
+    else if (e.key === 'Backspace') { tokens.pop(); renderExpr(); }
+    else if (e.key === 'Escape') { tokens = []; renderExpr(); document.querySelectorAll('.f-sub.used').forEach(s => s.classList.remove('used')); }
+    else if (e.key === 'Enter' || e.key === '=') evaluate();
+});
+
+/* ── Evaluate ── */
+function evaluate() {
+    if (tokens.length === 0) return;
+    const expr = tokens.map(t => t.value).join(' ').replace(/×/g, '*').replace(/−/g, '-');
+    let result;
+    try { result = Function('"use strict"; return (' + expr + ')')(); } catch { showWrong(NaN); return; }
+    if (typeof result !== 'number' || isNaN(result)) { showWrong(NaN); return; }
+    const task = tasks[current];
+    const rounded = Math.round(result * 10) / 10;
+    if (Math.abs(rounded - task.mr) < 0.01) showCorrect(rounded);
+    else showWrong(rounded);
+}
+
+function showCorrect(val) {
+    locked = true; score++; results[current] = true;
+    updateScore(); renderDots();
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback correct';
+    fb.innerHTML = `<div class="fb-title">&#10003; Верно! M<sub>r</sub> = ${tasks[current].mr}</div>
+        <button class="fb-next" onclick="nextTask()">${current < tasks.length - 1 ? 'Следующее вещество &rarr;' : 'Результаты &rarr;'}</button>`;
+    tokens.push({ type: 'op', value: '=' });
+    tokens.push({ type: 'sub', value: String(val) });
+    renderExpr();
+}
+
+function showWrong(val) {
+    locked = true; results[current] = false;
+    updateScore(); renderDots();
+    const task = tasks[current];
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback wrong';
+    const valStr = isNaN(val) ? 'ошибка в выражении' : val;
+    // Check if user accidentally used Z instead of Ar
+    const usedZ = tokens.some(t => t.sym && t.sym.includes('(Z!)'));
+    const zWarn = usedZ ? '<div style="margin-top:6px;font-size:0.82em;color:#ef5350;font-weight:700;">&#9888; Ты взял(а) заряд ядра (верхнее число) вместо атомной массы (нижнее)!</div>' : '';
+    fb.innerHTML = `<div class="fb-title">&#10007; Неверно (${valStr}). Правильный ответ: ${task.mr}</div>
+        ${zWarn}
+        <div class="fb-breakdown">${task.breakdown}</div>
+        <div style="margin-top:6px;font-size:0.8em;color:#ff9800;">Атомная масса &mdash; <b style="color:#4fc3f7">нижнее число</b> в ячейке</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <button class="fb-next" onclick="retryTask()">Попробовать снова</button>
+            <button class="fb-next" onclick="nextTask()" style="opacity:0.7;">${current < tasks.length - 1 ? 'Пропустить &rarr;' : 'Результаты &rarr;'}</button>
+        </div>`;
+    task.elems.forEach(sym => { if (cellMap[sym]) cellMap[sym].classList.add('hint'); });
+}
+
+function retryTask() {
+    document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
+    document.getElementById('feedback').className = 'feedback';
+    locked = false; tokens = [];
+    results[current] = undefined; // reset result for this task
+    loadTask();
+}
+
+function nextTask() {
+    document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
+    document.getElementById('feedback').className = 'feedback';
+    locked = false; tokens = []; current++;
+    if (current >= tasks.length) { showFinal(); return; }
+    loadTask();
+}
+
+function showFinal() {
+    const pct = Math.round(score / tasks.length * 100);
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback ' + (pct >= 70 ? 'correct' : 'wrong');
+    fb.innerHTML = `<div class="fb-title">Результат: ${score}/${tasks.length} (${pct}%)</div>
+        <div style="color:#bbb;">${pct >= 90 ? 'Отлично! Молярная масса &mdash; не проблема.' : pct >= 70 ? 'Хорошо! Ещё практики.' : 'Стоит повторить &mdash; обрати внимание на подсчёт атомов.'}</div>
+        <button class="fb-next" onclick="restart()">Пройти заново</button>`;
+    document.getElementById('exprWrap').innerHTML = '';
+}
+
+function restart() {
+    current = 0; score = 0; results = []; tokens = []; locked = false;
+    document.getElementById('feedback').className = 'feedback';
+    updateScore(); renderDots(); loadTask();
+}
+
+/* ── Helpers ── */
+function loadTask() {
+    renderFormula();
+    renderExpr();
+    renderDots();
+}
+
+function updateScore() {
+    document.getElementById('scoreNum').textContent = score;
+    document.getElementById('scoreTotal').textContent = Math.max(current + 1, results.length);
+}
+
+function renderDots() {
+    const row = document.getElementById('progressRow');
+    row.innerHTML = '';
+    tasks.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        if (i === current && !locked) d.classList.add('cur');
+        if (results[i] === true) d.classList.add('done');
+        else if (results[i] === false) d.classList.add('fail');
+        row.appendChild(d);
+    });
+}
+
+function flashCell(sym) {
+    const cell = cellMap[sym];
+    if (!cell) return;
+    cell.classList.add('flash');
+    setTimeout(() => cell.classList.remove('flash'), 350);
+}
+
+/* ── Init ── */
+loadTask(); updateScore(); renderDots();
+</script>
+</body>
+</html>
