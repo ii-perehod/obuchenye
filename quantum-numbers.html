@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квантовые числа — тренажёр</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scrollbar-gutter: stable; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh; color: #e0e0e0;
+            padding: 20px; overflow-y: scroll;
+        }
+        .page { max-width: 620px; width: 100%; margin: 0 auto; padding-bottom: 40px; }
+        .back-link { display: inline-block; margin-bottom: 14px; color: #00d2ff; text-decoration: none; font-size: 0.82em; opacity: 0.7; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 1; }
+        h1 {
+            text-align: center; font-size: 1.5em; margin-bottom: 4px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; font-size: 0.82em; margin-bottom: 24px; }
+
+        /* ===== INTRO STYLES ===== */
+        .intro-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 24px; margin-bottom: 16px;
+            min-height: 320px;
+        }
+        .intro-card h2 {
+            font-size: 1.15em; margin-bottom: 14px; color: #00d2ff;
+        }
+        .intro-card p, .intro-card li {
+            font-size: 0.92em; line-height: 1.7; color: #bbb; margin-bottom: 10px;
+        }
+        .intro-card b { color: #e0e0e0; }
+        .intro-card .accent { color: #ff9800; font-weight: 700; }
+        .intro-card .accent2 { color: #00d2ff; font-weight: 700; }
+        .intro-card .accent3 { color: #e040fb; font-weight: 700; }
+        .intro-card .accent4 { color: #76ff03; font-weight: 700; }
+
+        .analogy-box {
+            background: rgba(0,210,255,0.06); border-left: 3px solid #00d2ff;
+            border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 14px 0;
+            font-size: 0.88em; line-height: 1.7; color: #ccc;
+        }
+        .analogy-box .emoji { font-size: 1.3em; margin-right: 6px; }
+
+        .intro-table {
+            width: 100%; border-collapse: collapse; margin: 14px 0;
+        }
+        .intro-table th {
+            text-align: left; padding: 8px 10px; font-size: 0.82em; color: #888;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .intro-table td {
+            padding: 10px; font-size: 0.88em; color: #bbb; border-bottom: 1px solid rgba(255,255,255,0.05);
+            line-height: 1.5;
+        }
+        .intro-table .sym { font-weight: 700; font-size: 1.1em; }
+
+        .intro-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 24px; padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .intro-dots {
+            display: flex; gap: 8px;
+        }
+        .intro-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); transition: all 0.3s;
+        }
+        .intro-dot.active { background: #00d2ff; transform: scale(1.3); }
+        .intro-dot.passed { background: rgba(0,210,255,0.4); }
+
+        .nav-btn {
+            padding: 9px 24px; border-radius: 20px; cursor: pointer;
+            font-size: 0.9em; font-weight: 600; border: 2px solid #7b2ff7;
+            background: rgba(123,47,247,0.12); color: #b388ff; transition: all 0.25s;
+        }
+        .nav-btn:hover { background: rgba(123,47,247,0.25); transform: translateY(-1px); }
+        .nav-btn.start-btn { border-color: #00d2ff; color: #00d2ff; background: rgba(0,210,255,0.12); font-size: 1em; padding: 11px 32px; }
+        .nav-btn.start-btn:hover { background: rgba(0,210,255,0.25); }
+        .nav-btn.back-btn { background: none; border-color: rgba(255,255,255,0.12); color: #888; }
+
+        .building-svg { display: block; margin: 10px auto; }
+
+        /* ===== TRAINER STYLES ===== */
+        .progress-bar { display: flex; gap: 6px; margin-bottom: 20px; }
+        .progress-dot {
+            flex: 1; height: 4px; border-radius: 2px;
+            background: rgba(255,255,255,0.08); transition: background 0.4s;
+        }
+        .progress-dot.done { background: #00d2ff; }
+        .progress-dot.current { background: #7b2ff7; }
+
+        .task-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 20px; margin-bottom: 16px;
+        }
+        .element-badge {
+            display: inline-flex; flex-direction: column; align-items: center;
+            background: rgba(0,210,255,0.1); border: 1px solid rgba(0,210,255,0.3);
+            border-radius: 10px; padding: 8px 16px; margin-bottom: 12px;
+        }
+        .element-badge .z { font-size: 0.7em; color: #888; }
+        .element-badge .symbol { font-size: 1.8em; font-weight: 700; color: #00d2ff; }
+        .element-badge .name { font-size: 0.75em; color: #aaa; }
+
+        .task-question { font-size: 0.95em; color: #ccc; margin-bottom: 6px; }
+        .task-hint { font-size: 0.82em; color: #666; font-style: italic; margin-bottom: 16px; }
+
+        .qn-legend {
+            display: flex; flex-wrap: wrap; gap: 6px 14px;
+            padding: 8px 12px; border-radius: 8px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.72em; color: #666;
+        }
+        .qn-legend span { white-space: nowrap; }
+        .qn-legend i { color: #555; font-style: normal; margin: 0 2px; }
+
+        .orbital-diagram { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; justify-content: center; }
+        .orb-group { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .orb-group-label { font-size: 0.72em; color: #666; }
+        .orb-cells { display: flex; gap: 3px; }
+        .orb-cell {
+            width: 34px; height: 34px; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 4px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.9em; background: rgba(255,255,255,0.03);
+        }
+        .orb-cell.active-cell {
+            border-color: #7b2ff7; background: rgba(123,47,247,0.15);
+            box-shadow: 0 0 12px rgba(123,47,247,0.3);
+        }
+        .arrow-up { color: #ff5252; }
+        .arrow-down { color: #448aff; }
+        .arrow-up::before { content: "↑"; }
+        .arrow-down::before { content: "↓"; }
+        .arrow-target { animation: pulse-arrow 1s ease-in-out infinite; }
+        @keyframes pulse-arrow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .step-area {
+            background: rgba(0,0,0,0.2); border-radius: 12px;
+            padding: 16px; margin-bottom: 12px;
+            min-height: 120px;
+        }
+        .step-label { font-size: 0.88em; font-weight: 700; margin-bottom: 10px; color: #aaa; }
+        .step-label .qn-symbol { font-size: 1.1em; }
+        .step-label .qn-symbol.n-color { color: #ff9800; }
+        .step-label .qn-symbol.l-color { color: #00d2ff; }
+        .step-label .qn-symbol.ml-color { color: #e040fb; }
+        .step-label .qn-symbol.ms-color { color: #76ff03; }
+
+        .options { display: flex; flex-wrap: wrap; gap: 8px; }
+        .opt-btn {
+            padding: 9px 20px; border-radius: 20px; cursor: pointer;
+            font-size: 0.92em; font-weight: 600; border: 2px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.04); color: #ccc; transition: all 0.2s;
+        }
+        .opt-btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+        .opt-btn.correct { border-color: #00e676; color: #00e676; background: rgba(0,230,118,0.12); pointer-events: none; }
+        .opt-btn.wrong { border-color: #ff5252; color: #ff5252; background: rgba(255,82,82,0.12); pointer-events: none; animation: shake 0.4s; }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+        .opt-btn:disabled { opacity: 0.3; pointer-events: none; }
+
+        .explanation {
+            background: rgba(0,210,255,0.06); border-left: 3px solid #00d2ff;
+            border-radius: 0 8px 8px 0; padding: 12px 16px;
+            font-size: 0.88em; color: #bbb; margin-top: 12px;
+            line-height: 1.6; display: none; min-height: 0;
+        }
+        .explanation.visible { display: block; }
+        .explanation b { color: #e0e0e0; }
+
+        .continue-btn {
+            display: inline-block; margin-top: 12px; padding: 7px 22px;
+            border-radius: 16px; cursor: pointer; font-size: 0.85em;
+            font-weight: 600; border: 1px solid rgba(123,47,247,0.4);
+            background: rgba(123,47,247,0.1); color: #b388ff; transition: all 0.2s;
+        }
+        .continue-btn:hover { background: rgba(123,47,247,0.2); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .collected { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; min-height: 28px; }
+        .collected-item {
+            font-size: 0.88em; padding: 4px 12px; border-radius: 12px;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .collected-item .sym { font-weight: 700; }
+        .collected-item.n-done .sym { color: #ff9800; }
+        .collected-item.l-done .sym { color: #00d2ff; }
+        .collected-item.ml-done .sym { color: #e040fb; }
+        .collected-item.ms-done .sym { color: #76ff03; }
+
+        .complete-msg { text-align: center; padding: 20px; }
+        .complete-msg .big { font-size: 1.3em; font-weight: 700; color: #00e676; margin-bottom: 8px; }
+        .complete-msg .detail { font-size: 0.88em; color: #999; line-height: 1.6; }
+        .next-btn {
+            display: inline-block; margin-top: 16px; padding: 10px 32px;
+            border-radius: 22px; cursor: pointer; font-size: 0.95em;
+            font-weight: 700; border: 2px solid #7b2ff7;
+            background: rgba(123,47,247,0.15); color: #b388ff; transition: all 0.25s;
+        }
+        .next-btn:hover { background: rgba(123,47,247,0.3); transform: translateY(-2px); }
+
+        .final-card {
+            text-align: center; padding: 30px 20px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+        }
+        .final-card .title { font-size: 1.4em; font-weight: 700; color: #00e676; margin-bottom: 10px; }
+        .final-card .score { font-size: 1.1em; color: #ccc; margin-bottom: 8px; }
+        .final-card .restart-btn {
+            display: inline-block; margin-top: 16px; padding: 10px 32px;
+            border-radius: 22px; cursor: pointer; font-size: 0.95em;
+            font-weight: 700; border: 2px solid #00d2ff;
+            background: rgba(0,210,255,0.12); color: #00d2ff; transition: all 0.25s;
+        }
+        .final-card .restart-btn:hover { background: rgba(0,210,255,0.25); transform: translateY(-2px); }
+
+        #main-area { min-height: 400px; }
+        .ref-toggle { text-align: center; margin-bottom: 16px; }
+        .ref-toggle button {
+            background: none; border: 1px solid rgba(255,255,255,0.12);
+            color: #888; padding: 6px 16px; border-radius: 16px;
+            font-size: 0.78em; cursor: pointer; transition: all 0.2s;
+        }
+        .ref-toggle button:hover { border-color: #00d2ff; color: #00d2ff; }
+        .ref-cheat { display: none; }
+        .ref-cheat.open { display: block; }
+    </style>
+</head>
+<body>
+<div class="page">
+    <a href="index.html" class="back-link">&larr; На главную</a>
+    <h1>Квантовые числа</h1>
+    <div class="subtitle" id="page-subtitle">Адрес каждого электрона в атоме</div>
+
+    <div id="main-area"></div>
+</div>
+
+<script>
+// ============ INTRO SLIDES ============
+const INTRO = [
+    // Slide 0: Связка с тренажёром + что такое квант
+    `<div class="intro-card">
+        <h2>Ты уже это делал(а)!</h2>
+        <p>В тренажёре <b>«Заполнение орбиталей»</b> ты расставлял(а) стрелки-электроны по ячейкам: 1s, 2s, 2p, 3s… Каждая стрелка — это электрон, и у каждого есть своё конкретное место.</p>
+        <p>Давай посмотрим, как <b>по-другому описать адрес каждого электрона</b> — с помощью четырёх чисел. Это и есть <b>квантовые числа</b>.</p>
+        <div class="analogy-box">
+            <b>Квант</b> — минимальная порция. Представь лестницу: ты стоишь на 1-й ступеньке, на 2-й, на 3-й — но <b>не между ними</b>. Электрон живёт по тем же правилам — только на определённых «ступеньках», и нигде между.<br><br>
+            Слово <b>«квантовый»</b> = «порционный», «ступенчатый». Не плавно, а скачками.
+        </div>
+    </div>`,
+
+    // Slide 1: Аналогия с домом
+    `<div class="intro-card">
+        <h2>Адрес электрона</h2>
+        <p>В атоме может быть много электронов. Как их различить? У каждого электрона есть свой уникальный <b>«адрес»</b> — набор из 4 чисел.</p>
+        <div class="analogy-box">
+            Представь жилой дом. Чтобы найти конкретного человека, нужно знать:<br><br>
+            <b>Этаж</b> &rarr; <b>Квартира</b> (какой формы) &rarr; <b>Комната</b> &rarr; <b>Кровать</b> (верхняя или нижняя полка)<br><br>
+            Точно так же у электрона:<br>
+            <b style="color:#ff9800">Этаж (n)</b> &rarr; <b style="color:#00d2ff">Квартира (l)</b> &rarr; <b style="color:#e040fb">Комната (m<sub>l</sub>)</b> &rarr; <b style="color:#76ff03">Полка (m<sub>s</sub>)</b>
+        </div>
+        <p>Два электрона <b>не могут иметь одинаковый адрес</b> — это принцип Паули. Как два человека не живут на одной полке одной кровати.</p>
+    </div>`,
+
+    // Slide 2: n — главное
+    `<div class="intro-card">
+        <h2><span style="color:#ff9800; font-size:1.3em;">n</span> — Главное квантовое число</h2>
+        <p>Это <b>номер этажа</b> — энергетический уровень электрона.</p>
+        <div class="analogy-box">
+            n = 1 — первый этаж (ближе всего к ядру, самый маленький)<br>
+            n = 2 — второй этаж (побольше)<br>
+            n = 3 — третий этаж (ещё больше)<br>
+            …и так далее
+        </div>
+        <p>Чем выше этаж — тем <b>дальше от ядра</b> электрон и тем <b>больше его энергия</b>.</p>
+        <p><b>Как определить n?</b> Это просто <b>номер периода</b> в таблице Менделеева! Водород и гелий — 1-й период, значит n=1. Литий — 2-й период, значит n=2. Натрий — 3-й период, n=3.</p>
+        <p>Значения: <b>n = 1, 2, 3, 4…</b></p>
+        <svg class="building-svg" viewBox="0 0 280 180" width="280" height="180">
+            <rect x="60" y="10" width="160" height="160" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <circle cx="140" cy="150" r="8" fill="#ffeb3b" opacity="0.8"/>
+            <text x="140" y="154" text-anchor="middle" fill="#333" font-size="9" font-weight="700">+</text>
+            <ellipse cx="140" cy="150" rx="30" ry="14" fill="none" stroke="#ff9800" stroke-width="2" opacity="0.8"/>
+            <text x="195" y="154" fill="#ff9800" font-size="13" font-weight="700">n=1</text>
+            <ellipse cx="140" cy="150" rx="55" ry="30" fill="none" stroke="#ff9800" stroke-width="2" opacity="0.5"/>
+            <text x="215" y="128" fill="#ff9800" font-size="13" font-weight="700">n=2</text>
+            <ellipse cx="140" cy="150" rx="80" ry="48" fill="none" stroke="#ff9800" stroke-width="2" opacity="0.3"/>
+            <text x="235" y="110" fill="#ff9800" font-size="13" font-weight="700">n=3</text>
+            <text x="140" y="165" text-anchor="middle" fill="#888" font-size="10">ядро</text>
+        </svg>
+    </div>`,
+
+    // Slide 3: l — орбитальное
+    `<div class="intro-card">
+        <h2><span style="color:#00d2ff; font-size:1.3em;">l</span> — Орбитальное квантовое число</h2>
+        <p>Это <b>тип квартиры</b> на этаже — её форма. На каждом этаже бывают квартиры разной планировки.</p>
+        <div class="analogy-box">
+            l = 0 &rarr; квартира типа <b>«s»</b> — круглая (сфера)<br>
+            l = 1 &rarr; квартира типа <b>«p»</b> — вытянутая, как гантель<br>
+            l = 2 &rarr; квартира типа <b>«d»</b> — четырёхлепестковая (клевер)<br>
+            l = 3 &rarr; квартира типа <b>«f»</b> — совсем причудливая форма
+        </div>
+        <p>Важное правило: <b>l может быть от 0 до n−1</b></p>
+        <p>На 1-м этаже (n=1) только одна квартира: <b>s</b> (l=0)<br>
+        На 2-м этаже (n=2) две квартиры: <b>s</b> и <b>p</b> (l=0, 1)<br>
+        На 3-м этаже (n=3) три: <b>s, p, d</b> (l=0, 1, 2)</p>
+        <svg class="building-svg" viewBox="0 0 280 100" width="280" height="100">
+            <circle cx="50" cy="50" r="25" fill="rgba(0,210,255,0.15)" stroke="#00d2ff" stroke-width="2"/>
+            <text x="50" y="90" text-anchor="middle" fill="#00d2ff" font-size="13" font-weight="700">s (l=0)</text>
+            <ellipse cx="140" cy="35" rx="18" ry="30" fill="rgba(255,152,0,0.15)" stroke="#ff9800" stroke-width="2"/>
+            <ellipse cx="140" cy="70" rx="18" ry="25" fill="rgba(255,152,0,0.15)" stroke="#ff9800" stroke-width="2"/>
+            <circle cx="140" cy="52" r="3" fill="#fff"/>
+            <text x="140" y="100" text-anchor="middle" fill="#ff9800" font-size="13" font-weight="700">p (l=1)</text>
+            <ellipse cx="215" cy="30" rx="14" ry="22" fill="rgba(224,64,251,0.12)" stroke="#e040fb" stroke-width="1.5" transform="rotate(45,215,50)"/>
+            <ellipse cx="260" cy="30" rx="14" ry="22" fill="rgba(224,64,251,0.12)" stroke="#e040fb" stroke-width="1.5" transform="rotate(-45,237,50)"/>
+            <ellipse cx="215" cy="70" rx="14" ry="22" fill="rgba(224,64,251,0.12)" stroke="#e040fb" stroke-width="1.5" transform="rotate(-45,215,50)"/>
+            <ellipse cx="260" cy="70" rx="14" ry="22" fill="rgba(224,64,251,0.12)" stroke="#e040fb" stroke-width="1.5" transform="rotate(45,237,50)"/>
+            <circle cx="237" cy="50" r="3" fill="#fff"/>
+            <text x="237" y="100" text-anchor="middle" fill="#e040fb" font-size="13" font-weight="700">d (l=2)</text>
+        </svg>
+    </div>`,
+
+    // Slide 4: ml — магнитное
+    `<div class="intro-card">
+        <h2><span style="color:#e040fb; font-size:1.3em;">m<sub>l</sub></span> — Магнитное квантовое число</h2>
+        <p>Это <b>номер комнаты</b> в квартире. Сколько комнат — зависит от типа квартиры.</p>
+        <div class="analogy-box">
+            Квартира <b>s</b> (l=0): одна комната &rarr; m<sub>l</sub> = <b>0</b><br>
+            Квартира <b>p</b> (l=1): три комнаты &rarr; m<sub>l</sub> = <b>−1, 0, +1</b><br>
+            Квартира <b>d</b> (l=2): пять комнат &rarr; m<sub>l</sub> = <b>−2, −1, 0, +1, +2</b><br>
+            Квартира <b>f</b> (l=3): семь комнат &rarr; m<sub>l</sub> = <b>−3, −2, −1, 0, +1, +2, +3</b>
+        </div>
+        <p>Формула простая: <b>m<sub>l</sub></b> идёт от <b>−l</b> до <b>+l</b>. Всего <b>2l + 1</b> комнат.</p>
+        <p>Каждая комната — это ячейка, куда ты ставил(а) стрелки в тренажёре орбиталей. Комнаты направлены в разные стороны в пространстве (p<sub>x</sub>, p<sub>y</sub>, p<sub>z</sub>).</p>
+    </div>`,
+
+    // Slide 5: ms — спиновое
+    `<div class="intro-card">
+        <h2><span style="color:#76ff03; font-size:1.3em;">m<sub>s</sub></span> — Спиновое квантовое число</h2>
+        <p>Это <b>полка двухъярусной кровати</b>. В каждой комнате — ровно одна кровать с двумя полками.</p>
+        <div class="analogy-box">
+            m<sub>s</sub> = <b>+½</b> &rarr; верхняя полка <b style="color:#ff5252">↑</b> (первый жилец)<br>
+            m<sub>s</sub> = <b>−½</b> &rarr; нижняя полка <b style="color:#448aff">↓</b> (второй жилец)
+        </div>
+        <p>Сначала заселяется верхняя полка (+½), потом нижняя (−½).</p>
+        <p><b>Принцип Паули:</b> два электрона в одной комнате обязаны крутиться в разные стороны. Поэтому в одной комнате — максимум <b>2 электрона</b>.</p>
+    </div>`,
+
+    // Slide 6: Итог + пример
+    `<div class="intro-card">
+        <h2>Собираем адрес</h2>
+        <p>Давай попробуем на примере. Возьмём <b>бор (B)</b>, 5 электронов: 1s² 2s² 2p¹</p>
+        <p>Последний электрон — первый на 2p-орбитали. Его адрес:</p>
+        <table class="intro-table">
+            <tr><th>Аналогия</th><th>Число</th><th>Значение</th><th>Почему?</th></tr>
+            <tr>
+                <td>Этаж</td>
+                <td><span class="sym" style="color:#ff9800">n = 2</span></td>
+                <td>2-й период</td>
+                <td>Бор во <b>2-м периоде</b> таблицы</td>
+            </tr>
+            <tr>
+                <td>Квартира</td>
+                <td><span class="sym" style="color:#00d2ff">l = 1</span></td>
+                <td>p-форма</td>
+                <td>Написано: 2<b>p</b>¹ (p = l=1)</td>
+            </tr>
+            <tr>
+                <td>Комната</td>
+                <td><span class="sym" style="color:#e040fb">m<sub>l</sub> = −1</span></td>
+                <td>Первая из трёх p-ячеек</td>
+                <td>Заполняем с −l: <b>−1</b>, 0, +1</td>
+            </tr>
+            <tr>
+                <td>Полка кровати</td>
+                <td><span class="sym" style="color:#76ff03">m<sub>s</sub> = +½</span></td>
+                <td>Верхняя ↑</td>
+                <td>Первый электрон → спин вверх</td>
+            </tr>
+        </table>
+        <p style="margin-top:8px;">Готов(а) попрактиковаться? Сейчас будет 10 заданий — от простого к сложному. Не торопись, после каждого ответа будет объяснение.</p>
+    </div>`
+];
+
+let introSlide = 0;
+
+function showIntro() {
+    const area = document.getElementById('main-area');
+    const isLast = introSlide === INTRO.length - 1;
+
+    let dots = '<div class="intro-dots">';
+    for (let i = 0; i < INTRO.length; i++) {
+        const cls = i === introSlide ? 'active' : (i < introSlide ? 'passed' : '');
+        dots += `<div class="intro-dot ${cls}"></div>`;
+    }
+    dots += '</div>';
+
+    area.innerHTML = INTRO[introSlide] + `
+        <div class="intro-nav">
+            ${introSlide > 0 ? '<button class="nav-btn back-btn" onclick="prevIntro()">&larr; Назад</button>' : '<div></div>'}
+            ${dots}
+            ${isLast
+                ? '<button class="nav-btn start-btn" onclick="startTrainer()">Начать тренировку &rarr;</button>'
+                : '<button class="nav-btn" onclick="nextIntro()">Дальше &rarr;</button>'}
+        </div>
+    `;
+    // scroll only for intro slides, not during trainer
+    if (typeof introSlide !== 'undefined') window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function nextIntro() { if (introSlide < INTRO.length - 1) { introSlide++; showIntro(); } }
+function prevIntro() { if (introSlide > 0) { introSlide--; showIntro(); } }
+
+// ============ TRAINER ============
+const TASKS = [
+    { Z: 1, sym: "H", name: "Водород", config: "1s¹",
+      electrons: [{n:1,l:0,ml:0,ms:"+½"}], targetIdx: 0,
+      desc: "Единственный электрон водорода — самый простой случай" },
+
+    { Z: 3, sym: "Li", name: "Литий", config: "1s² 2s¹",
+      electrons: [{n:1,l:0,ml:0,ms:"+½"},{n:1,l:0,ml:0,ms:"-½"},{n:2,l:0,ml:0,ms:"+½"}], targetIdx: 2,
+      desc: "Последний (валентный) электрон лития" },
+
+    { Z: 5, sym: "B", name: "Бор", config: "1s² 2s² 2p¹",
+      electrons: [{n:1,l:0,ml:0,ms:"+½"},{n:1,l:0,ml:0,ms:"-½"},{n:2,l:0,ml:0,ms:"+½"},{n:2,l:0,ml:0,ms:"-½"},{n:2,l:1,ml:-1,ms:"+½"}], targetIdx: 4,
+      desc: "Первый p-электрон — новая форма орбитали!" },
+
+    { Z: 7, sym: "N", name: "Азот", config: "1s² 2s² 2p³",
+      electrons: [{n:1,l:0,ml:0,ms:"+½"},{n:1,l:0,ml:0,ms:"-½"},{n:2,l:0,ml:0,ms:"+½"},{n:2,l:0,ml:0,ms:"-½"},
+                  {n:2,l:1,ml:-1,ms:"+½"},{n:2,l:1,ml:0,ms:"+½"},{n:2,l:1,ml:1,ms:"+½"}], targetIdx: 6,
+      desc: "Последний p-электрон азота (Хунд: сначала по одному в каждую ячейку)" },
+
+    { Z: 8, sym: "O", name: "Кислород", config: "1s² 2s² 2p⁴",
+      electrons: [{n:1,l:0,ml:0,ms:"+½"},{n:1,l:0,ml:0,ms:"-½"},{n:2,l:0,ml:0,ms:"+½"},{n:2,l:0,ml:0,ms:"-½"},
+                  {n:2,l:1,ml:-1,ms:"+½"},{n:2,l:1,ml:0,ms:"+½"},{n:2,l:1,ml:1,ms:"+½"},
+                  {n:2,l:1,ml:-1,ms:"-½"}], targetIdx: 7,
+      desc: "4-й p-электрон кислорода — начинает спариваться (спин вниз!)" },
+
+    { Z: 11, sym: "Na", name: "Натрий", config: "[Ne] 3s¹",
+      electrons: [{n:3,l:0,ml:0,ms:"+½"}], targetIdx: 0,
+      desc: "Валентный электрон натрия — третий этаж" },
+
+    { Z: 17, sym: "Cl", name: "Хлор", config: "[Ne] 3s² 3p⁵",
+      electrons: [{n:3,l:0,ml:0,ms:"+½"},{n:3,l:0,ml:0,ms:"-½"},
+                  {n:3,l:1,ml:-1,ms:"+½"},{n:3,l:1,ml:0,ms:"+½"},{n:3,l:1,ml:1,ms:"+½"},
+                  {n:3,l:1,ml:-1,ms:"-½"},{n:3,l:1,ml:0,ms:"-½"}], targetIdx: 6,
+      desc: "Последний электрон хлора — не хватает одного до полного p-подуровня" },
+
+    { Z: 21, sym: "Sc", name: "Скандий", config: "[Ar] 3d¹ 4s²",
+      electrons: [{n:3,l:2,ml:-2,ms:"+½"}], targetIdx: 0,
+      desc: "Первый d-электрон! n=3, хотя заполняется после 4s" },
+
+    { Z: 26, sym: "Fe", name: "Железо", config: "[Ar] 3d⁶ 4s²",
+      electrons: [{n:3,l:2,ml:-2,ms:"+½"},{n:3,l:2,ml:-1,ms:"+½"},{n:3,l:2,ml:0,ms:"+½"},
+                  {n:3,l:2,ml:1,ms:"+½"},{n:3,l:2,ml:2,ms:"+½"},
+                  {n:3,l:2,ml:-2,ms:"-½"}], targetIdx: 5,
+      desc: "6-й d-электрон железа — начинает спариваться" },
+
+    { Z: 10, sym: "Ne", name: "Неон", config: "1s² 2s² 2p⁶",
+      electrons: [{n:1,l:0,ml:0,ms:"+½"},{n:1,l:0,ml:0,ms:"-½"},{n:2,l:0,ml:0,ms:"+½"},{n:2,l:0,ml:0,ms:"-½"},
+                  {n:2,l:1,ml:-1,ms:"+½"},{n:2,l:1,ml:0,ms:"+½"},{n:2,l:1,ml:1,ms:"+½"},
+                  {n:2,l:1,ml:-1,ms:"-½"},{n:2,l:1,ml:0,ms:"-½"},{n:2,l:1,ml:1,ms:"-½"}], targetIdx: 9,
+      desc: "Последний электрон неона — полностью заполненная оболочка (благородный газ)" },
+];
+
+const L_NAMES = {0:"s", 1:"p", 2:"d", 3:"f"};
+let currentTask = 0, currentStep = 0, mistakes = 0, totalMistakes = 0;
+
+function startTrainer() {
+    document.getElementById('page-subtitle').textContent = 'Определи 4 квантовых числа для выделенного электрона';
+    currentTask = 0; currentStep = 0; totalMistakes = 0;
+    const area = document.getElementById('main-area');
+    area.innerHTML = `
+        <div class="ref-toggle"><button onclick="document.getElementById('trainer-cheat').classList.toggle('open')">Шпаргалка (аналогия с домом)</button></div>
+        <div class="intro-card ref-cheat" id="trainer-cheat" style="margin-bottom:16px;padding:12px 16px;min-height:auto;font-size:0.82em;line-height:1.7;">
+            <span style="color:#ff9800;font-weight:700">n</span>=этаж (период) | <span style="color:#00d2ff;font-weight:700">l</span>=квартира (s/p/d/f) | <span style="color:#e040fb;font-weight:700">m<sub>l</sub></span>=комната | <span style="color:#76ff03;font-weight:700">m<sub>s</sub></span>=полка (↑↓)<br>
+            <span style="color:#888">l: 0…n−1 | m<sub>l</sub>: −l…+l | m<sub>s</sub>: +½ первый, −½ второй</span>
+        </div>
+        <div class="progress-bar" id="progress-bar"></div>
+        <div id="game-area"></div>
+    `;
+    initProgress();
+    renderTask();
+}
+
+function initProgress() {
+    document.getElementById('progress-bar').innerHTML = TASKS.map((_, i) =>
+        `<div class="progress-dot" id="pdot-${i}"></div>`).join('');
+}
+
+function renderTask() {
+    const task = TASKS[currentTask];
+    const el = task.electrons[task.targetIdx];
+    currentStep = 0; mistakes = 0;
+    document.getElementById(`pdot-${currentTask}`).className = 'progress-dot current';
+
+    document.getElementById('game-area').innerHTML = `
+        <div class="task-card">
+            <div class="element-badge">
+                <span class="z">${task.Z}</span>
+                <span class="symbol">${task.sym}</span>
+                <span class="name">${task.name}</span>
+            </div>
+            <div class="task-question">${task.desc}</div>
+            <div class="task-hint">Конфигурация: ${task.config}</div>
+            <div class="orbital-diagram" id="orb-diagram"></div>
+            <div class="qn-legend">
+                <span><b style="color:#ff9800">n</b> <i>главное</i> этаж</span>
+                <span><b style="color:#00d2ff">l</b> <i>орбитальное</i> квартира</span>
+                <span><b style="color:#e040fb">m<sub>l</sub></b> <i>магнитное</i> комната</span>
+                <span><b style="color:#76ff03">m<sub>s</sub></b> <i>спиновое</i> полка</span>
+            </div>
+        </div>
+        <div class="collected" id="collected"></div>
+        <div class="step-area" id="step-area"></div>
+    `;
+    renderOrbitalDiagram(task);
+    renderStep();
+}
+
+function renderOrbitalDiagram(task) {
+    const container = document.getElementById('orb-diagram');
+    const el = task.electrons[task.targetIdx];
+    const subshells = [];
+    const seen = new Set();
+    for (const e of task.electrons) {
+        const key = `${e.n}${L_NAMES[e.l]}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            const cells = [];
+            for (let ml = -e.l; ml <= e.l; ml++) {
+                cells.push({
+                    ml,
+                    up: !!task.electrons.find(x => x.n===e.n && x.l===e.l && x.ml===ml && x.ms==="+½"),
+                    down: !!task.electrons.find(x => x.n===e.n && x.l===e.l && x.ml===ml && x.ms==="-½")
+                });
+            }
+            subshells.push({label: key, n: e.n, l: e.l, cells});
+        }
+    }
+
+    let html = '';
+    for (const sub of subshells) {
+        html += `<div class="orb-group"><div class="orb-cells">`;
+        for (const cell of sub.cells) {
+            const isTarget = sub.n===el.n && sub.l===el.l && cell.ml===el.ml;
+            let arrows = '';
+            if (cell.up) arrows += `<span class="arrow-up ${isTarget && el.ms==="+½" ? 'arrow-target':''}"></span>`;
+            if (cell.down) arrows += `<span class="arrow-down ${isTarget && el.ms==="-½" ? 'arrow-target':''}"></span>`;
+            html += `<div class="orb-cell${isTarget?' active-cell':''}">${arrows}</div>`;
+        }
+        html += `</div><div class="orb-group-label">${sub.label}</div></div>`;
+    }
+    container.innerHTML = html;
+}
+
+function renderStep() {
+    const task = TASKS[currentTask];
+    const el = task.electrons[task.targetIdx];
+    const area = document.getElementById('step-area');
+
+    if (currentStep === 0) {
+        area.innerHTML = `
+            <div class="step-label"><span class="qn-symbol n-color">n</span> — На каком этаже (в каком периоде)? <span style="color:#555;font-weight:400;font-size:0.82em">— главное кв. число</span></div>
+            <div class="options" id="options">
+                ${[1,2,3,4].map(v => `<button class="opt-btn" onclick="checkAnswer(${v},${el.n},this)">${v}</button>`).join('')}
+            </div>
+            <div class="explanation" id="explanation"></div>
+        `;
+    } else if (currentStep === 1) {
+        const opts = [];
+        for (let i = 0; i < el.n; i++) opts.push(i);
+        area.innerHTML = `
+            <div class="step-label"><span class="qn-symbol l-color">l</span> — В какой квартире? (форма) <span style="color:#555;font-weight:400;font-size:0.82em">— орбитальное кв. число</span></div>
+            <div class="options" id="options">
+                ${opts.map(v => `<button class="opt-btn" onclick="checkAnswer(${v},${el.l},this)">${v} (${L_NAMES[v]})</button>`).join('')}
+            </div>
+            <div class="explanation" id="explanation"></div>
+        `;
+    } else if (currentStep === 2) {
+        const opts = [];
+        for (let i = -el.l; i <= el.l; i++) opts.push(i);
+        // даже если один вариант — всё равно показываем кнопку выбора
+        area.innerHTML = `
+            <div class="step-label"><span class="qn-symbol ml-color">m<sub>l</sub></span> — Какая комната? (ориентация) <span style="color:#555;font-weight:400;font-size:0.82em">— магнитное кв. число</span></div>
+            <div class="options" id="options">
+                ${opts.map(v => `<button class="opt-btn" onclick="checkAnswer(${v},${el.ml},this)">${v>0?'+':''}${v}</button>`).join('')}
+            </div>
+            <div class="explanation" id="explanation"></div>
+        `;
+    } else if (currentStep === 3) {
+        area.innerHTML = `
+            <div class="step-label"><span class="qn-symbol ms-color">m<sub>s</sub></span> — Какая полка кровати? (спин) <span style="color:#555;font-weight:400;font-size:0.82em">— спиновое кв. число</span></div>
+            <div class="options" id="options">
+                <button class="opt-btn" onclick="checkAnswerMs('+½','${el.ms}',this)">+½ ↑ верхняя</button>
+                <button class="opt-btn" onclick="checkAnswerMs('-½','${el.ms}',this)">−½ ↓ нижняя</button>
+            </div>
+            <div class="explanation" id="explanation"></div>
+        `;
+    }
+}
+
+function checkAnswer(chosen, correct, btn) {
+    const el = TASKS[currentTask].electrons[TASKS[currentTask].targetIdx];
+    if (chosen === correct) {
+        btn.classList.add('correct');
+        disableOthers(btn);
+        showExplanation(currentStep, el);
+        const names = ['n','l','m<sub>l</sub>','m<sub>s</sub>'];
+        const classes = ['n-done','l-done','ml-done','ms-done'];
+        let val = chosen;
+        if (currentStep===1) val = `${chosen} (${L_NAMES[chosen]})`;
+        if (currentStep===2) val = chosen>0?`+${chosen}`:`${chosen}`;
+        addCollected(names[currentStep], val, classes[currentStep]);
+        showContinueButton();
+    } else {
+        btn.classList.add('wrong');
+        mistakes++; totalMistakes++;
+        setTimeout(() => { btn.classList.remove('wrong'); btn.disabled = true; }, 500);
+    }
+}
+
+function checkAnswerMs(chosen, correct, btn) {
+    const el = TASKS[currentTask].electrons[TASKS[currentTask].targetIdx];
+    if (chosen === correct) {
+        btn.classList.add('correct');
+        disableOthers(btn);
+        showExplanation(3, el);
+        addCollected('m<sub>s</sub>', chosen, 'ms-done');
+        currentStep++;
+        // Show continue button, don't auto-advance
+        const box = document.getElementById('explanation');
+        box.innerHTML += `<br><button class="continue-btn" onclick="showTaskComplete()">Понятно, дальше &rarr;</button>`;
+    } else {
+        btn.classList.add('wrong');
+        mistakes++; totalMistakes++;
+        setTimeout(() => { btn.classList.remove('wrong'); btn.disabled = true; }, 500);
+    }
+}
+
+function showContinueButton() {
+    const box = document.getElementById('explanation');
+    box.innerHTML += `<br><button class="continue-btn" onclick="advanceStep()">Понятно, дальше &rarr;</button>`;
+}
+
+function confirmMl0() {
+    addCollected('m<sub>l</sub>', '0', 'ml-done');
+    currentStep = 3;
+    renderStep();
+}
+
+function advanceStep() {
+    currentStep++;
+    if (currentStep <= 3) {
+        renderStep();
+    } else {
+        showTaskComplete();
+    }
+}
+
+function disableOthers(btn) {
+    document.querySelectorAll('#options .opt-btn').forEach(b => { if (b!==btn) b.disabled=true; });
+}
+
+function addCollected(sym, val, cls) {
+    document.getElementById('collected').innerHTML +=
+        `<span class="collected-item ${cls}"><span class="sym">${sym}</span> = ${val}</span>`;
+}
+
+function showExplanation(step, el) {
+    const box = document.getElementById('explanation');
+    let text = '';
+    if (step===0) {
+        text = `<b>n = ${el.n}</b> — ${el.n}-й этаж (${el.n}-й период в таблице Менделеева). Число перед буквой в конфигурации — это n.`;
+    } else if (step===1) {
+        const shapes = {0:'сфера (шар)',1:'гантель (две доли)',2:'клевер (четыре доли)',3:'сложная форма'};
+        text = `<b>l = ${el.l} (${L_NAMES[el.l]})</b> — квартира формы «${shapes[el.l]}». Буква в конфигурации (s/p/d/f) — это и есть l. Допустимо от 0 до n−1 = ${el.n-1}.`;
+    } else if (step===2) {
+        const count = 2*el.l+1;
+        text = `<b>m<sub>l</sub> = ${el.ml>0?'+':''}${el.ml}</b> — одна из ${count} комнат в ${L_NAMES[el.l]}-квартире. Комнаты нумеруются от −${el.l} до +${el.l}, заселяются слева направо.`;
+    } else if (step===3) {
+        text = el.ms==="+½"
+            ? `<b>m<sub>s</sub> = +½ ↑</b> — верхняя полка кровати. Первый жилец в комнате всегда со спином вверх.`
+            : `<b>m<sub>s</sub> = −½ ↓</b> — нижняя полка. Второй жилец в комнате — спаривается с первым (спин вниз).`;
+    }
+    box.innerHTML = text;
+    box.classList.add('visible');
+}
+
+function showTaskComplete() {
+    const task = TASKS[currentTask];
+    const el = task.electrons[task.targetIdx];
+    const area = document.getElementById('step-area');
+    area.innerHTML = `
+        <div class="complete-msg">
+            <div class="big">${mistakes===0?'Отлично!':'Верно!'}</div>
+            <div class="detail">
+                <b>${task.sym}</b>: электрон <b>${el.n}${L_NAMES[el.l]}</b><br>
+                Адрес: <span style="color:#ff9800">n=${el.n}</span>,
+                <span style="color:#00d2ff">l=${el.l}</span>,
+                <span style="color:#e040fb">m<sub>l</sub>=${el.ml>0?'+':''}${el.ml}</span>,
+                <span style="color:#76ff03">m<sub>s</sub>=${el.ms}</span>
+                ${mistakes>0?`<br><span style="color:#ff5252">Ошибок: ${mistakes}</span>`:''}
+            </div>
+            ${currentTask < TASKS.length-1
+                ? `<button class="next-btn" onclick="nextTask()">Следующий &rarr;</button>`
+                : `<button class="next-btn" onclick="showFinal()">Результат</button>`}
+        </div>
+    `;
+}
+
+function nextTask() {
+    document.getElementById(`pdot-${currentTask}`).className = 'progress-dot done';
+    currentTask++;
+    renderTask();
+}
+
+function showFinal() {
+    document.getElementById(`pdot-${currentTask}`).className = 'progress-dot done';
+    document.getElementById('game-area').innerHTML = `
+        <div class="final-card">
+            <div class="title">${totalMistakes===0?'Безупречно!':'Тренировка завершена!'}</div>
+            <div class="score">
+                ${TASKS.length} заданий пройдено<br>
+                ${totalMistakes===0?'Ни одной ошибки!':`Ошибок: ${totalMistakes}`}
+            </div>
+            <div style="font-size:0.88em;color:#888;margin-top:14px;line-height:1.7;">
+                Запомни аналогию:<br>
+                <b style="color:#ff9800">n</b> — этаж (период),
+                <b style="color:#00d2ff">l</b> — квартира (s/p/d/f),
+                <b style="color:#e040fb">m<sub>l</sub></b> — комната,
+                <b style="color:#76ff03">m<sub>s</sub></b> — полка кровати
+            </div>
+            <button class="restart-btn" onclick="startTrainer()">Пройти ещё раз</button>
+        </div>
+    `;
+}
+
+// ===== START =====
+function showStartScreen() {
+    document.getElementById('main-area').innerHTML = `
+        <div class="intro-card" style="text-align:center;">
+            <h2>С чего начнём?</h2>
+            <p>Если тема новая — начни с объяснений.<br>Если уже знаешь основы — сразу к практике.</p>
+            <div style="display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap;">
+                <button class="nav-btn" onclick="introSlide=0; showIntro()">Сначала объяснения</button>
+                <button class="nav-btn start-btn" onclick="startTrainer()">Сразу тренажёр</button>
+            </div>
+        </div>
+    `;
+}
+showStartScreen();
+</script>
+</body>
+</html>
