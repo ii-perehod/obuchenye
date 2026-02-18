@@ -468,9 +468,15 @@ body {
       <div class="rule-desc">Вычитать отрицательное — всё равно что прибавлять положительное</div>
     </div>
 
-    <button class="start-btn" id="start-phase2-btn" onclick="startPhase2()">
-      Понятно! Попробую 🎯
-    </button>
+    <div style="display:flex;gap:10px">
+      <button class="start-btn" id="repeat-wand-btn" onclick="replayWand()"
+        style="background:linear-gradient(135deg,#4c1d95,#6d28d9);color:#e9d5ff;flex:0 0 auto;width:auto;padding:16px 20px">
+        🔄
+      </button>
+      <button class="start-btn" id="start-phase2-btn" onclick="startPhase2()">
+        Понятно! Попробую 🎯
+      </button>
+    </div>
   </div>
 </div>
 
@@ -843,6 +849,14 @@ function runWandAnimation(){
 
   const hint=document.getElementById('wand-click-hint');
   hint.style.display='block';
+}
+
+function replayWand(){
+  document.getElementById('start-phase2-btn').className='start-btn';
+  document.getElementById('repeat-wand-btn').className='start-btn';
+  document.getElementById('wand-click-hint').style.display='none';
+  wandDemoClicked=false;
+  runWandAnimation();
 }
 
 function onWandDemoClick(){
