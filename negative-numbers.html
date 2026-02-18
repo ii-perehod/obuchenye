@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Отрицательные числа</title>
+<style>
+:root {
+  --bg: #1a0533;
+  --card: #2a0f4a;
+  --primary: #c084fc;
+  --accent: #f0abfc;
+  --correct: #34d399;
+  --wrong: #f87171;
+  --text: #f3e8ff;
+  --muted: #a78bfa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  padding: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* ── Header ── */
+.title {
+  text-align: center; font-size: 1.3rem; font-weight: 800;
+  background: linear-gradient(90deg,#c084fc,#f0abfc,#818cf8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 10px;
+}
+.stats {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: .84rem; color: var(--muted); margin-bottom: 6px;
+}
+.streak { color: #fbbf24; font-weight: 700; }
+.pbar-wrap { height: 6px; background: #3b1563; border-radius: 99px; overflow: hidden; margin-bottom: 14px; }
+.pbar { height: 100%; background: linear-gradient(90deg,#a855f7,#c084fc); border-radius: 99px; transition: width .5s ease; }
+
+/* ── Rules ── */
+.rules-btn {
+  width: 100%; background: #2a0f4a; border: 1.5px solid #6d28d9;
+  border-radius: 10px; padding: 9px 14px; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  color: var(--accent); font-size: .88rem; font-weight: 600; margin-bottom: 4px;
+}
+.rules-body {
+  background: #1e0940; border: 1.5px solid #4c1d95; border-radius: 0 0 10px 10px;
+  padding: 12px 14px; margin-bottom: 14px; display: none; font-size: .87rem; line-height: 1.55;
+}
+.rules-body.open { display: block; }
+.rule { margin-bottom: 8px; }
+.rex {
+  display: inline-block; background: #2d1060; border: 1px solid #6d28d9;
+  border-radius: 5px; padding: 1px 7px; font-family: monospace;
+  color: #d8b4fe; font-size: .87rem; margin: 2px 2px 0;
+}
+
+/* ── Question ── */
+.q-card {
+  background: var(--card); border: 1.5px solid #6d28d9; border-radius: 18px;
+  padding: 20px; text-align: center; margin-bottom: 16px;
+  box-shadow: 0 0 30px rgba(192,132,252,.1);
+}
+.q-text { font-size: 2.2rem; font-weight: 900; color: #f3e8ff; line-height: 1.15; margin-bottom: 4px; }
+.q-sub  { font-size: .82rem; color: var(--muted); }
+
+/* ── Number line ── */
+.nl-section { margin-bottom: 16px; }
+.nl-hint {
+  text-align: center; font-size: .84rem; color: var(--accent);
+  margin-bottom: 8px; min-height: 22px; font-weight: 600; transition: color .3s;
+}
+.nl-outer { position: relative; height: 80px; user-select: none; -webkit-user-select: none; }
+.nl-track { position: absolute; left: 22px; right: 22px; top: 46px; height: 5px; background: #3b1563; border-radius: 3px; }
+.nl-svg   { position: absolute; left: 22px; right: 22px; top: 28px; height: 50px; width: calc(100% - 44px); }
+.nl-ball {
+  width: 44px; height: 44px; border-radius: 50%;
+  position: absolute; top: 24px; transform: translateX(-50%);
+  background: radial-gradient(circle at 35% 30%, #d8b4fe, #7c3aed);
+  box-shadow: 0 0 22px rgba(167,139,250,.7);
+  transition: left .65s cubic-bezier(.34,1.56,.64,1), background .4s;
+  z-index: 10; display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; font-weight: 900; color: white;
+  cursor: grab; touch-action: none;
+}
+.nl-ball.dragging { cursor: grabbing; transition: none !important; }
+.nl-ball.idle { animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 22px rgba(167,139,250,.7); }
+  50%      { box-shadow: 0 0 38px rgba(192,132,252,1), 0 0 12px rgba(167,139,250,.6); }
+}
+@keyframes ballIn {
+  0%   { transform: translateX(-50%) scale(.1); opacity:0; }
+  70%  { transform: translateX(-50%) scale(1.25); }
+  100% { transform: translateX(-50%) scale(1); opacity:1; }
+}
+.nl-ball.popin { animation: ballIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+.nl-ball.correct-ball { background: radial-gradient(circle at 35% 30%, #6ee7b7, #059669); box-shadow: 0 0 28px rgba(52,211,153,.8); animation: none; }
+.nl-ball.wrong-ball   { background: radial-gradient(circle at 35% 30%, #fca5a5, #dc2626); box-shadow: 0 0 28px rgba(248,113,113,.8); animation: shake .5s ease forwards !important; }
+@keyframes shake {
+  0%,100% { transform: translateX(-50%) scale(1); }
+  20% { transform: translateX(calc(-50% + 11px)) scale(1.05); }
+  40% { transform: translateX(calc(-50% - 11px)) scale(1.05); }
+  60% { transform: translateX(calc(-50% + 7px)); }
+  80% { transform: translateX(calc(-50% - 5px)); }
+}
+.nl-bubble {
+  position: absolute; top: 2px; transform: translateX(-50%);
+  background: #7c3aed; color: white; font-size: .78rem; font-weight: 800;
+  padding: 2px 8px; border-radius: 8px;
+  transition: left .65s cubic-bezier(.34,1.56,.64,1);
+  white-space: nowrap; pointer-events: none; opacity: 0; z-index: 11;
+}
+.nl-bubble.show { opacity: 1; }
+.nl-bubble.dragging { transition: none !important; }
+
+/* ── Check button ── */
+.check-btn {
+  width: 100%; padding: 16px; font-size: 1rem; font-weight: 700;
+  background: linear-gradient(135deg,#7c3aed,#a855f7); color: white;
+  border: none; border-radius: 14px; cursor: pointer; margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(124,58,237,.4); display: none;
+}
+.check-btn.show { display: block; animation: btnAppear .3s ease forwards; }
+@keyframes btnAppear { from{transform:scale(.92);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* ── Feedback ── */
+.feedback {
+  border-radius: 14px; padding: 14px 16px; margin-bottom: 14px;
+  display: none; border-left: 5px solid var(--correct); background: #0a2820;
+}
+.feedback.show { display: block; }
+.feedback.wrong-fb { border-color: var(--wrong); background: #2a0a0a; }
+.fb-title { font-weight: 800; font-size: 1.05rem; margin-bottom: 5px; }
+.fb-body  { font-size: .88rem; color: #d1d5db; line-height: 1.6; white-space: pre-line; }
+.feedback:not(.wrong-fb) .fb-title { color: var(--correct); }
+.feedback.wrong-fb .fb-title { color: var(--wrong); }
+
+/* ── Next / action button ── */
+.next-btn {
+  width: 100%; padding: 16px; font-size: 1rem; font-weight: 700;
+  background: linear-gradient(135deg,#7c3aed,#a855f7); color: white;
+  border: none; border-radius: 14px; cursor: pointer; display: none;
+  box-shadow: 0 4px 20px rgba(124,58,237,.4);
+}
+.next-btn.show { display: block; }
+
+/* ── Confetti ── */
+@keyframes fall {
+  0%   { top:-60px; opacity:1; transform:rotate(0deg) scale(1.2); }
+  100% { top:110vh; opacity:0; transform:rotate(520deg) scale(.4); }
+}
+.cp { position:fixed; top:-60px; pointer-events:none; z-index:9999; animation:fall linear both; font-size:1.6rem; }
+
+/* ══════════════════════════════════════
+   MAGIC WAND SCREEN
+══════════════════════════════════════ */
+.wand-screen {
+  text-align: center; padding: 8px 0;
+}
+.wand-title {
+  font-size: 1.4rem; font-weight: 900; margin-bottom: 6px;
+  background: linear-gradient(90deg,#fbbf24,#f0abfc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.wand-subtitle { font-size: .9rem; color: var(--muted); margin-bottom: 24px; }
+
+.demo-box {
+  background: var(--card); border: 1.5px solid #6d28d9;
+  border-radius: 18px; padding: 24px 16px 20px; margin-bottom: 20px;
+  position: relative; overflow: visible; min-height: 120px;
+}
+
+/* The expression spans */
+.demo-expr {
+  font-size: 2rem; font-weight: 900; letter-spacing: 1px;
+  display: flex; justify-content: center; align-items: center;
+  gap: 2px; flex-wrap: wrap; position: relative; z-index: 2;
+  margin-bottom: 8px;
+}
+.de-num   { color: #f3e8ff; }
+.de-minus { color: #f87171; display: inline-block; transition: all .4s; }
+.de-paren { color: #f87171; display: inline-block; transition: all .4s; }
+.de-plus  { color: #34d399; display: inline-block; transform: scale(0); transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.de-plus.show { transform: scale(1); }
+.de-minus.gone, .de-paren.gone {
+  transform: scale(0); opacity: 0;
+}
+
+/* Rewritten expression */
+.demo-rewrite {
+  font-size: 1.5rem; font-weight: 700; opacity: 0;
+  transition: opacity .5s; color: #a78bfa; margin-top: 8px;
+}
+.demo-rewrite.show { opacity: 1; }
+.demo-answer {
+  font-size: 1.8rem; font-weight: 900; color: var(--correct);
+  opacity: 0; transition: opacity .5s; margin-top: 6px;
+}
+.demo-answer.show { opacity: 1; }
+
+/* The wand */
+.wand-emoji {
+  position: absolute; font-size: 2rem;
+  top: 10px; left: 50%;
+  transition: all .5s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none; z-index: 20;
+  opacity: 0;
+  transform-origin: bottom center;
+}
+.wand-emoji.visible { opacity: 1; }
+@keyframes wandTap {
+  0%   { transform: rotate(-30deg) scale(1); }
+  40%  { transform: rotate(10deg) scale(1.3); }
+  70%  { transform: rotate(-15deg) scale(1.1); }
+  100% { transform: rotate(-30deg) scale(1); }
+}
+.wand-emoji.tapping { animation: wandTap .5s ease forwards; }
+
+/* Sparkles burst */
+.sparkle-burst {
+  position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+  font-size: 1.6rem; pointer-events: none; z-index: 19; opacity: 0;
+}
+@keyframes burst {
+  0%   { opacity:0; transform: translateX(-50%) scale(.3); }
+  40%  { opacity:1; transform: translateX(-50%) scale(1.4); }
+  100% { opacity:0; transform: translateX(-50%) scale(1); }
+}
+.sparkle-burst.pop { animation: burst .6s ease forwards; }
+
+/* Rule card */
+.rule-card {
+  background: #1e0940; border: 2px solid #6d28d9; border-radius: 14px;
+  padding: 16px; margin-bottom: 20px; opacity: 0; transition: opacity .5s;
+}
+.rule-card.show { opacity: 1; }
+.rule-big {
+  font-size: 1.35rem; font-weight: 900; font-family: monospace;
+  color: #d8b4fe; text-align: center; margin-bottom: 6px;
+}
+.rule-desc { font-size: .88rem; color: var(--muted); text-align: center; }
+
+.start-btn {
+  width: 100%; padding: 16px; font-size: 1rem; font-weight: 700;
+  background: linear-gradient(135deg,#f59e0b,#f0abfc); color: #1a0533;
+  border: none; border-radius: 14px; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(245,158,11,.4);
+  opacity: 0; transition: opacity .4s; display: block;
+}
+.start-btn.show { opacity: 1; }
+
+/* Wand interactive — clickable on demo screen */
+.wand-emoji.clickable {
+  cursor: pointer !important; pointer-events: all !important;
+  touch-action: manipulation;
+  animation: wandPulse 1.2s ease-in-out infinite;
+}
+@keyframes wandPulse {
+  0%,100% { transform: rotate(-20deg) scale(1);    filter: drop-shadow(0 0 6px #fbbf24); }
+  50%      { transform: rotate(-10deg) scale(1.3);  filter: drop-shadow(0 0 20px #fbbf24); }
+}
+.wand-click-hint {
+  text-align:center; color:#fbbf24; font-size:.95rem; font-weight:700;
+  margin-bottom:14px; animation:wblink 1.4s ease-in-out infinite; display:none;
+}
+@keyframes wblink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* Phase-2 wand zone inside q-card */
+.wand-zone {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  margin:12px 0 4px; padding:11px 14px;
+  background:#1e0940; border-radius:12px; border:2px dashed #6d28d9;
+  cursor:pointer; transition:border-color .2s;
+  animation:wzPulse 2s ease-in-out infinite;
+}
+@keyframes wzPulse {
+  0%,100%{border-color:#6d28d9}
+  50%{border-color:#fbbf24;box-shadow:0 0 14px rgba(251,191,36,.2)}
+}
+.wand-zone:active { transform:scale(.96); }
+.wand-zone.done   { display:none !important; }
+.wz-emoji { font-size:1.6rem; }
+.wz-text  { color:#a78bfa; font-size:.88rem; font-weight:600; }
+
+.q-transform {
+  font-size:1.25rem; font-weight:700; color:#34d399;
+  opacity:0; transition:opacity .45s; margin-top:4px;
+}
+.q-transform.show { opacity:1; }
+
+.mm-hint {
+  margin-top:8px; font-size:.85rem; color:#fbbf24; font-weight:600;
+}
+
+/* ── Transition screen ── */
+.transition-screen { text-align: center; padding: 40px 16px; }
+.ts-emoji  { font-size: 4rem; margin-bottom: 14px; }
+.ts-title  { font-size: 1.4rem; font-weight: 900; color: var(--accent); margin-bottom: 10px; }
+.ts-text   { font-size: .92rem; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+.ts-btn {
+  width: 100%; padding: 16px; font-size: 1rem; font-weight: 700;
+  background: linear-gradient(135deg,#7c3aed,#a855f7); color: white;
+  border: none; border-radius: 14px; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(124,58,237,.4);
+}
+
+/* ── Results ── */
+.results-screen { text-align: center; padding: 40px 16px; }
+
+/* ── Menu ── */
+.menu-screen { padding: 8px 0; }
+.menu-hero {
+  text-align: center; font-size: 1.3rem; font-weight: 900; margin-bottom: 6px;
+  background: linear-gradient(90deg,#c084fc,#f0abfc,#818cf8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.menu-sub { text-align: center; color: var(--muted); font-size: .88rem; margin-bottom: 22px; }
+.menu-card {
+  background: var(--card); border: 1.5px solid #6d28d9; border-radius: 14px;
+  padding: 15px 16px; display: flex; align-items: center; gap: 14px;
+  margin-bottom: 11px; cursor: pointer; transition: border-color .2s, transform .15s;
+  text-align: left;
+}
+.menu-card:active { transform: scale(.97); border-color: var(--primary); }
+.menu-num {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg,#7c3aed,#a855f7);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 900; color: white;
+}
+.menu-label { font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.menu-desc  { font-size: .8rem;  color: var(--muted); line-height: 1.4; }
+.menu-back {
+  background: none; border: none; color: var(--muted); font-size: .82rem;
+  cursor: pointer; padding: 2px 0; text-decoration: underline; display: inline-block;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ MENU ═══ -->
+<div id="menu-ui">
+  <div class="menu-screen">
+    <div class="menu-hero">🔢 Отрицательные числа</div>
+    <div class="menu-sub">Выбери раздел:</div>
+
+    <div class="menu-card" onclick="startPhase0()">
+      <div class="menu-num">1</div>
+      <div>
+        <div class="menu-label">Сложение и вычитание</div>
+        <div class="menu-desc">10 примеров — числовая линейка, разные знаки, ноль</div>
+      </div>
+    </div>
+
+    <div class="menu-card" onclick="jumpToWand()">
+      <div class="menu-num">🪄</div>
+      <div>
+        <div class="menu-label">Правило двух минусов</div>
+        <div class="menu-desc">Объяснение с волшебной палочкой</div>
+      </div>
+    </div>
+
+    <div class="menu-card" onclick="jumpToPhase2()">
+      <div class="menu-num">2</div>
+      <div>
+        <div class="menu-label">Два минуса — тренировка</div>
+        <div class="menu-desc">5 примеров: нажми палочку и преобразуй</div>
+      </div>
+    </div>
+
+    <div class="menu-card" onclick="jumpToPhase3()">
+      <div class="menu-num">3</div>
+      <div>
+        <div class="menu-label">Всё вперемешку</div>
+        <div class="menu-desc">10 примеров — и сложение, и два минуса</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ QUIZ UI (фазы 0, 2, 3) ═══ -->
+<div id="quiz-ui" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+    <div class="title" style="margin-bottom:0">🔢 Отрицательные числа</div>
+    <button class="menu-back" onclick="showMenu()">↩ Меню</button>
+  </div>
+  <div class="stats">
+    <span>Вопрос <b id="qn">1</b> из <b id="qtotal">10</b></span>
+    <span class="streak" id="stk"></span>
+    <span>✓ <b id="sc">0</b></span>
+  </div>
+  <div class="pbar-wrap"><div class="pbar" id="pbar" style="width:0%"></div></div>
+
+  <button class="rules-btn" onclick="toggleRules()">
+    <span>📋 Правила — открой, если забыла!</span>
+    <span id="rarrow">▼</span>
+  </button>
+  <div class="rules-body" id="rbody">
+    <div class="rule">➕ <b>Одинаковые знаки</b> — складываем, ставим тот же знак<br>
+      <span class="rex">(−3)+(−5) = −8</span> <span class="rex">4+7 = 11</span>
+    </div>
+    <div class="rule">↔️ <b>Разные знаки</b> — вычитаем меньший из большего, знак у того кто больше<br>
+      <span class="rex">(−7)+4 = −3</span> <span class="rex">7+(−4) = 3</span>
+    </div>
+    <div class="rule" id="rule-mm" style="display:none">✨ <b>Два минуса = плюс!</b> a − (−b) = a + b<br>
+      <span class="rex">5−(−3) = 5+3 = 8</span> <span class="rex">(−2)−(−6) = 4</span>
+    </div>
+    <div class="rule">↔️ <b>Линейка:</b> плюс → вправо ➡️ &nbsp;минус → влево ⬅️</div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-text" id="qt">—</div>
+    <div class="q-sub"  id="qs"></div>
+    <div class="wand-zone" id="wand-zone" style="display:none" onclick="onWandZoneTap()">
+      <span class="wz-emoji">🪄</span>
+      <span class="wz-text">Нажми — преобразуй два минуса!</span>
+    </div>
+    <div class="q-transform" id="q-transform"></div>
+    <div class="mm-hint" id="mm-hint" style="display:none">✨ превращаем в плюс</div>
+  </div>
+
+  <div class="nl-section" id="nlsec">
+    <div class="nl-hint" id="nlhint">Потяни шарик к ответу 👆</div>
+    <div class="nl-outer" id="nlout">
+      <div class="nl-bubble" id="bubble">0</div>
+      <svg class="nl-svg" id="nlsvg" viewBox="0 0 400 50" preserveAspectRatio="none"></svg>
+      <div class="nl-track"></div>
+      <div class="nl-ball idle" id="ball">🔮</div>
+    </div>
+  </div>
+  <button class="check-btn" id="checkbtn" onclick="checkDrag()">Проверить! ✓</button>
+
+  <div class="feedback" id="fb">
+    <div class="fb-title" id="fbt"></div>
+    <div class="fb-body"  id="fbb"></div>
+  </div>
+  <button class="next-btn" id="nbtn">Следующий вопрос →</button>
+</div>
+
+<!-- ═══ MAGIC WAND SCREEN ═══ -->
+<div id="wand-ui" style="display:none">
+  <div class="wand-screen">
+    <div class="wand-title">🪄 Волшебное правило!</div>
+    <div class="wand-subtitle">Два минуса подряд — волшебная палочка их превращает в плюс</div>
+
+    <div class="demo-box" id="demo-box">
+      <div class="wand-emoji" id="wand-el">🪄</div>
+      <div class="sparkle-burst" id="sparkles">✨✨✨</div>
+
+      <div class="demo-expr" id="demo-expr">
+        <!-- заполняется JS -->
+      </div>
+      <div class="demo-rewrite" id="demo-rewrite"></div>
+      <div class="demo-answer"  id="demo-answer"></div>
+    </div>
+
+    <div class="wand-click-hint" id="wand-click-hint">👆 Нажми на палочку!</div>
+
+    <div class="rule-card" id="rule-card">
+      <div class="rule-big">a − (−b) = a + b</div>
+      <div class="rule-desc">Вычитать отрицательное — всё равно что прибавлять положительное</div>
+    </div>
+
+    <button class="start-btn" id="start-phase2-btn" onclick="startPhase2()">
+      Понятно! Попробую 🎯
+    </button>
+  </div>
+</div>
+
+<!-- ═══ TRANSITION SCREENS ═══ -->
+<div id="transition-ui" style="display:none"></div>
+
+<script>
+// ══════ UTILS ══════
+const rInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const rChoice = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=rInt(0,i);[a[i],a[j]]=[a[j],a[i]];}return a; };
+const eq = (a,b) => Math.abs(a-b)<0.001;
+const show = id => document.getElementById(id).style.display='block';
+const hide = id => document.getElementById(id).style.display='none';
+
+function fmt(n) {
+  const s = Number.isInteger(n) ? String(n) : parseFloat(n.toFixed(1)).toString();
+  return n < 0 ? `(${s})` : s;
+}
+function fmtBtn(n) { return String(n); }
+
+// ══════ QUESTION GENERATORS ══════
+// Числа в пределах линейки [-12, 12], через десятки — нормально
+function genSum() {
+  const t = rInt(1,4);
+  if (t===1) {
+    // оба отрицательных: результат=-(a+b), нужно a+b<=12
+    const a=rInt(1,6), b=rInt(1,6), r=-(a+b);
+    return { text:`${fmt(-a)} + ${fmt(-b)}`, result:r, start:-a, useNL:true,
+      explain:`Оба отрицательные — складываем:\n${a} + ${b} = ${a+b}, ставим минус → ${r}`,
+      typMistake: a+b };
+  }
+  if (t===2) {
+    // a + (-b), результат отрицательный
+    const b=rInt(3,12), a=rInt(1,Math.min(b-1,11)), r=a-b;
+    return { text:`${a} + ${fmt(-b)}`, result:r, start:a, useNL:true,
+      explain:`Разные знаки. Вычитаем: ${b} − ${a} = ${b-a}.\nОтрицательное больше → ${r}`,
+      typMistake: a+b };
+  }
+  if (t===3) {
+    // a + (-b), результат положительный
+    const a=rInt(3,12), b=rInt(1,a-1), r=a-b;
+    return { text:`${a} + ${fmt(-b)}`, result:r, start:a, useNL:true,
+      explain:`Разные знаки. Вычитаем: ${a} − ${b} = ${r}.\nПоложительное больше → ${r}`,
+      typMistake: a+b };
+  }
+  // (-a) + b
+  const a=rInt(2,10), b=rInt(1,10), r=b-a;
+  const bigger = a>b ? 'Отрицательное' : 'Положительное';
+  return { text:`${fmt(-a)} + ${b}`, result:r, start:-a, useNL:true,
+    explain:`Разные знаки. Вычитаем: ${Math.max(a,b)} − ${Math.min(a,b)} = ${Math.abs(r)}.\n${bigger} больше → ${r}`,
+    typMistake: a+b };
+}
+
+function genZero() {
+  const a = rInt(2,10);
+  if (rInt(0,1)) {
+    return { text:`${a} + ${fmt(-a)}`, result:0, start:a, useNL:true,
+      explain:`Разные знаки, модули одинаковые:\n${a} − ${a} = 0`, typMistake: a+a };
+  }
+  return { text:`${fmt(-a)} + ${a}`, result:0, start:-a, useNL:true,
+    explain:`Разные знаки, модули одинаковые:\n${a} − ${a} = 0`, typMistake: a+a };
+}
+
+function genMM() {  // "два минуса": a − (−b) = a + b, всё в [-12, 12]
+  const a=rInt(-8,5), b=rInt(1,7), r=a+b;
+  if(Math.abs(r)>12) return genMM();
+  const aStr = a<0 ? fmt(a) : String(a);
+  const rDisp = r<0 ? `−${Math.abs(r)}` : String(r);
+  return { text:`${aStr} − (−${b})`, result:r, start:a, useNL:true,
+    type:'mm', mmRewrite:`${aStr} + ${b} = ${rDisp}`,
+    explain:`Два минуса = плюс!\n${aStr} − (−${b}) = ${aStr} + ${b} = ${r}`,
+    typMistake: a-b };
+}
+
+function buildPhase0() {         // 10 вопросов: только сложение
+  const qs = [];
+  for(let i=0;i<9;i++) qs.push(genSum());
+  qs.splice(rInt(2,6), 0, genZero());
+  return qs.slice(0,10);
+}
+function buildPhase2() {         // 5 вопросов: только два минуса
+  return [0,1,2,3,4].map(()=>genMM());
+}
+function buildPhase3() {         // 10 вопросов: вперемешку
+  const qs = [];
+  for(let i=0;i<9;i++) {
+    qs.push(rInt(0,2)===0 ? genMM() : genSum());
+  }
+  qs.splice(rInt(2,6), 0, genZero());
+  return qs.slice(0,10);
+}
+
+// ══════ NUMBER LINE ══════
+const NL_MIN=-12, NL_MAX=12;
+function nlPct(n){ return (Math.max(NL_MIN,Math.min(NL_MAX,n))-NL_MIN)/(NL_MAX-NL_MIN)*100; }
+
+function drawTicks(){
+  const svg=document.getElementById('nlsvg');
+  svg.innerHTML='';
+  const W=400, LY=22;
+  function x(n){ return (n-NL_MIN)/(NL_MAX-NL_MIN)*W; }
+  function el(tag,attrs){
+    const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(const[k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+    return e;
+  }
+  svg.appendChild(el('line',{x1:x(0),y1:LY-9,x2:x(0),y2:LY+9,stroke:'#6d28d9','stroke-width':2.5}));
+  for(let n=NL_MIN;n<=NL_MAX;n+=2){
+    const big=n%5===0||n===0;
+    svg.appendChild(el('line',{x1:x(n),y1:LY-(big?7:4),x2:x(n),y2:LY+(big?7:4),
+      stroke:big?'#6d28d9':'#3b1563','stroke-width':big?1.5:1}));
+    if(big){
+      const t=el('text',{x:x(n),y:LY+19,'text-anchor':'middle','font-size':11,
+        fill:n===0?'#a78bfa':'#6d28d9','font-weight':n===0?'bold':'normal'});
+      t.textContent=n; svg.appendChild(t);
+    }
+  }
+}
+
+// ══════ DRAG ══════
+let isDrag=false, dragN=0, hasMoved=false;
+
+function setBallPos(pct, animate=true){
+  const ball=document.getElementById('ball');
+  const bub=document.getElementById('bubble');
+  if(!animate){ ball.style.transition='none'; bub.style.transition='none'; }
+  ball.style.left=pct+'%'; bub.style.left=pct+'%';
+  if(!animate){ setTimeout(()=>{
+    ball.style.transition='left .65s cubic-bezier(.34,1.56,.64,1), background .4s';
+    bub.style.transition='left .65s cubic-bezier(.34,1.56,.64,1)';
+  },30); }
+}
+function getClientX(e){
+  if(e.touches&&e.touches.length>0) return e.touches[0].clientX;
+  if(e.changedTouches&&e.changedTouches.length>0) return e.changedTouches[0].clientX;
+  return e.clientX;
+}
+function clientXtoN(cx){
+  const outer=document.getElementById('nlout');
+  const rect=outer.getBoundingClientRect();
+  const pad=22, trackW=rect.width-pad*2;
+  return Math.round(Math.max(NL_MIN,Math.min(NL_MAX, NL_MIN+(cx-rect.left-pad)/trackW*(NL_MAX-NL_MIN))));
+}
+function onDragStart(e){
+  if(answered) return;
+  isDrag=true;
+  document.getElementById('ball').classList.remove('idle');
+  document.getElementById('ball').classList.add('dragging');
+  document.getElementById('bubble').classList.add('dragging');
+  e.preventDefault();
+  moveBallTo(getClientX(e));
+  // вешаем слушатели только пока тащим
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('touchmove', onDragMove, {passive:false});
+  document.addEventListener('mouseup',   onDragEnd);
+  document.addEventListener('touchend',  onDragEnd);
+}
+function onDragMove(e){ e.preventDefault(); moveBallTo(getClientX(e)); }
+function onDragEnd(e){
+  isDrag=false;
+  document.getElementById('ball').classList.remove('dragging');
+  document.getElementById('bubble').classList.remove('dragging');
+  // сразу снимаем — больше не нужны
+  document.removeEventListener('mousemove', onDragMove);
+  document.removeEventListener('touchmove', onDragMove);
+  document.removeEventListener('mouseup',   onDragEnd);
+  document.removeEventListener('touchend',  onDragEnd);
+  if(hasMoved) document.getElementById('checkbtn').classList.add('show');
+}
+function moveBallTo(cx){
+  const n=clientXtoN(cx); dragN=n; hasMoved=true;
+  setBallPos(nlPct(n), false);
+  document.getElementById('ball').textContent=String(n);
+  const bub=document.getElementById('bubble');
+  bub.textContent=n>=0?`+${n}`:String(n); bub.classList.add('show');
+  document.getElementById('nlhint').textContent =
+    n > cur.start ? '➡️ вправо от старта' : n < cur.start ? '⬅️ влево от старта' : '← на месте старта';
+}
+function attachDrag(){
+  const ball=document.getElementById('ball');
+  ball.addEventListener('mousedown', onDragStart);
+  ball.addEventListener('touchstart', onDragStart, {passive:false});
+}
+
+// ══════ CONFETTI ══════
+function confetti(){
+  const emojis=['⭐','🌟','✨','💜','🎉','🎊','💫','🔮'];
+  for(let i=0;i<20;i++){
+    const el=document.createElement('div'); el.className='cp';
+    el.textContent=rChoice(emojis);
+    el.style.left=Math.random()*100+'vw';
+    el.style.animationDuration=(0.9+Math.random()*1.4)+'s';
+    el.style.animationDelay=(Math.random()*0.5)+'s';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),3000);
+  }
+}
+
+// ══════ QUIZ STATE ══════
+let phase=0, questions=[], qNum=0, score=0, totalScore=0, streak=0, cur=null, answered=false;
+
+const PHASE_TOTAL = { 0:10, 2:5, 3:10 };
+
+function toggleRules(){
+  const b=document.getElementById('rbody'), a=document.getElementById('rarrow');
+  b.classList.toggle('open'); a.textContent=b.classList.contains('open')?'▲':'▼';
+}
+
+function loadQ(){
+  answered=false; hasMoved=false; dragN=0;
+  cur=questions[qNum];
+
+  const total=PHASE_TOTAL[phase]||10;
+  document.getElementById('qn').textContent=qNum+1;
+  document.getElementById('qtotal').textContent=total;
+  document.getElementById('pbar').style.width=`${qNum/total*100}%`;
+  document.getElementById('qt').textContent=cur.text+' = ?';
+  document.getElementById('qs').textContent='';
+  document.getElementById('fb').className='feedback';
+  document.getElementById('nbtn').className='next-btn';
+  document.getElementById('checkbtn').className='check-btn';
+
+  const nlsec=document.getElementById('nlsec');
+  nlsec.style.display='block';
+  drawTicks();
+  const ball=document.getElementById('ball');
+  ball.className='nl-ball';
+  ball.textContent='🔮'; ball.style.transition='none';
+  ball.style.left=nlPct(cur.start)+'%';
+  const bub=document.getElementById('bubble');
+  bub.className='nl-bubble'; bub.style.left=nlPct(cur.start)+'%';
+  document.getElementById('nlhint').textContent = phase===2 ? '🪄 Сначала нажми на палочку!' : 'Потяни шарик к ответу 👆';
+  document.getElementById('nlhint').style.color='';
+  // wand zone / mm-hint
+  const _wz=document.getElementById('wand-zone');
+  const _qt=document.getElementById('q-transform');
+  const _mh=document.getElementById('mm-hint');
+  _wz.style.display='none'; _wz.classList.remove('done');
+  _qt.className='q-transform'; _qt.textContent='';
+  _mh.style.display='none';
+  if(phase===2){ _wz.style.display='flex'; }
+  else if(phase===3 && cur.type==='mm'){ _mh.style.display='block'; }
+  setTimeout(()=>{
+    ball.style.transition='left .65s cubic-bezier(.34,1.56,.64,1), background .4s';
+    ball.classList.add('idle','popin');
+    setTimeout(()=>ball.classList.remove('popin'),500);
+  },50);
+}
+
+function checkDrag(){ if(answered||!hasMoved) return; resolveAnswer(dragN); }
+
+function resolveAnswer(chosen){
+  if(answered) return; answered=true;
+  const ok=eq(chosen, cur.result);
+  if(ok){ score++; totalScore++; streak++; } else streak=0;
+  document.getElementById('sc').textContent=score;
+  const stk=document.getElementById('stk');
+  stk.textContent=streak>=3?`🔥 ${streak} подряд!`:streak===2?'✨ 2 подряд':'';
+
+  const ball=document.getElementById('ball');
+  const bub=document.getElementById('bubble');
+  ball.classList.remove('idle','dragging','popin');
+  setTimeout(()=>{
+    ball.style.transition='left .65s cubic-bezier(.34,1.56,.64,1), background .4s';
+    bub.style.transition='left .65s cubic-bezier(.34,1.56,.64,1)';
+    setBallPos(nlPct(cur.result), true);
+    bub.textContent=String(cur.result); bub.classList.add('show');
+    document.getElementById('nlhint').textContent =
+      cur.result > cur.start ? '➡️ едем вправо' : cur.result < cur.start ? '⬅️ едем влево' : '↔️ остаёмся на месте';
+    setTimeout(()=>{
+      ball.classList.add(ok?'correct-ball':'wrong-ball');
+      document.getElementById('nlhint').textContent=ok
+        ? `✓ Правильно! Приехали в ${cur.result}` : `✗ Надо было в ${cur.result}`;
+      document.getElementById('nlhint').style.color=ok?'#34d399':'#f87171';
+    },700);
+  },100);
+
+  if(ok) setTimeout(confetti,500);
+
+  const fb=document.getElementById('fb');
+  fb.className='feedback show '+(ok?'':'wrong-fb');
+  document.getElementById('fbt').textContent=ok
+    ? rChoice(['Верно! 🎉','Отлично! ⭐','Молодец! 💜','Правильно! 🌟','Огонь! 🔥'])
+    : `Неверно. Правильный ответ: ${fmtBtn(cur.result)}`;
+  document.getElementById('fbb').textContent=cur.explain;
+
+  document.getElementById('checkbtn').className='check-btn';
+  const nb=document.getElementById('nbtn');
+  nb.className='next-btn show';
+  if(ok){
+    qNum++;
+    nb.textContent=qNum<questions.length?'Следующий вопрос →':'Дальше →';
+    nb.onclick=nextQ;
+  } else {
+    nb.textContent='Попробовать снова 🔄';
+    nb.onclick=retryQ;
+  }
+}
+
+function nextQ(){
+  document.getElementById('ball').classList.remove('correct-ball','wrong-ball','idle','popin','dragging');
+  document.getElementById('nlhint').style.color='';
+  if(qNum>=questions.length){ phaseComplete(); return; }
+  loadQ();
+}
+
+function retryQ(){
+  answered=false; hasMoved=false; dragN=0;
+  document.getElementById('fb').className='feedback';
+  document.getElementById('nbtn').className='next-btn';
+  document.getElementById('checkbtn').className='check-btn';
+  document.getElementById('nlhint').style.color='';
+  const ball=document.getElementById('ball');
+  ball.className='nl-ball';
+  ball.textContent='🔮'; ball.style.transition='none';
+  ball.style.left=nlPct(cur.start)+'%';
+  const bub=document.getElementById('bubble');
+  bub.className='nl-bubble'; bub.style.left=nlPct(cur.start)+'%';
+  document.getElementById('nlhint').textContent = phase===2 ? '🪄 Сначала нажми на палочку!' : 'Потяни шарик к ответу 👆';
+  if(phase===2){
+    const _wz=document.getElementById('wand-zone');
+    _wz.style.display='flex'; _wz.classList.remove('done');
+    const _qt=document.getElementById('q-transform');
+    _qt.className='q-transform'; _qt.textContent='';
+  }
+  setTimeout(()=>{
+    ball.style.transition='left .65s cubic-bezier(.34,1.56,.64,1), background .4s';
+    ball.classList.add('idle','popin');
+    setTimeout(()=>ball.classList.remove('popin'),500);
+  },50);
+}
+
+// ══════ PHASE MANAGEMENT ══════
+function phaseComplete(){
+  if(phase===0){ showWandScreen(); }
+  else if(phase===2){ showMixedTransition(); }
+  else { showFinalResults(); }
+}
+
+// ══════ MAGIC WAND SCREEN ══════
+function showWandScreen(){
+  hide('quiz-ui');
+  show('wand-ui');
+  wandDemoClicked=false;
+  runWandAnimation();
+}
+
+let wandDemoClicked=false;
+
+function runWandAnimation(){
+  // Пример: −8 − (−5) = ?
+  const expr=document.getElementById('demo-expr');
+  expr.innerHTML=`
+    <span class="de-num">(−8)</span>
+    <span class="de-minus" id="dm1">&nbsp;−&nbsp;</span>
+    <span class="de-paren" id="dm2">(</span>
+    <span class="de-minus" id="dm3">−</span>
+    <span class="de-num"   id="dm4">5</span>
+    <span class="de-paren" id="dm5">)</span>`;
+  document.getElementById('demo-rewrite').className='demo-rewrite';
+  document.getElementById('demo-answer').className='demo-answer';
+  document.getElementById('rule-card').className='rule-card';
+  document.getElementById('start-phase2-btn').className='start-btn';
+
+  // Палочка появляется сразу и ждёт нажатия
+  const wand=document.getElementById('wand-el');
+  wand.className='wand-emoji visible clickable';
+  wand.style.left='62%'; wand.style.top='4px';
+  wand.onclick=onWandDemoClick;
+
+  const hint=document.getElementById('wand-click-hint');
+  hint.style.display='block';
+}
+
+function onWandDemoClick(){
+  if(wandDemoClicked) return;
+  wandDemoClicked=true;
+
+  const wand=document.getElementById('wand-el');
+  wand.classList.remove('clickable'); wand.onclick=null;
+  document.getElementById('wand-click-hint').style.display='none';
+
+  // Палочка тыкает
+  wand.classList.add('tapping');
+
+  // Искры
+  setTimeout(()=>{
+    const sp=document.getElementById('sparkles');
+    sp.classList.add('pop');
+    setTimeout(()=>sp.classList.remove('pop'),700);
+  }, 300);
+
+  // dm1 (−) превращается в (+) на месте, скобки и лишний минус исчезают
+  setTimeout(()=>{
+    const dm1=document.getElementById('dm1');
+    dm1.textContent='\u00a0+\u00a0';
+    dm1.style.color='#34d399';
+    dm1.style.transform='scale(1.4)';
+    setTimeout(()=>{ dm1.style.transform=''; }, 350);
+    document.getElementById('dm2').classList.add('gone');
+    document.getElementById('dm3').classList.add('gone');
+    document.getElementById('dm5').classList.add('gone');
+    setTimeout(()=>{
+      document.getElementById('dm2').style.display='none';
+      document.getElementById('dm3').style.display='none';
+      document.getElementById('dm5').style.display='none';
+    }, 500);
+  }, 700);
+
+  // Переписанный пример
+  setTimeout(()=>{
+    document.getElementById('demo-rewrite').textContent='(−8) + 5';
+    document.getElementById('demo-rewrite').classList.add('show');
+  }, 1500);
+
+  // Решение
+  setTimeout(()=>{
+    document.getElementById('demo-answer').textContent='= −3';
+    document.getElementById('demo-answer').classList.add('show');
+  }, 2200);
+
+  // Правило
+  setTimeout(()=>{
+    document.getElementById('rule-card').classList.add('show');
+  }, 2900);
+
+  // Кнопка "Понятно!"
+  setTimeout(()=>{
+    document.getElementById('start-phase2-btn').classList.add('show');
+  }, 3500);
+}
+
+function onWandZoneTap(){
+  const zone=document.getElementById('wand-zone');
+  if(zone.classList.contains('done')) return;
+  zone.classList.add('done');
+
+  // Показываем преобразование
+  const qt=document.getElementById('q-transform');
+  qt.textContent='✨ = '+cur.mmRewrite;
+  qt.classList.add('show');
+
+  document.getElementById('nlhint').textContent='Теперь потяни шарик к ответу 👆';
+}
+
+function startPhase2(){
+  hide('wand-ui');
+  show('quiz-ui');
+  // Добавляем правило в шпаргалку
+  document.getElementById('rule-mm').style.display='block';
+  phase=2; qNum=0; score=0; streak=0;
+  questions=buildPhase2();
+  loadQ();
+}
+
+// ══════ MIXED TRANSITION ══════
+function showMixedTransition(){
+  hide('quiz-ui');
+  const tr=document.getElementById('transition-ui');
+  tr.innerHTML=`
+    <div class="transition-screen">
+      <div class="ts-emoji">🎯</div>
+      <div class="ts-title">Отлично! Теперь всё вперемешку</div>
+      <div class="ts-text">10 примеров: и сложение, и два минуса.<br>Ты уже знаешь оба правила!</div>
+      <button class="ts-btn" onclick="startPhase3()">Поехали! →</button>
+    </div>`;
+  show('transition-ui');
+}
+
+function startPhase3(){
+  hide('transition-ui');
+  show('quiz-ui');
+  phase=3; qNum=0; score=0; streak=0;
+  questions=buildPhase3();
+  loadQ();
+}
+
+// ══════ FINAL RESULTS ══════
+function showFinalResults(){
+  hide('quiz-ui');
+  const pct=totalScore/25;
+  let emoji,comment;
+  if(pct>=.9)       {emoji='🏆';comment='Блестяще! Ты освоила оба правила!';}
+  else if(pct>=.75) {emoji='⭐';comment='Очень хорошо! Ещё чуть-чуть практики!';}
+  else if(pct>=.5)  {emoji='💪';comment='Неплохо! Посмотри правила и попробуй снова.';}
+  else              {emoji='📖';comment='Загляни в правила — там всё есть. Попробуй ещё раз!';}
+
+  const tr=document.getElementById('transition-ui');
+  tr.innerHTML=`
+    <div class="results-screen" style="font-family:'Segoe UI',system-ui;color:#f3e8ff;max-width:480px;margin:0 auto">
+      <div style="font-size:5rem;margin-bottom:16px">${emoji}</div>
+      <h2 style="color:#c084fc;font-size:1.3rem;margin-bottom:8px">Итог</h2>
+      <div style="font-size:3rem;font-weight:900;background:linear-gradient(90deg,#c084fc,#f0abfc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${totalScore} / 25</div>
+      <p style="color:#c4b5fd;margin:12px 0 32px;font-size:.95rem;line-height:1.5">${comment}</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button onclick="showMenu()" style="padding:14px 28px;background:#2a0f4a;border:1.5px solid #6d28d9;color:#c084fc;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer">↩ Меню</button>
+        <button onclick="location.reload()" style="padding:14px 28px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,.5)">Ещё раз!</button>
+      </div>
+    </div>`;
+  show('transition-ui');
+}
+
+// ══════ NAVIGATION ══════
+function showMenu(){
+  hide('quiz-ui'); hide('wand-ui'); hide('transition-ui');
+  show('menu-ui');
+}
+
+function startPhase0(){
+  hide('menu-ui'); show('quiz-ui');
+  phase=0; qNum=0; score=0; totalScore=0; streak=0;
+  questions=buildPhase0();
+  loadQ();
+}
+
+function jumpToWand(){
+  hide('menu-ui');
+  showWandScreen();
+}
+
+function jumpToPhase2(){
+  hide('menu-ui'); show('quiz-ui');
+  document.getElementById('rule-mm').style.display='block';
+  phase=2; qNum=0; score=0; totalScore=0; streak=0;
+  questions=buildPhase2();
+  loadQ();
+}
+
+function jumpToPhase3(){
+  hide('menu-ui'); show('quiz-ui');
+  document.getElementById('rule-mm').style.display='block';
+  phase=3; qNum=0; score=0; totalScore=0; streak=0;
+  questions=buildPhase3();
+  loadQ();
+}
+
+// ══════ START ══════
+attachDrag();
+showMenu();
+</script>
+</body>
+</html>
