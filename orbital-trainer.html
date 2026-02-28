@@ -143,6 +143,27 @@
             .orbital-box{width:26px;height:26px;font-size:0.8em;}.arrow-src{width:34px;height:34px;font-size:1.2em;}.sub-label{font-size:0.55em;min-width:12px;}
             .pt-cell{width:15px;height:18px;}.pt-cell .pt-sym{font-size:0.36em;}.pt-cell .pt-z{display:none;}.pt-cell .pt-mass{display:none;}.pt-empty{width:15px;height:18px;}
         }
+
+        /* ===== MODE 2: ВАЛЕНТНОСТЬ ===== */
+        @keyframes valGlow{0%,100%{text-shadow:0 0 5px #4ade80,0 0 10px rgba(74,222,128,0.4);}50%{text-shadow:0 0 12px #4ade80,0 0 22px rgba(74,222,128,0.7);}}
+        .val-glow{color:#4ade80;animation:valGlow 1.5s ease-in-out infinite;}
+        @keyframes excGlow{0%,100%{text-shadow:0 0 5px #f59e0b,0 0 10px rgba(245,158,11,0.4);}50%{text-shadow:0 0 12px #f59e0b,0 0 22px rgba(245,158,11,0.7);}}
+        .exc-glow{color:#f59e0b;animation:excGlow 1.2s ease-in-out infinite;}
+        .val-sub-lbl{color:#4ade80!important;text-shadow:0 0 8px rgba(74,222,128,0.5);}
+        .orbital-box.val-box-active{border-color:rgba(74,222,128,0.35);background:rgba(74,222,128,0.04);}
+        @keyframes valBoxPulse{0%,100%{box-shadow:0 0 0 rgba(74,222,128,0);}50%{box-shadow:0 0 12px rgba(74,222,128,0.5);}}
+        .orbital-box.val-excitable{border-color:rgba(74,222,128,0.8)!important;cursor:pointer;animation:valBoxPulse 2s ease-in-out infinite;}
+        .orbital-box.val-excitable:hover{background:rgba(74,222,128,0.15)!important;}
+        .pt-cell.val-select{cursor:pointer;}
+        .pt-cell.val-select:hover{background:rgba(74,222,128,0.25)!important;border-color:rgba(74,222,128,0.6)!important;}
+        .val-info-panel{margin-top:8px;padding:12px 16px;background:rgba(0,0,0,0.3);border-radius:12px;border:1px solid rgba(74,222,128,0.2);text-align:center;line-height:1.9;font-size:0.88em;}
+        .val-state{color:#a78bfa;font-size:0.72em;letter-spacing:2px;text-transform:uppercase;}
+        .val-electrons{color:#888;font-size:0.78em;}
+        .val-unpaired{color:#ccc;}
+        .val-result{color:#ccc;font-size:1.05em;}
+        .val-hint{color:#4ade80;font-size:0.75em;margin-top:4px;animation:valHintPulse 2s ease-in-out infinite;}
+        @keyframes valHintPulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
+        .val-note{color:#666;font-size:0.75em;margin-top:4px;}
     </style>
 </head>
 <body>
@@ -153,6 +174,7 @@
     <div class="mode-tabs">
         <div class="mode-tab active" onclick="setMode(0)">Заполни элемент</div>
         <div class="mode-tab" onclick="setMode(1)">Свободное заполнение</div>
+        <div class="mode-tab" onclick="setMode(2)">Валентность</div>
     </div>
 
     <div class="top-bar">
@@ -187,9 +209,19 @@
         </div>
     </div>
 
+    <div class="el-row hidden" id="valRow">
+        <div class="free-element" id="valElDisplay">
+            <div class="free-el-sym" id="valSym" style="color:#4ade80;">?</div>
+            <div>
+                <div class="free-el-name" id="valName">Выбери элемент в таблице</div>
+                <div class="free-el-z" id="valZlabel"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="work-area">
         <div class="work-left">
-            <div class="arrows-row">
+            <div class="arrows-row" id="arrowsRow">
                 <div class="arrow-src" id="srcUp" onmousedown="startDrag(event,'up')" ontouchstart="startDrag(event,'up')"><span class="up">&#8593;</span></div>
                 <div class="arrow-src" id="srcDown" onmousedown="startDrag(event,'down')" ontouchstart="startDrag(event,'down')"><span class="down">&#8595;</span></div>
                 <div class="arrows-hint">&#8592; тащи в клетку</div>
@@ -219,6 +251,14 @@
     <div class="btn-row hidden" id="btnRow1">
         <button class="btn btn-secondary" onclick="undoLast()">&#8592; Назад</button>
         <button class="btn btn-secondary" onclick="freeRestart()">Очистить</button>
+    </div>
+
+    <div class="btn-row hidden" id="btnRow2">
+        <button class="btn btn-secondary" onclick="resetToGround()">&#8635; Основное состояние</button>
+    </div>
+
+    <div class="val-info-panel hidden" id="valInfoPanel">
+        <div id="valInfo"></div>
     </div>
 
     <div id="feedback" class="feedback"></div>
@@ -357,7 +397,9 @@ function renderPT(activeZ) {
             if(el){
                 const act=el.z===activeZ;
                 const ms=el.m>=100?Math.round(el.m):el.m.toFixed(el.m<10?3:2);
-                h+=`<td class="pt-cell ${el.sg==='a'?'sg-a':'sg-b'}${act?' active':''}" title="${el.s} (Z=${el.z})"><span class="pt-z">${el.z}</span><span class="pt-sym">${el.s}</span><span class="pt-mass">${ms}</span></td>`;
+                const valSel=(mode===2&&el.z<=54)?' val-select':'';
+                const valClick=(mode===2&&el.z<=54)?`onclick="selectValZ(${el.z})"`:'';
+                h+=`<td class="pt-cell ${el.sg==='a'?'sg-a':'sg-b'}${act?' active':''}${valSel}" title="${el.s} (Z=${el.z})" ${valClick}><span class="pt-z">${el.z}</span><span class="pt-sym">${el.s}</span><span class="pt-mass">${ms}</span></td>`;
             } else { h+='<td class="pt-empty"></td>'; }
         }
         h+='</tr>';
@@ -386,11 +428,17 @@ function setMode(m) {
     document.querySelectorAll('.mode-tab').forEach((t,i)=>t.classList.toggle('active',i===m));
     document.getElementById('elRow').classList.toggle('hidden',m!==0);
     document.getElementById('freeRow').classList.toggle('hidden',m!==1);
+    document.getElementById('valRow').classList.toggle('hidden',m!==2);
     document.getElementById('diffBar').classList.toggle('hidden',m!==0);
     document.getElementById('scoreArea').classList.toggle('hidden',m!==0);
     document.getElementById('btnRow0').classList.toggle('hidden',m!==0);
     document.getElementById('btnRow1').classList.toggle('hidden',m!==1);
-    if(m===0) nextEl(); else freeRestart();
+    document.getElementById('btnRow2').classList.toggle('hidden',m!==2);
+    document.getElementById('valInfoPanel').classList.toggle('hidden',m!==2);
+    document.getElementById('arrowsRow').classList.toggle('hidden',m===2);
+    if(m===0) nextEl();
+    else if(m===1) freeRestart();
+    else { if(valZ2===0) initValence(16); else initValence(valZ2); }
 }
 
 // ===== DRAG =====
@@ -759,6 +807,188 @@ function updateLiveConfig(){
 }
 
 nextEl();
+
+// ===== MODE 2: ВАЛЕНТНОСТЬ =====
+let valZ2=0, groundGrid2=[], excitedCells2=new Set(), excCount=0;
+
+function buildGroundState(z){
+    let maxP=1,cum=0;
+    for(const fi of FILL_ORDER){
+        maxP=Math.max(maxP,SUBSHELLS[fi].n);
+        cum+=SUBSHELLS[fi].boxes*2;
+        if(cum>=z)break;
+    }
+    maxP=Math.max(maxP,3);
+    const g=[];
+    for(let i=0;i<SUBSHELLS.length;i++) g.push(SUBSHELLS[i].n<=maxP?Array(SUBSHELLS[i].boxes).fill(0):null);
+    const seq=generateSequenceForElement(z);
+    for(const s of seq) g[s.si][s.box]=s.arrow==='up'?1:2;
+    const exc=EXCEPTIONS[z];
+    if(exc){
+        if(exc.double){
+            g[exc.srcSi][exc.srcBi]=exc.srcAfterSecond;
+            g[exc.jumps[0].tgtSi][exc.jumps[0].tgtBi]=exc.jumps[0].tgtVal;
+            g[exc.jumps[1].tgtSi][exc.jumps[1].tgtBi]=exc.jumps[1].tgtVal;
+        } else {
+            g[exc.srcSi][exc.srcBi]=1;
+            g[exc.tgtSi][exc.tgtBi]=exc.tgtVal;
+        }
+    }
+    return g;
+}
+
+function getValenceSubshells(){
+    let outerN=1;
+    for(let si=0;si<grid.length;si++){
+        if(!grid[si])continue;
+        if(grid[si].some(v=>v>0)) outerN=Math.max(outerN,SUBSHELLS[si].n);
+    }
+    const vs=new Set();
+    for(let si=0;si<grid.length;si++){
+        if(!grid[si])continue;
+        const n=SUBSHELLS[si].n, e=grid[si].reduce((a,b)=>a+b,0);
+        if(n===outerN) vs.add(si);
+        if(SUBSHELLS[si].l==='d'&&n===outerN-1&&e>0) vs.add(si);
+    }
+    return vs;
+}
+
+function countUnpaired2(){
+    const vs=getValenceSubshells();
+    let c=0;
+    for(const si of vs){ if(!grid[si])continue; for(const v of grid[si]) if(v===1)c++; }
+    return c;
+}
+
+function findExcTarget(si){
+    if(valZ2>18) return null;
+    if(SUBSHELLS[si].l==='d') return null;
+    const n=SUBSHELLS[si].n;
+    for(let tsi=0;tsi<grid.length;tsi++){
+        if(!grid[tsi]||SUBSHELLS[tsi].n!==n) continue;
+        for(let bi=0;bi<grid[tsi].length;bi++) if(grid[tsi][bi]===0) return {si:tsi,bi};
+    }
+    return null;
+}
+
+function renderGridValence(){
+    const vs=getValenceSubshells();
+    const container=document.getElementById('orbitalGrid');
+    const periods={};
+    for(let si=0;si<SUBSHELLS.length;si++){
+        if(grid[si]===null)continue;
+        const n=SUBSHELLS[si].n;
+        if(!periods[n])periods[n]=[];
+        periods[n].push(si);
+    }
+    let html='';
+    for(const n of Object.keys(periods).sort((a,b)=>a-b)){
+        html+=`<div class="period-row"><div class="period-num">${n}</div>`;
+        for(const si of periods[n]){
+            const sub=SUBSHELLS[si], isVal=vs.has(si);
+            html+=`<div class="subshell-group">`;
+            html+=`<div class="sub-label ${sub.l}-label${isVal?' val-sub-lbl':''}">${sub.n}${sub.l}</div>`;
+            for(let bi=0;bi<grid[si].length;bi++){
+                const v=grid[si][bi];
+                const isExc=excitedCells2.has(`${si}_${bi}`);
+                const canExc=isVal&&v===2&&findExcTarget(si)!==null;
+                let boxCls='orbital-box';
+                if(isVal&&v>0) boxCls+=' val-box-active';
+                if(canExc) boxCls+=' val-excitable';
+                let c='';
+                if(v===1){
+                    const cls=isVal?(isExc?'arr arr-up exc-glow':'arr arr-up val-glow'):'arr arr-up';
+                    c=`<span class="${cls}">\u2191</span>`;
+                } else if(v===2){
+                    const uc=isVal?'arr arr-up val-glow':'arr arr-up';
+                    const dc=isVal?'arr arr-down val-glow':'arr arr-down';
+                    c=`<span class="${uc}">\u2191</span><span class="${dc}">\u2193</span>`;
+                }
+                const oc=canExc?`onclick="clickExcite(${si},${bi})"` :'';
+                html+=`<div class="${boxCls}" id="box_${si}_${bi}" ${oc}>${c}</div>`;
+            }
+            html+=`</div>`;
+        }
+        html+=`</div>`;
+    }
+    container.innerHTML=html;
+}
+
+function toRoman(n){return['','I','II','III','IV','V','VI','VII','VIII'][n]||n;}
+
+function updateValenceInfo(){
+    const el=ELEMENTS[valZ2]; if(!el) return;
+    const vs=getValenceSubshells();
+    const unpaired=countUnpaired2();
+    const valElCount=Array.from(vs).reduce((s,si)=>s+(grid[si]?grid[si].reduce((a,b)=>a+b,0):0),0);
+    let outerN=1; for(const si of vs) if(grid[si]) outerN=Math.max(outerN,SUBSHELLS[si].n);
+    const isDElement=valZ2>=21&&valZ2<=30||valZ2>=39&&valZ2<=48;
+
+    let stateStr=excCount===0?'Основное состояние':`${excCount}-е возбуждённое состояние`;
+
+    let canMore=false;
+    if(valZ2<=18){
+        const vs2=getValenceSubshells();
+        outer: for(const si of vs2){
+            if(!grid[si])continue;
+            for(let bi=0;bi<grid[si].length;bi++){
+                if(grid[si][bi]===2&&findExcTarget(si)!==null){canMore=true;break outer;}
+            }
+        }
+    }
+
+    const valStr=unpaired===0?'нет неспаренных электронов':`<strong style="color:#4ade80;font-size:1.2em">${toRoman(unpaired)}</strong>`;
+    const dExtra=isDElement?`<div class="val-note">d-элемент: валентность определяется числом неспаренных (${outerN-1})d + ${outerN}s электронов</div>`:'';
+    const hintStr=canMore?`<div class="val-hint">\u2191\u2193 кликни на светящийся — возбуди электрон</div>`
+        :excCount>0?`<div class="val-note">Больше возбудить нельзя</div>`:'';
+
+    document.getElementById('valInfo').innerHTML=`
+        <div class="val-state">${stateStr}</div>
+        <div class="val-electrons">Валентных электронов: ${valElCount}${isDElement?' (d + s)':` (${outerN}-й уровень)`}</div>
+        <div class="val-unpaired">Неспаренных: <span style="color:#4ade80">${unpaired}</span></div>
+        <div class="val-result">Валентность: ${valStr}</div>
+        ${dExtra}${hintStr}`;
+}
+
+function initValence(z){
+    valZ2=z; excCount=0; excitedCells2=new Set();
+    grid=buildGroundState(z);
+    groundGrid2=grid.map(g=>g?[...g]:null);
+    const el=ELEMENTS[z];
+    document.getElementById('valSym').textContent=el?el.s:z;
+    document.getElementById('valName').textContent=el?el.n:'';
+    document.getElementById('valZlabel').textContent=`Z=${z} \u2014 ${z} \u044d\u043b\u0435\u043a\u0442\u0440\u043e\u043d\u043e\u0432`;
+    renderGridValence(); updateLiveConfig(); updateValenceInfo(); renderPT(z);
+    document.getElementById('feedback').className='feedback';
+}
+
+function clickExcite(si,bi){
+    const target=findExcTarget(si); if(!target) return;
+    grid[si][bi]=1;
+    renderGridValence();
+    const freshSrc=document.getElementById(`box_${si}_${bi}`);
+    const freshTgt=document.getElementById(`box_${target.si}_${target.bi}`);
+    if(!freshSrc||!freshTgt) return;
+    flyElectron(freshSrc,freshTgt,()=>{
+        grid[target.si][target.bi]=1;
+        excitedCells2.add(`${target.si}_${target.bi}`);
+        excCount++;
+        renderGridValence(); updateLiveConfig(); updateValenceInfo(); playDing();
+        flashTargetBox(target.si,target.bi);
+    });
+}
+
+function resetToGround(){
+    if(!valZ2) return;
+    excitedCells2=new Set(); excCount=0;
+    grid=groundGrid2.map(g=>g?[...g]:null);
+    renderGridValence(); updateLiveConfig(); updateValenceInfo();
+}
+
+function selectValZ(z){
+    if(mode!==2||z>54||!ELEMENTS[z]) return;
+    initValence(z);
+}
 </script>
 </body>
 </html>
