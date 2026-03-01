@@ -164,6 +164,9 @@
         .val-hint{color:#4ade80;font-size:0.75em;margin-top:4px;animation:valHintPulse 2s ease-in-out infinite;}
         @keyframes valHintPulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
         .val-note{color:#666;font-size:0.75em;margin-top:4px;}
+        .val-examples{color:#888;font-size:0.76em;margin-top:3px;}
+        .val-examples strong{color:#60a5fa;}
+        .val-ex-inline{color:#60a5fa;font-size:0.85em;}
     </style>
 </head>
 <body>
@@ -811,6 +814,98 @@ nextEl();
 // ===== MODE 2: ВАЛЕНТНОСТЬ =====
 let valZ2=0, groundGrid2=[], excitedCells2=new Set(), excCount=0;
 
+// ===== ПРИМЕРЫ СОЕДИНЕНИЙ ПО ВАЛЕНТНОСТИ =====
+const ELEM_DATA = {
+    1:  {ex:{'I':['HCl','H₂O','H₂S','NH₃']}},
+    2:  {ex:{'0':[]}},
+    3:  {ex:{'I':['LiOH','LiCl','Li₂O']}},
+    4:  {ex:{'II':['BeO','BeCl₂','Be(OH)₂']}},
+    5:  {ex:{'III':['BCl₃','B₂O₃','H₃BO₃']}},
+    6:  {ex:{'II':['CO'],'IV':['CO₂','CH₄','CCl₄']}},
+    7:  {ex:{'III':['NH₃','N₂H₄','HNO₂'],'IV':['NH₄⁺','HNO₃','N₂O₄']}},
+    8:  {ex:{'II':['H₂O','CO₂','SO₃']}},
+    9:  {ex:{'I':['HF','NaF','CaF₂']}},
+    10: {ex:{'0':[]}},
+    11: {ex:{'I':['NaCl','NaOH','Na₂O']}},
+    12: {ex:{'II':['MgO','MgCl₂','Mg(OH)₂']}},
+    13: {ex:{'III':['Al₂O₃','AlCl₃','Al(OH)₃']}},
+    14: {ex:{'II':['SiO'],'IV':['SiO₂','SiCl₄','SiH₄']}},
+    15: {ex:{'III':['PH₃','PCl₃','H₃PO₃'],'V':['PCl₅','H₃PO₄','P₂O₅']}},
+    16: {ex:{'II':['H₂S','Na₂S','FeS'],'IV':['SO₂','H₂SO₃'],'VI':['SO₃','H₂SO₄']}},
+    17: {ex:{'I':['HCl','NaCl','KCl'],'III':['HClO₂','ClF₃'],'V':['HClO₃','ClF₅'],'VII':['HClO₄','Cl₂O₇']}},
+    18: {ex:{'0':[]}},
+    19: {ex:{'I':['KCl','KOH','K₂O','K₂SO₄']}},
+    20: {ex:{'II':['CaO','CaCl₂','Ca(OH)₂','CaCO₃']}},
+    21: {ex:{'III':['Sc₂O₃','ScCl₃']}},
+    22: {ex:{'II':['TiO'],'III':['Ti₂O₃'],'IV':['TiO₂','TiCl₄']}},
+    23: {ex:{'II':['VO'],'III':['V₂O₃'],'IV':['VO₂','VCl₄'],'V':['V₂O₅']}},
+    24: {ex:{'II':['CrO','CrCl₂'],'III':['Cr₂O₃','CrCl₃','Cr(OH)₃'],'VI':['CrO₃','K₂Cr₂O₇']}},
+    25: {ex:{'II':['MnO','MnCl₂','MnSO₄'],'III':['Mn₂O₃'],'IV':['MnO₂'],'VI':['K₂MnO₄'],'VII':['KMnO₄']}},
+    26: {ex:{'II':['FeO','FeCl₂','FeSO₄','Fe(OH)₂'],'III':['Fe₂O₃','FeCl₃','Fe(OH)₃']}},
+    27: {ex:{'II':['CoO','CoCl₂','CoSO₄'],'III':['Co₂O₃','CoCl₃']}},
+    28: {ex:{'II':['NiO','NiCl₂','NiSO₄'],'III':['Ni₂O₃'],'IV':['NiO₂']}},
+    29: {ex:{'I':['Cu₂O','CuCl','CuI'],'II':['CuO','CuCl₂','CuSO₄']}},
+    30: {ex:{'II':['ZnO','ZnCl₂','ZnSO₄','Zn(OH)₂']}},
+    31: {ex:{'III':['Ga₂O₃','GaCl₃']}},
+    32: {ex:{'II':['GeO','GeCl₂'],'IV':['GeO₂','GeCl₄']}},
+    33: {ex:{'III':['As₂O₃','AsCl₃','AsH₃'],'V':['As₂O₅','AsCl₅']}},
+    34: {ex:{'II':['H₂Se','Na₂Se'],'IV':['SeO₂'],'VI':['SeO₃','H₂SeO₄']}},
+    35: {ex:{'I':['HBr','NaBr','KBr'],'III':['BrF₃'],'V':['BrF₅'],'VII':['HBrO₄']}},
+    36: {ex:{'0':[]}},
+    37: {ex:{'I':['RbCl','RbOH','Rb₂O']}},
+    38: {ex:{'II':['SrO','SrCl₂','Sr(OH)₂','SrSO₄']}},
+    39: {ex:{'III':['Y₂O₃','YCl₃','Y(OH)₃']}},
+    40: {ex:{'IV':['ZrO₂','ZrCl₄']}},
+    41: {ex:{'III':['NbCl₃'],'IV':['NbO₂'],'V':['Nb₂O₅','NbCl₅']}},
+    42: {ex:{'II':['MoCl₂'],'III':['MoCl₃'],'IV':['MoO₂'],'VI':['MoO₃']}},
+    43: {ex:{'IV':['TcO₂'],'VI':['TcF₆'],'VII':['Tc₂O₇']}},
+    44: {ex:{'II':['RuCl₂'],'III':['RuCl₃'],'IV':['RuO₂'],'VI':['RuO₃'],'VIII':['RuO₄']}},
+    45: {ex:{'II':['RhCl₂'],'III':['Rh₂O₃','RhCl₃'],'IV':['RhO₂'],'VI':['RhF₆']}},
+    46: {ex:{'II':['PdO','PdCl₂'],'IV':['PdO₂','PdF₄']}},
+    47: {ex:{'I':['AgCl','AgNO₃','Ag₂O'],'II':['AgO','AgF₂']}},
+    48: {ex:{'II':['CdO','CdCl₂','CdSO₄','Cd(OH)₂']}},
+    49: {ex:{'III':['In₂O₃','InCl₃']}},
+    50: {ex:{'II':['SnO','SnCl₂'],'IV':['SnO₂','SnCl₄']}},
+    51: {ex:{'III':['Sb₂O₃','SbCl₃','SbH₃'],'V':['Sb₂O₅','SbCl₅']}},
+    52: {ex:{'II':['H₂Te'],'IV':['TeO₂'],'VI':['TeO₃','H₂TeO₄']}},
+    53: {ex:{'I':['HI','NaI','KI'],'III':['ICl₃'],'V':['HIO₃','IF₅'],'VII':['IF₇','HIO₄']}},
+    54: {ex:{'II':['XeF₂'],'IV':['XeF₄','XeO₂'],'VI':['XeF₆','XeO₃']}}
+};
+
+// Характерные валентности d-элементов и тяжёлых p-элементов (по учебнику)
+const CHAR_VALENCES = {
+    19:['I'], 20:['II'],
+    21:['III'], 22:['II','III','IV'], 23:['II','III','IV','V'],
+    24:['II','III','VI'], 25:['II','III','IV','VI','VII'],
+    26:['II','III'], 27:['II','III'], 28:['II','III','IV'],
+    29:['I','II'], 30:['II'],
+    31:['III'], 32:['II','IV'], 33:['III','V'],
+    34:['II','IV','VI'], 35:['I','III','V','VII'], 36:['0'],
+    37:['I'], 38:['II'],
+    39:['III'], 40:['IV'], 41:['III','IV','V'],
+    42:['II','III','IV','VI'], 43:['IV','VI','VII'],
+    44:['II','III','IV','VI','VIII'], 45:['II','III','IV','VI'],
+    46:['II','IV'], 47:['I','II'], 48:['II'],
+    49:['III'], 50:['II','IV'], 51:['III','V'],
+    52:['II','IV','VI'], 53:['I','III','V','VII'], 54:['II','IV','VI']
+};
+
+// Краткое объяснение переменной валентности для конкретных элементов
+const VAL_EXPLAIN = {
+    7: '3 неспаренных электрона дают валентность III. Одинокая пара 2s² может образовать донорно-акцепторную связь → максимальная валентность IV',
+    4: 'В основном состоянии электроны спарены, но Be всегда возбуждается → валентность постоянно II',
+    12: 'В основном состоянии электроны спарены, но Mg всегда возбуждается → валентность постоянно II',
+    20: 'В основном состоянии электроны спарены, но Ca всегда возбуждается → валентность постоянно II',
+    38: 'В основном состоянии электроны спарены, но Sr всегда возбуждается → валентность постоянно II',
+    26:'Fe(II): отдаёт 4s² &nbsp;|&nbsp; Fe(III): отдаёт 4s² + один 3d',
+    29:'Cu(I): отдаёт 4s¹ → [Ar]3d¹⁰ &nbsp;|&nbsp; Cu(II): отдаёт 4s¹ + один 3d',
+    24:'Cr(III): наиболее устойчив &nbsp;|&nbsp; Cr(VI): в сильных окислителях',
+    25:'Mn(II): слабые условия &nbsp;|&nbsp; Mn(IV): MnO₂ &nbsp;|&nbsp; Mn(VII): KMnO₄',
+    28:'Ni(II): наиболее типична',
+    47:'Ag(I): наиболее типична',
+    54:'В отличие от Ne/Ar, у Xe есть пустые 5d-орбитали → в жёстких условиях распаривается и образует реальные соединения'
+};
+
 function buildGroundState(z){
     let maxP=1,cum=0;
     for(const fi of FILL_ORDER){
@@ -860,9 +955,19 @@ function countUnpaired2(){
     return c;
 }
 
+const NOBLE_GASES = new Set([2,10,18,36,86]); // Xe (54) исключён — образует соединения через 5d
+
+function isPBlockHeavy(z){
+    return (z>=31&&z<=35)||(z>=49&&z<=53);
+}
+
 function findExcTarget(si){
-    if(valZ2>18) return null;
+    if(NOBLE_GASES.has(valZ2)) return null;
     if(SUBSHELLS[si].l==='d') return null;
+    // d-блок и s-элементы периодов 4-5 — без возбуждения
+    const isDBlock=(valZ2>=21&&valZ2<=30)||(valZ2>=39&&valZ2<=48);
+    const isSBlock=(valZ2===19||valZ2===20||valZ2===37||valZ2===38);
+    if(isDBlock||isSBlock) return null;
     const n=SUBSHELLS[si].n;
     for(let tsi=0;tsi<grid.length;tsi++){
         if(!grid[tsi]||SUBSHELLS[tsi].n!==n) continue;
@@ -873,6 +978,7 @@ function findExcTarget(si){
 
 function renderGridValence(){
     const vs=getValenceSubshells();
+    const isDEl=valZ2>18&&!NOBLE_GASES.has(valZ2);
     const container=document.getElementById('orbitalGrid');
     const periods={};
     for(let si=0;si<SUBSHELLS.length;si++){
@@ -904,7 +1010,7 @@ function renderGridValence(){
                     const dc=isVal?'arr arr-down val-glow':'arr arr-down';
                     c=`<span class="${uc}">\u2191</span><span class="${dc}">\u2193</span>`;
                 }
-                const oc=canExc?`onclick="clickExcite(${si},${bi})"` :'';
+                const oc=canExc?`onclick="clickExcite(${si},${bi})"`:'';
                 html+=`<div class="${boxCls}" id="box_${si}_${bi}" ${oc}>${c}</div>`;
             }
             html+=`</div>`;
@@ -922,38 +1028,130 @@ function updateValenceInfo(){
     const unpaired=countUnpaired2();
     const valElCount=Array.from(vs).reduce((s,si)=>s+(grid[si]?grid[si].reduce((a,b)=>a+b,0):0),0);
     let outerN=1; for(const si of vs) if(grid[si]) outerN=Math.max(outerN,SUBSHELLS[si].n);
-    const isDElement=valZ2>=21&&valZ2<=30||valZ2>=39&&valZ2<=48;
 
     let stateStr=excCount===0?'Основное состояние':`${excCount}-е возбуждённое состояние`;
 
-    let canMore=false;
-    if(valZ2<=18){
-        const vs2=getValenceSubshells();
-        outer: for(const si of vs2){
-            if(!grid[si])continue;
-            for(let bi=0;bi<grid[si].length;bi++){
-                if(grid[si][bi]===2&&findExcTarget(si)!==null){canMore=true;break outer;}
-            }
-        }
+    // Благородные газы
+    if(NOBLE_GASES.has(valZ2)){
+        document.getElementById('valInfo').innerHTML=`
+            <div class="val-state">Основное состояние</div>
+            <div class="val-electrons">Внешний уровень заполнен полностью</div>
+            <div class="val-result" style="color:#888">Химически инертен &mdash; валентность <strong>0</strong></div>
+            <div class="val-note">Октет завершён, возбуждение не происходит</div>`;
+        return;
     }
 
-    const valStr=unpaired===0?'нет неспаренных электронов':`<strong style="color:#4ade80;font-size:1.2em">${toRoman(unpaired)}</strong>`;
-    const dExtra=isDElement?`<div class="val-note">d-элемент: валентность определяется числом неспаренных (${outerN-1})d + ${outerN}s электронов</div>`:'';
-    const hintStr=canMore?`<div class="val-hint">\u2191\u2193 кликни на светящийся — возбуди электрон</div>`
-        :excCount>0?`<div class="val-note">Больше возбудить нельзя</div>`:'';
+    // d-элементы и s-элементы периодов 4-5 (Z > 18, без анимации возбуждения)
+    if(valZ2>18&&!isPBlockHeavy(valZ2)){
+        const cv=CHAR_VALENCES[valZ2];
+        const cvStr=cv?cv.map(v=>{
+            const ex=ELEM_DATA[valZ2]?.ex?.[v];
+            const exStr=ex&&ex.length>0?` <span class="val-ex-inline">(${ex.slice(0,2).join(', ')})</span>`:'';
+            return `<strong style="color:#4ade80">${v}</strong>${exStr}`;
+        }).join('&nbsp;&nbsp;'):'—';
+        const explain=VAL_EXPLAIN[valZ2]?`<div class="val-note" style="color:#a78bfa;margin-top:4px">${VAL_EXPLAIN[valZ2]}</div>`:'';
+        const isDEl=valZ2>=21&&valZ2<=30||valZ2>=39&&valZ2<=48;
+        document.getElementById('valInfo').innerHTML=`
+            <div class="val-state">Основное состояние</div>
+            <div class="val-electrons">Валентных электронов: ${valElCount}${isDEl?` &nbsp;(${outerN-1}d + ${outerN}s)`:''}</div>
+            <div class="val-unpaired">Неспаренных: <span style="color:#4ade80">${unpaired}</span></div>
+            <div class="val-result" style="margin-top:6px">Характерные валентности:</div>
+            <div style="margin-top:4px;line-height:2">${cvStr}</div>
+            ${explain}
+            <div class="val-note" style="margin-top:4px">d-элементы отдают сначала ns, затем (n-1)d электроны</div>`;
+        return;
+    }
 
+    // p-элементы периодов 4-5 (Ge, As, Se, Br, Sn, Sb, Te, I) — с анимацией возбуждения
+    if(valZ2>18&&isPBlockHeavy(valZ2)){
+        let canMore=false;
+        outer2: for(const si of vs){
+            if(!grid[si])continue;
+            for(let bi=0;bi<grid[si].length;bi++){
+                if(grid[si][bi]===2&&findExcTarget(si)!==null){canMore=true;break outer2;}
+            }
+        }
+        const valRomanH=toRoman(unpaired);
+        const valStrH=unpaired===0
+            ?'<span style="color:#888">0</span>'
+            :`<strong style="color:#4ade80;font-size:1.2em">${valRomanH}</strong>`;
+        const cv=CHAR_VALENCES[valZ2];
+        const cvStr=cv?cv.map(v=>{
+            const ex=ELEM_DATA[valZ2]?.ex?.[v];
+            const exStr=ex&&ex.length>0?` <span class="val-ex-inline">(${ex.slice(0,2).join(', ')})</span>`:'';
+            return `<strong style="color:#60a5fa">${v}</strong>${exStr}`;
+        }).join('&nbsp;&nbsp;'):'—';
+        const hintStrH=canMore
+            ?`<div class="val-hint">↑↓ кликни на светящийся — возбуди электрон через пустую d</div>`
+            :excCount>0?`<div class="val-note">Больше возбудить нельзя</div>`:'';
+        const explain=VAL_EXPLAIN[valZ2]?`<div class="val-note" style="color:#a78bfa;margin-top:4px">${VAL_EXPLAIN[valZ2]}</div>`:'';
+        document.getElementById('valInfo').innerHTML=`
+            <div class="val-state">${stateStr}</div>
+            <div class="val-unpaired">Неспаренных: <span style="color:#4ade80">${unpaired}</span></div>
+            <div class="val-result">Валентность: ${valStrH}</div>
+            <div class="val-result" style="margin-top:6px;font-size:0.9em">Характерные валентности: ${cvStr}</div>
+            ${explain}
+            ${hintStrH}`;
+        return;
+    }
+
+    // Периоды 1–3 (s/p элементы) — расчёт из неспаренных
+    let canMore=false;
+    outer: for(const si of vs){
+        if(!grid[si])continue;
+        for(let bi=0;bi<grid[si].length;bi++){
+            if(grid[si][bi]===2&&findExcTarget(si)!==null){canMore=true;break outer;}
+        }
+    }
+    const valRoman=toRoman(unpaired);
+    const valStr=unpaired===0
+        ?'<span style="color:#888">0 &mdash; нет неспаренных электронов</span>'
+        :`<strong style="color:#4ade80;font-size:1.2em">${valRoman}</strong>`;
+    const hintStr=canMore
+        ?`<div class="val-hint">\u2191\u2193 кликни на светящийся &mdash; возбуди электрон</div>`
+        :excCount>0?`<div class="val-note">Больше возбудить нельзя</div>`:'';
+    const elemEx=ELEM_DATA[valZ2]?.ex?.[valRoman];
+    const exStr=elemEx&&elemEx.length>0
+        ?`<div class="val-examples">Примеры: <strong>${elemEx.join(', ')}</strong></div>`:'';
+    const allEx=ELEM_DATA[valZ2]?.ex||{};
+    const extraStr=Object.keys(allEx).filter(v=>v!==valRoman&&allEx[v].length>0)
+        .map(v=>`<div class="val-examples" style="color:#a78bfa">Валентность ${v} (донорно-акцепторная): <strong>${allEx[v].slice(0,2).join(', ')}</strong></div>`).join('');
+
+    const explain=VAL_EXPLAIN[valZ2]?`<div class="val-note" style="color:#a78bfa;margin-top:4px">${VAL_EXPLAIN[valZ2]}</div>`:'';
     document.getElementById('valInfo').innerHTML=`
         <div class="val-state">${stateStr}</div>
-        <div class="val-electrons">Валентных электронов: ${valElCount}${isDElement?' (d + s)':` (${outerN}-й уровень)`}</div>
+        <div class="val-electrons">Валентных электронов: ${valElCount} (${outerN}-й уровень)</div>
         <div class="val-unpaired">Неспаренных: <span style="color:#4ade80">${unpaired}</span></div>
         <div class="val-result">Валентность: ${valStr}</div>
-        ${dExtra}${hintStr}`;
+        ${exStr}
+        ${extraStr}
+        ${explain}
+        ${hintStr}`;
 }
 
 function initValence(z){
     valZ2=z; excCount=0; excitedCells2=new Set();
     grid=buildGroundState(z);
     groundGrid2=grid.map(g=>g?[...g]:null);
+    // Be и Mg всегда двухвалентны — автовозбуждаем сразу
+    if(z===4||z===12){
+        const vs=getValenceSubshells();
+        outer: for(const si of vs){
+            if(!grid[si])continue;
+            for(let bi=0;bi<grid[si].length;bi++){
+                if(grid[si][bi]===2){
+                    const target=findExcTarget(si);
+                    if(target){
+                        grid[si][bi]=1;
+                        grid[target.si][target.bi]=1;
+                        excitedCells2.add(`${target.si}_${target.bi}`);
+                        excCount++;
+                        break outer;
+                    }
+                }
+            }
+        }
+    }
     const el=ELEMENTS[z];
     document.getElementById('valSym').textContent=el?el.s:z;
     document.getElementById('valName').textContent=el?el.n:'';
