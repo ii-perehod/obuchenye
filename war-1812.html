@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Отечественная война 1812 года и заграничные походы</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 30px 20px 60px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.7rem;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #ff9800, #ff5252, #e040fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #888;
+    margin-bottom: 28px;
+    font-size: 0.95rem;
+  }
+
+  /* Filters */
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+
+  .filters button {
+    padding: 8px 18px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    background: rgba(255,255,255,0.06);
+    color: #ccc;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.25s;
+  }
+
+  .filters button:hover {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+
+  .filters button.active {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    border-color: rgba(255,255,255,0.35);
+  }
+
+  /* Stage groups */
+  .stage {
+    max-width: 900px;
+    margin: 0 auto 32px;
+  }
+
+  .stage-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-left: 4px solid #e040fb;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+
+  /* Event rows */
+  .event-row {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  .event-row:hover {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .event-header {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    gap: 12px;
+    user-select: none;
+  }
+
+  @media (max-width: 600px) {
+    .event-header {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+
+  .event-date {
+    font-size: 0.85rem;
+    color: #aaa;
+    white-space: nowrap;
+  }
+
+  .event-name {
+    font-size: 0.95rem;
+  }
+
+  .event-tag {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .tag-battle   { background: rgba(255,82,82,0.2);  color: #ff5252; }
+  .tag-retreat   { background: rgba(255,152,0,0.2);  color: #ff9800; }
+  .tag-diplomacy { background: rgba(0,210,255,0.2);  color: #00d2ff; }
+  .tag-key       { background: rgba(224,64,251,0.2); color: #e040fb; }
+
+  /* Expandable details */
+  .event-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+    padding: 0 16px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #bbb;
+  }
+
+  .event-row.open .event-details {
+    max-height: 300px;
+    padding: 0 16px 14px;
+  }
+
+  .event-details p { margin-bottom: 6px; }
+
+  /* Chevron */
+  .chevron {
+    display: inline-block;
+    width: 18px;
+    text-align: center;
+    transition: transform 0.3s;
+    color: #666;
+    font-size: 0.8rem;
+    margin-left: 8px;
+  }
+
+  .event-row.open .chevron { transform: rotate(90deg); }
+
+  /* Legend */
+  .legend {
+    max-width: 900px;
+    margin: 0 auto 24px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.82rem;
+    color: #999;
+  }
+
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* Toggle all button */
+  .toggle-all-btn {
+    border-color: rgba(224,64,251,0.4) !important;
+    color: #e040fb !important;
+  }
+
+  .toggle-all-btn:hover {
+    background: rgba(224,64,251,0.15) !important;
+  }
+
+  /* Sources */
+  .sources {
+    max-width: 900px;
+    margin: 40px auto 0;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+  }
+
+  .sources-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #999;
+    margin-bottom: 10px;
+  }
+
+  .sources ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .sources li {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 6px;
+    padding-left: 12px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+  }
+
+  .sources a {
+    color: #00d2ff;
+    text-decoration: none;
+  }
+
+  .sources a:hover { text-decoration: underline; }
+
+  /* hidden by filter */
+  .event-row.hidden-by-filter {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<h1>Отечественная война 1812 года и заграничные походы русской армии</h1>
+<p class="subtitle">Хронологическая таблица основных событий</p>
+
+<div class="legend">
+  <span><span class="legend-dot" style="background:#ff5252"></span> Сражения</span>
+  <span><span class="legend-dot" style="background:#ff9800"></span> Манёвры</span>
+  <span><span class="legend-dot" style="background:#00d2ff"></span> Дипломатия</span>
+  <span><span class="legend-dot" style="background:#e040fb"></span> Ключевое событие</span>
+</div>
+
+<div class="filters">
+  <button class="active" data-filter="all">Все</button>
+  <button data-filter="battle">Сражения</button>
+  <button data-filter="retreat">Манёвры</button>
+  <button data-filter="diplomacy">Дипломатия</button>
+  <button data-filter="key">Ключевые</button>
+  <button id="toggle-all" class="toggle-all-btn">Открыть всё</button>
+</div>
+
+<div id="timeline">
+
+  <!-- ===== ЭТАП 1 ===== -->
+  <div class="stage">
+    <div class="stage-title">I. Вторжение и отступление (июнь — август 1812)</div>
+
+    <div class="event-row" data-type="key">
+      <div class="event-header">
+        <span class="event-date">12 (24) июня</span>
+        <span class="event-name">Переправа армии Наполеона через Неман</span>
+        <span><span class="event-tag tag-key">ключевое</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Армия Наполеона численностью около 600 тыс. человек начала переправу через Неман у Ковно. Это стало началом вторжения в Россию. Наполеон рассчитывал на быстрый разгром русских армий в приграничном сражении.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="retreat">
+      <div class="event-header">
+        <span class="event-date">июнь — июль</span>
+        <span class="event-name">Отступление 1-й и 2-й русских армий</span>
+        <span><span class="event-tag tag-retreat">манёвр</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Армии Барклая-де-Толли (1-я) и Багратиона (2-я) отступали, избегая генерального сражения. Стратегия состояла в изматывании противника и растягивании его коммуникаций. Наполеон стремился навязать бой, но русские уклонялись.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">11 (23) июля</span>
+        <span class="event-name">Бой под Салтановкой</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Корпус Раевского атаковал французские позиции у Салтановки, чтобы отвлечь Даву и дать возможность армии Багратиона переправиться через Днепр. Задача была выполнена — 2-я армия успешно отошла к Смоленску.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="key">
+      <div class="event-header">
+        <span class="event-date">22 июля (3 авг.)</span>
+        <span class="event-name">Соединение 1-й и 2-й армий у Смоленска</span>
+        <span><span class="event-tag tag-key">ключевое</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Армии Барклая-де-Толли и Багратиона наконец соединились у Смоленска. Это сорвало план Наполеона разбить русские армии поодиночке. Общая численность объединённых сил составила около 120 тыс. человек.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">4–6 (16–18) авг.</span>
+        <span class="event-name">Смоленское сражение</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Двухдневное сражение за Смоленск. Русские войска упорно обороняли город, но затем оставили его, чтобы сохранить армию. Наполеону достался горящий город. После этого Барклай продолжил отступление к Москве.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="key">
+      <div class="event-header">
+        <span class="event-date">8 (20) августа</span>
+        <span class="event-name">Назначение Кутузова главнокомандующим</span>
+        <span><span class="event-tag tag-key">ключевое</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Под давлением общественного мнения и недовольства отступлением Александр I назначил М. И. Кутузова главнокомандующим всех русских армий. Кутузов пользовался доверием армии и народа как ученик Суворова и опытный полководец.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">24 авг. (5 сент.)</span>
+        <span class="event-name">Бой за Шевардинский редут</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Передовое сражение накануне Бородинской битвы. Редут оборонял корпус Горчакова. Упорный бой позволил Кутузову выиграть время для подготовки основных позиций у села Бородино.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ЭТАП 2 ===== -->
+  <div class="stage">
+    <div class="stage-title">II. Перелом (сентябрь — октябрь 1812)</div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">26 авг. (7 сент.)</span>
+        <span class="event-name">Бородинское сражение</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Крупнейшее сражение войны у села Бородино. Наполеон атаковал позиции русской армии. Особенно ожесточённые бои шли за Багратионовы флеши и батарею Раевского. Обе стороны понесли огромные потери (около 40 тыс. у каждой). Наполеон не добился разгрома русской армии, Кутузов сохранил боеспособные войска.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="key">
+      <div class="event-header">
+        <span class="event-date">1 (13) сентября</span>
+        <span class="event-name">Совет в Филях</span>
+        <span><span class="event-tag tag-key">ключевое</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Военный совет в деревне Фили. Кутузов принял решение оставить Москву без боя, чтобы сохранить армию. Знаменитые слова: «С потерею Москвы не потеряна ещё Россия… но с потерею армии Россия потеряна».</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="key">
+      <div class="event-header">
+        <span class="event-date">2 (14) сентября</span>
+        <span class="event-name">Вступление Наполеона в Москву. Пожар</span>
+        <span><span class="event-tag tag-key">ключевое</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Наполеон вошёл в оставленную Москву и занял Кремль. В тот же день начался грандиозный пожар, уничтоживший большую часть города. Французская армия лишилась продовольственных запасов и зимних квартир, на которые рассчитывал Наполеон.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="retreat">
+      <div class="event-header">
+        <span class="event-date">сентябрь — октябрь</span>
+        <span class="event-name">Тарутинский манёвр Кутузова</span>
+        <span><span class="event-tag tag-retreat">манёвр</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Кутузов совершил знаменитый фланговый марш-манёвр: отступив по Рязанской дороге, скрытно перешёл на Калужскую и встал лагерем у Тарутина. Этим он прикрыл южные губернии с запасами и тульские оружейные заводы, одновременно угрожая коммуникациям Наполеона.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="diplomacy">
+      <div class="event-header">
+        <span class="event-date">сент. — окт.</span>
+        <span class="event-name">Попытки Наполеона заключить мир</span>
+        <span><span class="event-tag tag-diplomacy">дипломатия</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Наполеон трижды предлагал Александру I заключить мир — через Тутолмина, Яковлева и Лористона. Все предложения были отвергнуты. Александр I заявил, что будет воевать, даже если придётся отступить до Камчатки.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">6 (18) октября</span>
+        <span class="event-name">Тарутинский бой</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Русские войска атаковали авангард Мюрата у реки Чернишни. Французы были отброшены с потерями. Это была первая победа русской армии в войне и сигнал к началу контрнаступления.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ЭТАП 3 ===== -->
+  <div class="stage">
+    <div class="stage-title">III. Изгнание (октябрь — декабрь 1812)</div>
+
+    <div class="event-row" data-type="retreat">
+      <div class="event-header">
+        <span class="event-date">7 (19) октября</span>
+        <span class="event-name">Отступление Наполеона из Москвы</span>
+        <span><span class="event-tag tag-retreat">манёвр</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>После месяца бесплодного ожидания мира Наполеон покинул Москву. Он планировал отступать через Калугу по неразорённым южным дорогам, чтобы обеспечить армию продовольствием.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">12 (24) октября</span>
+        <span class="event-name">Сражение при Малоярославце</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Город 8 раз переходил из рук в руки. Кутузов преградил Наполеону путь на Калугу. Наполеон был вынужден повернуть на разорённую Смоленскую дорогу, что предрешило гибель его армии.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">22 окт. (3 нояб.)</span>
+        <span class="event-name">Бой под Вязьмой</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Русский авангард Милорадовича атаковал отступающие французские корпуса. Армия Наполеона теряла организованность; всё больше солдат отставало от колонн. Партизаны и казаки непрерывно тревожили противника.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">3–6 (15–18) нояб.</span>
+        <span class="event-name">Сражение под Красным</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Серия боёв у города Красный. Кутузов нанёс тяжёлые потери отступавшим корпусам Наполеона. Были разгромлены корпуса Даву и Нея. Французская армия потеряла около 6 тыс. убитыми и 26 тыс. пленными.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">14–17 (26–29) нояб.</span>
+        <span class="event-name">Переправа через Березину</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Катастрофическая переправа остатков армии Наполеона через реку Березину у Студёнки. Наполеон сумел переправить часть войск, обманув Чичагова, но потерял около 30 тыс. человек. После Березины организованное отступление превратилось в бегство.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="key">
+      <div class="event-header">
+        <span class="event-date">23 нояб. (5 дек.)</span>
+        <span class="event-name">Наполеон бросает армию и уезжает в Париж</span>
+        <span><span class="event-tag tag-key">ключевое</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>В Сморгони Наполеон передал командование Мюрату и тайно уехал в Париж. Он стремился предотвратить политический кризис и собрать новую армию. Остатки армии Наполеона продолжали беспорядочное отступление.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="key">
+      <div class="event-header">
+        <span class="event-date">14 (26) декабря</span>
+        <span class="event-name">Остатки армии Наполеона покидают Россию</span>
+        <span><span class="event-tag tag-key">ключевое</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Жалкие остатки армии Наполеона (около 30 тыс. из 600 тыс.) переправились обратно через Неман. Кутузов доложил Александру I: «Война окончилась за полным истреблением неприятеля». Отечественная война 1812 года завершилась полной победой России.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="diplomacy">
+      <div class="event-header">
+        <span class="event-date">25 дек. 1812</span>
+        <span class="event-name">Манифест об окончании Отечественной войны</span>
+        <span><span class="event-tag tag-diplomacy">дипломатия</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Александр I издал манифест об окончании Отечественной войны. В нём выражалась благодарность армии и народу. Было объявлено о строительстве Храма Христа Спасителя в Москве в память о победе.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ЭТАП 4 ===== -->
+  <div class="stage">
+    <div class="stage-title">IV. Заграничные походы (1813–1814)</div>
+
+    <div class="event-row" data-type="retreat">
+      <div class="event-header">
+        <span class="event-date">1 (13) янв. 1813</span>
+        <span class="event-name">Русская армия переходит Неман</span>
+        <span><span class="event-tag tag-retreat">манёвр</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Русская армия под командованием Кутузова перешла границу и начала освобождение Европы. Кутузов понимал, что для безопасности России необходимо добить Наполеона в Европе, не давая ему собрать новые силы.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="diplomacy">
+      <div class="event-header">
+        <span class="event-date">февр. 1813</span>
+        <span class="event-name">Калишский союзный договор (Россия и Пруссия)</span>
+        <span><span class="event-tag tag-diplomacy">дипломатия</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Россия и Пруссия заключили союзный договор в Калише. Пруссия перешла на сторону антинаполеоновской коалиции. Начала формироваться 6-я коалиция, которая со временем объединит почти всю Европу против Наполеона.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">20 апр. (2 мая)</span>
+        <span class="event-name">Сражение при Лютцене</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Первое крупное сражение заграничного похода. Наполеон с новой армией атаковал русско-прусские войска. Союзники отступили, но Наполеон не смог их преследовать из-за нехватки кавалерии, потерянной в России.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="diplomacy">
+      <div class="event-header">
+        <span class="event-date">август 1813</span>
+        <span class="event-name">Австрия присоединяется к 6-й коалиции</span>
+        <span><span class="event-tag tag-diplomacy">дипломатия</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>После провала мирных переговоров Австрия объявила войну Наполеону. Силы коалиции теперь значительно превосходили французские. Была принята стратегия: избегать боя с самим Наполеоном, бить его маршалов.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">4–7 (16–19) окт.</span>
+        <span class="event-name">«Битва народов» под Лейпцигом</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Крупнейшее сражение в истории до Первой мировой войны. Против 190 тыс. Наполеона сражались более 300 тыс. союзников (русские, прусские, австрийские и шведские войска). Наполеон потерпел решительное поражение и отступил за Рейн. Саксония и другие германские государства перешли на сторону коалиции.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="retreat">
+      <div class="event-header">
+        <span class="event-date">янв. — март 1814</span>
+        <span class="event-name">Поход коалиции во Францию</span>
+        <span><span class="event-tag tag-retreat">манёвр</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Союзные армии вторглись на территорию Франции. Несмотря на блестящие тактические победы Наполеона (Шампобер, Монмирай), силы были неравны. Союзники неуклонно продвигались к Парижу.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="battle">
+      <div class="event-header">
+        <span class="event-date">18 (30) марта 1814</span>
+        <span class="event-name">Взятие Парижа</span>
+        <span><span class="event-tag tag-battle">сражение</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Союзные войска (преимущественно русские и прусские) штурмовали Париж. После ожесточённого боя за Монмартр столица Франции капитулировала. Русский император Александр I триумфально вошёл в Париж во главе войск.</p>
+      </div>
+    </div>
+
+    <div class="event-row" data-type="diplomacy">
+      <div class="event-header">
+        <span class="event-date">25 марта (6 апр.)</span>
+        <span class="event-name">Отречение Наполеона</span>
+        <span><span class="event-tag tag-diplomacy">дипломатия</span><span class="chevron">&#9654;</span></span>
+      </div>
+      <div class="event-details">
+        <p>Под давлением маршалов и после занятия Парижа союзниками Наполеон подписал отречение от престола в Фонтенбло. Он был сослан на остров Эльба. Во Франции была восстановлена династия Бурбонов. Эпоха наполеоновских войн (до «Ста дней» 1815 г.) завершилась.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sources">
+  <div class="sources-title">Источники</div>
+  <ul>
+    <li>Курс отечественной истории IX–начала XXI веков. Основные этапы и особенности развития российского общества в мировом историческом процессе: учебник для вузов / Л. И. Ольштынский, Ф. Б. Белелюбский, В. А. Кучкина [и др.]; под редакцией Л. И. Ольштынского. — Москва</li>
+    <li>Шишова, Н. В. Отечественная история: учебник / Н. В. Шишова, Л. В. Мининкова, В. А. Ушкалов [и др.]. — Москва</li>
+    <li>История России: учебник / А. С. Орлов и др.</li>
+  </ul>
+</div>
+
+<script>
+  // Toggle event details
+  document.querySelectorAll('.event-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const row = header.parentElement;
+      row.classList.toggle('open');
+    });
+  });
+
+  // Toggle all
+  const toggleBtn = document.getElementById('toggle-all');
+  let allOpen = false;
+  toggleBtn.addEventListener('click', () => {
+    allOpen = !allOpen;
+    document.querySelectorAll('.event-row:not(.hidden-by-filter)').forEach(row => {
+      row.classList.toggle('open', allOpen);
+    });
+    toggleBtn.textContent = allOpen ? 'Свернуть всё' : 'Открыть всё';
+  });
+
+  // Filters
+  const filterMap = {
+    all: null,
+    battle: 'battle',
+    retreat: 'retreat',
+    diplomacy: 'diplomacy',
+    key: 'key'
+  };
+
+  document.querySelectorAll('.filters button[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.event-row').forEach(row => {
+        if (filter === 'all' || row.dataset.type === filter) {
+          row.classList.remove('hidden-by-filter');
+        } else {
+          row.classList.add('hidden-by-filter');
+          row.classList.remove('open');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
