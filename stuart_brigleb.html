@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Направленность связи по моделям Стюарта–Бриглеба</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;padding:20px 16px 40px;color:#fff}
+    h1{text-align:center;font-size:1.45rem;color:#a78bfa;margin-bottom:5px}
+    .sub{text-align:center;color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:18px}
+    .note{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.3);border-radius:12px;padding:11px 16px;max-width:620px;margin:0 auto 24px;font-size:.8rem;color:rgba(255,255,255,.82);line-height:1.65}
+    .note strong{color:#60a5fa}
+    .sec{text-align:center;font-size:.75rem;color:#60a5fa;margin:4px 0 14px;text-transform:uppercase;letter-spacing:3px}
+    .grid{display:flex;flex-wrap:wrap;gap:13px;justify-content:center;margin-bottom:30px}
+    /* flip cards */
+    .cw{perspective:900px;cursor:pointer}
+    .ci{position:relative;transform-style:preserve-3d;transition:transform .55s ease;border-radius:15px}
+    .cw.f .ci{transform:rotateY(180deg)}
+    .cf,.cb{backface-visibility:hidden;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:13px 11px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07)}
+    .cb{position:absolute;top:0;left:0;background:rgba(167,139,250,.13);transform:rotateY(180deg)}
+    .el-card .cf,.el-card .cb{width:158px;height:212px}
+    .mol-card .cf,.mol-card .cb{width:250px;height:220px}
+    .esym{font-size:1.3rem;font-weight:700;margin-top:5px}
+    .elab{font-size:.64rem;color:rgba(255,255,255,.45);margin-top:1px}
+    .bk-title{font-size:.9rem;font-weight:700;color:#a78bfa;margin-bottom:6px;text-align:center}
+    .bk-row{display:flex;align-items:center;gap:5px;font-size:.71rem;color:rgba(255,255,255,.85);margin-bottom:3px}
+    .dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(255,255,255,.25);flex-shrink:0}
+    .bk-p{font-size:.69rem;text-align:center;color:rgba(255,255,255,.75);line-height:1.55;margin-top:3px}
+    .bk-ang{margin-top:5px;font-size:.67rem;color:#60a5fa;background:rgba(96,165,250,.1);border-radius:20px;padding:2px 9px}
+    .hint{font-size:.6rem;color:rgba(255,255,255,.28);margin-top:4px}
+    .mol-formula{font-size:1.15rem;color:#4ade80;font-weight:700;margin-top:5px}
+    .mol-name{font-size:.7rem;color:rgba(255,255,255,.55);margin-top:1px}
+  </style>
+</head>
+<body>
+<h1>Направленность связи по моделям Стюарта–Бриглеба</h1>
+<p class="sub">Нажми на карточку</p>
+<div class="note">
+  <strong>Ключевая идея:</strong> на каждом атоме — <em>плоские срезы</em> под валентными углами.
+  Атомы стыкуются плоскость к плоскости. Угол между срезами = угол связи в молекуле.
+  Направленность связей задаётся геометрией срезов.<br>
+  <strong>Расстояние</strong> от центра шара атома до плоскости среза равно <em>ковалентному радиусу</em> этого атома.
+</div>
+
+<div class="sec">⚛️ Элементы — срезы и углы</div>
+<div class="grid" id="el"></div>
+
+<div class="sec">🔬 Молекулы целиком</div>
+<div class="grid" id="mol"></div>
+
+<script>
+const DR = 0.76;
+let _uid = 0;
+function uid(){ return 'u' + (++_uid) }
+
+// Draw one atom at absolute (cx,cy) — returns SVG fragment (no wrapper)
+function atomAt(cx, cy, color, r, sym, tc, stroke, cuts, frontDot) {
+  const d = r*DR, half = Math.sqrt(r*r - d*d);
+  const id = uid();
+  let maskCaps = '';
+  (cuts||[]).forEach(deg => {
+    const a = deg*Math.PI/180;
+    const px = cx + d*Math.cos(a), py = cy + d*Math.sin(a);
+    const p1x=(px+half*Math.sin(a)).toFixed(2), p1y=(py-half*Math.cos(a)).toFixed(2);
+    const p2x=(px-half*Math.sin(a)).toFixed(2), p2y=(py+half*Math.cos(a)).toFixed(2);
+    const capD = `M${p1x},${p1y}A${r},${r},0,0,1,${p2x},${p2y}Z`;
+    maskCaps += `<path d="${capD}" fill="black"/>`;
+  });
+  const dotSVG = frontDot ? `<circle cx="${cx}" cy="${cy}" r="${(r*.11).toFixed(1)}" fill="rgba(255,255,255,.8)" stroke="rgba(255,255,255,.95)" stroke-width=".8"/>` : '';
+  return `<defs>
+    <radialGradient id="${id}" cx="33%" cy="27%" r="68%">
+      <stop offset="0%" stop-color="white" stop-opacity=".82"/>
+      <stop offset="100%" stop-color="${color}"/>
+    </radialGradient>
+    <mask id="m${id}">
+      <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="white"/>
+      ${maskCaps}
+    </mask>
+  </defs>
+  <g mask="url(#m${id})"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="url(#${id})"/></g>
+  ${dotSVG}
+  <text x="${cx.toFixed(1)}" y="${(cy+r*.13).toFixed(1)}" text-anchor="middle" fill="${tc||'#fff'}"
+    font-size="${(r*.44).toFixed(1)}" font-weight="bold" font-family="Segoe UI,sans-serif">${sym}</text>`;
+}
+
+// Single-atom SVG for element cards
+function singleAtomSVG(color, r, sym, tc, stroke, cuts, frontDot) {
+  const S = r*2+6, C = S/2;
+  return `<svg width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">${atomAt(C,C,color,r,sym,tc,stroke,cuts,frontDot)}</svg>`;
+}
+
+// Molecule SVG: atoms = [{cx,cy,color,r,sym,tc,stroke,cuts,fd}], drawn in order
+// Small atoms (H) first, large (C/N/O) last — so large atoms cover H edges that go inside them
+function moleculeSVG(atoms, W, H) {
+  const normal = atoms.filter(a => !a.top).sort((a,b) => a.r - b.r);
+  const top = atoms.filter(a => a.top);
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="max-height:130px;width:auto">`
+    + [...normal, ...top].map(a => atomAt(a.cx,a.cy,a.color,a.r,a.sym,a.tc,a.stroke,a.cuts,a.fd)).join('')
+    + '</svg>';
+}
+
+// Atom shortcuts
+const C3 = (cx,cy,cuts,fd) => ({cx,cy,color:'#252525',tc:'#fff',stroke:'#444',r:38,sym:'C',cuts,fd});
+const C2 = (cx,cy,cuts)    => ({cx,cy,color:'#252525',tc:'#fff',stroke:'#444',r:38,sym:'C',cuts});
+const H  = (cx,cy,cuts)    => ({cx,cy,color:'#dedede',tc:'#333',stroke:'#aaa',r:27,sym:'H',cuts});
+const O  = (cx,cy,cuts)    => ({cx,cy,color:'#c01c1c',tc:'#fff',r:35,sym:'O',cuts});
+const N  = (cx,cy,cuts)    => ({cx,cy,color:'#1a50cc',tc:'#fff',r:34,sym:'N',cuts});
+
+// bond distance between two atom types
+function bd(r1,r2){ return (r1+r2)*DR }
+// position along angle
+function pos(cx,cy,dist,deg){ const a=deg*Math.PI/180; return [cx+dist*Math.cos(a), cy+dist*Math.sin(a)] }
+
+// ─── ELEMENT CARDS DATA ────────────────────────────────────────
+const EL=[
+  {sym:'H', color:'#dedede',tc:'#333',stroke:'#aaa',r:44,cuts:[0],fd:false,sub:'',
+   cname:'Белый',bonds:1,angle:'—',geom:'1 срез, 1 связь',
+   desc:'Самый маленький. Один срез. Входит в C–H, O–H, N–H.'},
+  {sym:'C', color:'#252525',tc:'#fff',stroke:'#444',r:60,cuts:[270,150,30],fd:true,sub:'sp³',
+   cname:'Чёрный',bonds:4,angle:'109.5°',geom:'4 среза · тетраэдр',
+   desc:'3 среза видны по краям, 4-й направлен к нам (точка в центре). Метан, алканы.'},
+  {sym:'C', color:'#252525',tc:'#fff',stroke:'#444',r:60,cuts:[270,150,30],fd:false,sub:'sp²',
+   cname:'Чёрный',bonds:3,angle:'120°',geom:'3 среза · плоский треугольник',
+   desc:'3 среза в одной плоскости по 120°. Для C=C, C=O. Этилен, бензол.'},
+  {sym:'N', color:'#1a50cc',tc:'#fff',r:57,cuts:[270,147,33],fd:false,sub:'sp³',
+   cname:'Синий',bonds:3,angle:'107°',geom:'3 среза · пирамида',
+   desc:'Неподелённая пара сжимает угол до 107°. Аммиак, амины.'},
+  {sym:'O', color:'#c01c1c',tc:'#fff',r:56,cuts:[218,322],fd:false,sub:'',
+   cname:'Красный',bonds:2,angle:'104.5°',geom:'2 среза · угловая',
+   desc:'2 неподелённые пары сжимают угол ещё сильнее. Вода, спирты.'},
+  {sym:'S', color:'#a16207',tc:'#fff',r:64,cuts:[220,320],fd:false,sub:'',
+   cname:'Жёлтый',bonds:2,angle:'~100°',geom:'2 среза · угловая',
+   desc:'Как O, но атом крупнее. H₂S, цистеин, метионин.'},
+  {sym:'Cl',color:'#15803d',tc:'#fff',r:59,cuts:[180],fd:false,sub:'',
+   cname:'Зелёный',bonds:1,angle:'—',geom:'1 срез, 1 связь',
+   desc:'Один срез слева. Остальное — неподелённые пары, срезов нет.'},
+  {sym:'Br',color:'#7c2d12',tc:'#fff',r:66,cuts:[180],fd:false,sub:'',
+   cname:'Коричн.-красный',bonds:1,angle:'—',geom:'1 срез, 1 связь',
+   desc:'Как Cl, но атом крупнее. Бромпроизводные.'},
+];
+const EL_NAMES=['Водород','Углерод sp³','Углерод sp²','Азот','Кислород','Сера','Хлор','Бром'];
+
+// ─── MOLECULES ─────────────────────────────────────────────────
+
+function makeWater() {
+  // O at center, 2 H at 218° and 322°
+  const W=190, Hh=130, Ocx=95, Ocy=78;
+  const dist = bd(35,27); // O+H bond
+  const [h1x,h1y] = pos(Ocx,Ocy,dist,218);
+  const [h2x,h2y] = pos(Ocx,Ocy,dist,322);
+  return moleculeSVG([
+    O(Ocx,Ocy,[218,322]),
+    H(h1x,h1y,[38]),   // 218+180=398=38
+    H(h2x,h2y,[142])   // 322+180=502=142
+  ], W, Hh);
+}
+
+function makeMethane() {
+  const W=170, Hh=165, Ccx=85, Ccy=82;
+  const dist = bd(38,27);
+  const [h1x,h1y] = pos(Ccx,Ccy,dist,270);
+  const [h2x,h2y] = pos(Ccx,Ccy,dist,150);
+  const [h3x,h3y] = pos(Ccx,Ccy,dist,30);
+  // 4th H points toward viewer — same 2D position as C, drawn on top
+  const h4 = {...H(Ccx,Ccy,[]), top:true};
+  return moleculeSVG([
+    C3(Ccx,Ccy,[270,150,30],false),
+    H(h1x,h1y,[90]),
+    H(h2x,h2y,[330]),
+    H(h3x,h3y,[210]),
+    h4
+  ], W, Hh);
+}
+
+function makeEthylene() {
+  // sp2 C=C: C1 at left, C2 at right
+  // C1 bonds: 0°(→C2), 120°(→H1 lower-left), 240°(→H2 upper-left)
+  // C2 bonds: 180°(→C1), 300°(→H3 upper-right), 60°(→H4 lower-right)
+  const W=220, Hh=165;
+  const bCC = bd(38,38), bCH = bd(38,27);
+  const C1x=55, Cy=82;
+  const C2x = C1x+bCC;
+  const [h1x,h1y] = pos(C1x,Cy,bCH,120);
+  const [h2x,h2y] = pos(C1x,Cy,bCH,240);
+  const [h3x,h3y] = pos(C2x,Cy,bCH,300);
+  const [h4x,h4y] = pos(C2x,Cy,bCH,60);
+  return moleculeSVG([
+    C2(C1x,Cy,[0,120,240]),
+    C2(C2x,Cy,[180,300,60]),
+    H(h1x,h1y,[300]),
+    H(h2x,h2y,[60]),
+    H(h3x,h3y,[120]),
+    H(h4x,h4y,[240])
+  ], W, Hh);
+}
+
+function makeBenzene() {
+  // Regular hexagon, r_C=22, r_H=16
+  const rC=22, rH=16;
+  const DR2=DR;
+  const Rhex = 2*rC*DR2; // side = center-to-center between adjacent C
+  const bCH = (rC+rH)*DR2;
+  const W=200, Hh=200, Cx=100, Cy=100;
+  const atoms=[];
+  for(let i=0;i<6;i++){
+    const phi = i*60; // ring angle in SVG (0=right,90=down)
+    const a = phi*Math.PI/180;
+    const ccx = Cx + Rhex*Math.cos(a);
+    const ccy = Cy + Rhex*Math.sin(a);
+    // C cuts: toward ring neighbours + outward for H
+    const c1 = phi; // outward → H
+    const c2 = (phi+120)%360; // → next C
+    const c3 = (phi+240)%360; // → prev C
+    atoms.push({cx:ccx,cy:ccy,color:'#252525',tc:'#fff',stroke:'#444',r:rC,sym:'C',cuts:[c1,c2,c3]});
+    // H atom
+    const [hx,hy] = pos(ccx,ccy,bCH,phi);
+    atoms.push({cx:hx,cy:hy,color:'#dedede',tc:'#333',stroke:'#aaa',r:rH,sym:'H',cuts:[(phi+180)%360]});
+  }
+  // reorder: all C first, then H (so H renders on top of ring area)
+  const Catoms = atoms.filter((_,i)=>i%2===0);
+  const Hatoms = atoms.filter((_,i)=>i%2===1);
+  return moleculeSVG([...Catoms,...Hatoms], W, Hh);
+}
+
+function makeAmmonia() {
+  const W=170, Hh=150, Ncx=85, Ncy=85;
+  const dist = bd(34,27);
+  const [h1x,h1y] = pos(Ncx,Ncy,dist,270);
+  const [h2x,h2y] = pos(Ncx,Ncy,dist,147);
+  const [h3x,h3y] = pos(Ncx,Ncy,dist,33);
+  return moleculeSVG([
+    N(Ncx,Ncy,[270,147,33]),
+    H(h1x,h1y,[90]),
+    H(h2x,h2y,[327]),
+    H(h3x,h3y,[213])
+  ], W, Hh);
+}
+
+function makePropane() {
+  // H3C–CH2–CH3: zig-zag, sp3 carbons (scaled down to fit card)
+  const rC=32, rH=23;
+  const bCC=(rC+rC)*DR, bCH=(rC+rH)*DR;
+  const W=230, Hh=180;
+  const C1x=65, C1y=105;
+  const [C2x,C2y] = pos(C1x,C1y,bCC,330);
+  const [C3x,C3y] = pos(C2x,C2y,bCC,30);
+  const [h1x,h1y] = pos(C1x,C1y,bCH,150);
+  const [h2x,h2y] = pos(C1x,C1y,bCH,210);
+  const [h3x,h3y] = pos(C1x,C1y,bCH,90);
+  const [h4x,h4y] = pos(C2x,C2y,bCH,270);
+  const [h5x,h5y] = pos(C3x,C3y,bCH,30);
+  const [h6x,h6y] = pos(C3x,C3y,bCH,330);
+  const [h7x,h7y] = pos(C3x,C3y,bCH,90);
+  const mk=(cx,cy,cuts,fd)=>({cx,cy,color:'#252525',tc:'#fff',stroke:'#444',r:rC,sym:'C',cuts,fd});
+  const mh=(cx,cy,cuts)=>({cx,cy,color:'#dedede',tc:'#333',stroke:'#aaa',r:rH,sym:'H',cuts});
+  return moleculeSVG([
+    mk(C1x,C1y,[330,150,210,90],false),
+    mk(C2x,C2y,[150,30,270],true),
+    mk(C3x,C3y,[210,30,330,90],false),
+    mh(h1x,h1y,[330]),
+    mh(h2x,h2y,[30]),
+    mh(h3x,h3y,[270]),
+    mh(h4x,h4y,[90]),
+    mh(h5x,h5y,[210]),
+    mh(h6x,h6y,[150]),
+    mh(h7x,h7y,[270])
+  ], W, Hh);
+}
+
+function makeAceticAcid() {
+  const W=235, Hh=215;
+  const bCC=bd(38,38), bCH=bd(38,27), bCO=bd(38,35), bOH=bd(35,27);
+  const C1x=80, C1y=122;
+  const [C2x,C2y] = pos(C1x,C1y,bCC,0);
+  const [h1x,h1y] = pos(C1x,C1y,bCH,90);
+  const [h2x,h2y] = pos(C1x,C1y,bCH,150);
+  const [h3x,h3y] = pos(C1x,C1y,bCH,210);
+  const [o1x,o1y] = pos(C2x,C2y,bCO,60);
+  const [o2x,o2y] = pos(C2x,C2y,bCO,300);
+  const [hox,hoy] = pos(o2x,o2y,bOH,300);
+  return moleculeSVG([
+    C3(C1x,C1y,[0,90,150,210],false),
+    C2(C2x,C2y,[180,60,300]),
+    O(o1x,o1y,[240]),
+    O(o2x,o2y,[120,300]),
+    H(h1x,h1y,[270]),
+    H(h2x,h2y,[330]),
+    H(h3x,h3y,[30]),
+    H(hox,hoy,[120])
+  ], W, Hh);
+}
+
+function makePhenol() {
+  const rC=22, rH=16, rO=28;
+  const W=225, Hh=210, Cx=88, Cy=105;
+  const Rhex=2*rC*DR;
+  const bCH=(rC+rH)*DR, bCO=(rC+rO)*DR, bOH=(rO+rH)*DR;
+  const atoms=[];
+  for(let i=0;i<6;i++){
+    const phi=i*60, a=phi*Math.PI/180;
+    const ccx=Cx+Rhex*Math.cos(a), ccy=Cy+Rhex*Math.sin(a);
+    atoms.push({cx:ccx,cy:ccy,color:'#252525',tc:'#fff',r:rC,sym:'C',cuts:[phi,(phi+120)%360,(phi+240)%360]});
+    if(i===0){
+      const [ox,oy]=pos(ccx,ccy,bCO,0);
+      const [hx,hy]=pos(ox,oy,bOH,330);
+      atoms.push({cx:ox,cy:oy,color:'#c01c1c',tc:'#fff',r:rO,sym:'O',cuts:[180,330]});
+      atoms.push({cx:hx,cy:hy,color:'#dedede',tc:'#333',r:rH,sym:'H',cuts:[150]});
+    } else {
+      const [hx,hy]=pos(ccx,ccy,bCH,phi);
+      atoms.push({cx:hx,cy:hy,color:'#dedede',tc:'#333',r:rH,sym:'H',cuts:[(phi+180)%360]});
+    }
+  }
+  return moleculeSVG(atoms, W, Hh);
+}
+
+// ─── MOLECULES DATA ────────────────────────────────────────────
+const MOLS=[
+  { fn:makeWater,    formula:'H₂O',  name:'Вода',
+    desc:'Кислород: 2 среза под 104.5°. Оба стыкуются с H. На O остаются 2 неподелённые пары (нет срезов) — они и сжимают угол.' },
+  { fn:makeAmmonia,  formula:'NH₃',  name:'Аммиак',
+    desc:'Азот: 3 среза под 107°, стыкует 3 атома H. Четвёртое место — неподелённая пара, она давит на срезы → угол меньше 109.5°. Форма: пирамида.' },
+  { fn:makeMethane,  formula:'CH₄',  name:'Метан',
+    desc:'Углерод sp³: 4 среза под 109.5°. 3 видны (стыкованы с H), 4-й к нам (точка). Форма: правильный тетраэдр.' },
+  { fn:makeEthylene, formula:'H₂C=CH₂', name:'Этилен',
+    desc:'Два sp² углерода: срезы под 120° в одной плоскости. Двойная связь C=C — атомы прижаты плотнее. Молекула абсолютно плоская.' },
+  { fn:makeBenzene,  formula:'C₆H₆', name:'Бензол',
+    desc:'Кольцо из 6 sp² атомов C. Каждый C: 2 среза внутрь кольца (→ соседние C), 1 срез наружу (→ H). Все в одной плоскости. Угол 120°.' },
+  { fn:makePropane,  formula:'C₃H₈', name:'Пропан',
+    desc:'Цепочка 3 sp³ углеродов. Зигзагообразная форма — следствие тетраэдрических углов 109.5°. Крайние C: 3 среза на H + 1 на C. Средний C: 2 на C + 2 на H.' },
+  { fn:makeAceticAcid, formula:'CH₃COOH', name:'Уксусная кислота',
+    desc:'sp³ углерод (CH₃): 4 среза. sp² углерод (C=O): 3 среза под 120°. Карбонильный O: 1 срез. Гидроксильный O: 2 среза.' },
+  { fn:makePhenol, formula:'C₆H₅OH', name:'Фенол',
+    desc:'Бензольное кольцо (6 sp² атомов C) + гидроксильная группа. O стыкуется с кольцом и с H. Пример соединения ароматика + функциональная группа.' },
+];
+
+// ─── RENDER ────────────────────────────────────────────────────
+function mkEl(){
+  const cont=document.getElementById('el');
+  EL.forEach((e,i)=>{
+    const svg=singleAtomSVG(e.color,e.r,e.sym,e.tc,e.stroke,e.cuts,e.fd);
+    const div=document.createElement('div');
+    div.className='cw el-card';
+    div.innerHTML=`<div class="ci">
+      <div class="cf">
+        ${svg}
+        <div class="esym">${e.sym}</div>
+        <div class="elab">${e.sub||e.geom}</div>
+        <div class="hint">нажми</div>
+      </div>
+      <div class="cb">
+        <div class="bk-title">${e.sym}${e.sub?' ('+e.sub+')':''} — ${EL_NAMES[i]}</div>
+        <div class="bk-row"><div class="dot" style="background:${e.color}"></div><span>${e.cname}</span></div>
+        <div class="bk-row" style="justify-content:center;color:#a78bfa;font-weight:600">${e.geom}</div>
+        <div class="bk-p">${e.desc}</div>
+        ${e.angle!=='—'?`<div class="bk-ang">Угол: ${e.angle}</div>`:''}
+      </div>
+    </div>`;
+    div.addEventListener('click',()=>div.classList.toggle('f'));
+    cont.appendChild(div);
+  });
+}
+
+function mkMols(){
+  const cont=document.getElementById('mol');
+  MOLS.forEach(m=>{
+    const svg=m.fn();
+    const div=document.createElement('div');
+    div.className='cw mol-card';
+    div.innerHTML=`<div class="ci">
+      <div class="cf">
+        <div style="display:flex;align-items:center;justify-content:center;flex:1">${svg}</div>
+        <div class="mol-formula">${m.formula}</div>
+        <div class="mol-name">${m.name}</div>
+        <div class="hint">нажми</div>
+      </div>
+      <div class="cb">
+        <div class="bk-title">${m.name} (${m.formula})</div>
+        <div class="bk-p" style="font-size:.72rem">${m.desc}</div>
+      </div>
+    </div>`;
+    div.addEventListener('click',()=>div.classList.toggle('f'));
+    cont.appendChild(div);
+  });
+}
+
+mkEl(); mkMols();
+</script>
+</body>
+</html>
