@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Гибридизация орбиталей</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Buttons */
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-wrap { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+
+        /* Progress */
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); border-radius: 10px; transition: width 0.4s; }
+
+        /* Tags */
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .tag-theory { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        .tag-easy { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-medium { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .tag-hard { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .round-badge {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px; margin-left: 8px;
+            background: rgba(245,158,11,0.2); color: #f59e0b;
+        }
+
+        /* Quiz */
+        .question-text { font-size: 1.1em; line-height: 1.6; margin-bottom: 20px; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            padding: 13px 16px; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 11px; cursor: pointer; transition: all 0.22s;
+            font-size: 0.95em; line-height: 1.45; background: rgba(255,255,255,0.03);
+        }
+        .option:hover:not(.disabled) { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.3); }
+        .option.correct { border-color: #4ade80; background: rgba(74,222,128,0.13); color: #4ade80; }
+        .option.wrong   { border-color: #ff5252; background: rgba(255,82,82,0.13);  color: #ff5252; }
+        .option.disabled { pointer-events: none; }
+        .explanation {
+            margin-top: 14px; padding: 14px 16px; border-radius: 10px;
+            background: rgba(255,255,255,0.05); border-left: 3px solid #f59e0b;
+            font-size: 0.88em; line-height: 1.6; display: none;
+        }
+
+        /* Results */
+        .score-circle {
+            width: 100px; height: 100px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6em; font-weight: 700; margin: 0 auto 16px;
+        }
+        .score-great { background: rgba(74,222,128,0.15); color: #4ade80; border: 3px solid #4ade80; }
+        .score-ok    { background: rgba(245,158,11,0.15); color: #f59e0b; border: 3px solid #f59e0b; }
+        .score-bad   { background: rgba(255,82,82,0.15);  color: #ff5252; border: 3px solid #ff5252; }
+        .topic-stat { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .ts-label { width: 100px; font-size: 0.82em; color: #aaa; }
+        .ts-bar { flex: 1; background: rgba(255,255,255,0.1); border-radius: 4px; height: 8px; overflow: hidden; }
+        .ts-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+        .ts-num { font-size: 0.82em; color: #aaa; width: 40px; text-align: right; }
+
+        /* ── Визуализация орбиталей ── */
+        .orbital-scene { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+        .orbital-box { text-align: center; }
+        .orbital-box .label { font-size: 0.78em; color: #aaa; margin-top: 6px; }
+
+        /* s-орбиталь — сфера */
+        .orb-s {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: radial-gradient(circle at 40% 40%, rgba(96,165,250,0.6), rgba(96,165,250,0.1));
+            border: 2px solid rgba(96,165,250,0.5);
+            margin: 0 auto;
+        }
+        /* p-орбиталь — гантель */
+        .orb-p {
+            width: 30px; height: 70px; position: relative; margin: 0 auto;
+        }
+        .orb-p .lobe {
+            width: 30px; height: 30px; border-radius: 50%;
+            background: radial-gradient(circle at 40% 40%, rgba(239,68,68,0.6), rgba(239,68,68,0.1));
+            border: 2px solid rgba(239,68,68,0.5);
+            position: absolute;
+        }
+        .orb-p .lobe.top { top: 0; }
+        .orb-p .lobe.bot { bottom: 0; }
+        .orb-p .node { width: 6px; height: 6px; background: #fff; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+        /* Гибридные — одинаковые капли */
+        .orb-sp3, .orb-sp2, .orb-sp {
+            width: 46px; height: 46px; border-radius: 50%;
+            margin: 0 auto;
+            border: 2px solid;
+        }
+        .orb-sp3 {
+            background: radial-gradient(circle at 40% 40%, rgba(74,222,128,0.6), rgba(74,222,128,0.1));
+            border-color: rgba(74,222,128,0.5);
+        }
+        .orb-sp2 {
+            background: radial-gradient(circle at 40% 40%, rgba(245,158,11,0.6), rgba(245,158,11,0.1));
+            border-color: rgba(245,158,11,0.5);
+        }
+        .orb-sp {
+            background: radial-gradient(circle at 40% 40%, rgba(167,139,250,0.6), rgba(167,139,250,0.1));
+            border-color: rgba(167,139,250,0.5);
+        }
+
+        .mix-arrow { font-size: 1.5em; color: #888; }
+
+        /* Шарики-аналогия */
+        .balloon-scene { display: flex; justify-content: center; gap: 30px; margin: 20px 0; flex-wrap: wrap; }
+        .balloon-group { text-align: center; }
+        .balloon-group .title { font-size: 0.85em; font-weight: 700; margin-bottom: 10px; }
+        .balloons { position: relative; width: 100px; height: 100px; margin: 0 auto; }
+        .balloon {
+            width: 24px; height: 24px; border-radius: 50%;
+            position: absolute; top: 50%; left: 50%;
+        }
+        /* sp³ — 4 шарика тетраэдром */
+        .b-sp3 .balloon { background: #4ade80; }
+        .b-sp3 .b1 { transform: translate(-28px, -28px); }
+        .b-sp3 .b2 { transform: translate(4px, -28px); }
+        .b-sp3 .b3 { transform: translate(-28px, 4px); }
+        .b-sp3 .b4 { transform: translate(4px, 4px); }
+        .b-sp3 .line { position: absolute; top: 50%; left: 50%; width: 2px; height: 28px; background: rgba(74,222,128,0.4); transform-origin: top center; }
+        .b-sp3 .l1 { transform: rotate(-135deg); }
+        .b-sp3 .l2 { transform: rotate(-45deg); }
+        .b-sp3 .l3 { transform: rotate(135deg); }
+        .b-sp3 .l4 { transform: rotate(45deg); }
+
+        /* sp² — 3 шарика треугольником */
+        .b-sp2 .balloon { background: #f59e0b; }
+        .b-sp2 .b1 { transform: translate(-12px, -32px); }
+        .b-sp2 .b2 { transform: translate(-32px, 8px); }
+        .b-sp2 .b3 { transform: translate(8px, 8px); }
+        .b-sp2 .line { position: absolute; top: 50%; left: 50%; width: 2px; height: 28px; background: rgba(245,158,11,0.4); transform-origin: top center; }
+        .b-sp2 .l1 { transform: rotate(-90deg); }
+        .b-sp2 .l2 { transform: rotate(150deg); }
+        .b-sp2 .l3 { transform: rotate(30deg); }
+
+        /* sp — 2 шарика линейно */
+        .b-sp .balloon { background: #a78bfa; }
+        .b-sp .b1 { transform: translate(-12px, -32px); }
+        .b-sp .b2 { transform: translate(-12px, 8px); }
+        .b-sp .line { position: absolute; top: 50%; left: 50%; width: 2px; height: 28px; background: rgba(167,139,250,0.4); transform-origin: top center; }
+        .b-sp .l1 { transform: rotate(0deg); }
+        .b-sp .l2 { transform: rotate(180deg); }
+
+        .angle-label { font-size: 0.78em; color: #aaa; margin-top: 8px; }
+
+        /* Алгоритм-шаги */
+        .algo-steps { counter-reset: step; margin: 16px 0; }
+        .algo-step {
+            counter-increment: step;
+            padding: 12px 16px 12px 50px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            margin-bottom: 8px;
+            position: relative;
+            line-height: 1.5;
+        }
+        .algo-step::before {
+            content: counter(step);
+            position: absolute; left: 14px; top: 12px;
+            width: 26px; height: 26px; border-radius: 50%;
+            background: rgba(245,158,11,0.2); color: #f59e0b;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85em;
+        }
+
+        /* Таблица-шпаргалка */
+        .cheat-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.9em; }
+        .cheat-table th { background: rgba(245,158,11,0.15); color: #f59e0b; padding: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .cheat-table td { padding: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .cheat-table tr:hover td { background: rgba(255,255,255,0.04); }
+
+        /* Emoji burst */
+        .emoji-burst {
+            position: fixed; font-size: 2.5em; z-index: 999;
+            pointer-events: none; animation: burst 0.9s ease-out forwards;
+        }
+        @keyframes burst { 0% { opacity: 1; transform: scale(0.5) translateY(0); } 100% { opacity: 0; transform: scale(1.3) translateY(-80px); } }
+
+        @media (max-width: 500px) {
+            body { padding: 12px; }
+            .card { padding: 18px; }
+            h1 { font-size: 1.3em; }
+            .balloon-scene { gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ═══════ SETUP ═══════ -->
+    <div class="screen active" id="screenSetup">
+        <h1>Гибридизация орбиталей</h1>
+        <div class="subtitle">От «на пальцах» до задач уровня вуза</div>
+        <div class="card">
+            <div style="font-size:1.05em; font-weight:700; margin-bottom:18px; color:#f59e0b;">Выбери режим:</div>
+            <button class="topic-btn" onclick="showTheory()">
+                <span class="t-label" style="color:#f59e0b">📖 ТЕОРИЯ — сначала почитать</span>
+                <span class="t-desc">Что такое гибридизация, зачем нужна, как определять. С картинками и примерами</span>
+            </button>
+            <button class="topic-btn" onclick="startQuiz('easy')">
+                <span class="t-label" style="color:#4ade80">🟢 ЛЁГКИЕ — 13 вопросов</span>
+                <span class="t-desc">Базовые понятия: что такое sp³, sp², sp, как выглядят</span>
+            </button>
+            <button class="topic-btn" onclick="startQuiz('medium')">
+                <span class="t-label" style="color:#60a5fa">🔵 СРЕДНИЕ — 16 вопросов</span>
+                <span class="t-desc">Определи тип гибридизации по формуле молекулы</span>
+            </button>
+            <button class="topic-btn" onclick="startQuiz('hard')">
+                <span class="t-label" style="color:#ef4444">🔴 СЛОЖНЫЕ — 14 вопросов</span>
+                <span class="t-desc">Электронные конфигурации, возбуждённое состояние, хитрые молекулы</span>
+            </button>
+            <button class="topic-btn" onclick="startQuiz('all')">
+                <span class="t-label" style="color:#f59e0b">🔥 ВСЕ — 43 вопроса</span>
+                <span class="t-desc">Всё вместе: от простого к сложному</span>
+            </button>
+            <a href="chemistry-quiz-2.html" class="topic-btn" style="display:block;text-decoration:none;margin-top:6px;border-color:rgba(96,165,250,0.35)">
+                <span class="t-label" style="color:#60a5fa">← Назад к квизу по связям</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ═══════ THEORY ═══════ -->
+    <div class="screen" id="screenTheory">
+        <h1>Гибридизация: на пальцах</h1>
+        <div class="subtitle">Потом будут задачи. Сначала — понять</div>
+
+        <div class="card">
+            <div style="font-weight:700; font-size:1.1em; color:#f59e0b; margin-bottom:14px;">❓ А зачем вообще гибридизация?</div>
+            <p>Хороший вопрос. У углерода в основном состоянии только <b>2 неспаренных электрона</b>. Теоретически — можно образовать только 2 связи, без всякой гибридизации.</p>
+            <p style="margin-top:10px">И такие частицы существуют! Они называются <b>карбены</b> (например, :CH₂) — углерод с двумя связями и неподелённой парой. Но карбены живут доли секунды и бешено реактивны.</p>
+            <p style="margin-top:10px"><b>Почему?</b> Потому что энергетически <b>выгоднее</b> потратить ~96 ккал/моль на возбуждение (перебросить электрон 2s → 2p), зато получить <b>2 дополнительные связи</b>, каждая из которых даёт ~80 ккал/моль.</p>
+            <p style="margin-top:10px; padding:12px; background:rgba(245,158,11,0.1); border-radius:8px;">
+                <b>Потратил 96 ккал — получил 160 ккал.</b> Чистый выигрыш ~64 ккал/моль. Поэтому углерод почти всегда образует 4 связи, а не 2.
+            </p>
+            <p style="margin-top:10px; color:#aaa; font-size:0.92em;">💡 <b>Важно:</b> гибридизация — это не физический процесс, который «происходит до реакции». Атом не думает: «сейчас перемешаю орбитали». Это <b>математическая модель</b>, удобный способ объяснить, почему в CH₄ все 4 связи одинаковые, а не 2 типа (s-связи и p-связи).</p>
+        </div>
+
+        <div class="card">
+            <div style="font-weight:700; font-size:1.1em; color:#f59e0b; margin-bottom:14px;">🎈 Аналогия: воздушные шарики</div>
+            <p>У атома есть «комнаты» для электронов — <b>орбитали</b>:</p>
+            <div class="orbital-scene">
+                <div class="orbital-box">
+                    <div class="orb-s"></div>
+                    <div class="label">s-орбиталь<br>(сфера)</div>
+                </div>
+                <div class="orbital-box">
+                    <div class="orb-p"><div class="lobe top"></div><div class="node"></div><div class="lobe bot"></div></div>
+                    <div class="label">p-орбиталь<br>(гантель)</div>
+                </div>
+            </div>
+            <p style="margin-top:12px">Проблема: s — круглая, p — вытянутая. Они <b>разные</b>. А атому нужно образовать несколько <b>одинаковых</b> связей (например, в CH₄ все 4 связи C–H одинаковые).</p>
+            <p style="margin-top:10px; padding:12px; background:rgba(245,158,11,0.1); border-radius:8px;"><b>Слово «гибрид»</b> — то же что в биологии! Скрестили помидор и помидор → обычный помидор. Скрестили помидор и перец → гибрид, нечто среднее. Так и тут: «скрестили» круглую s-орбиталь с вытянутой p-орбиталью → получили <b>гибридные</b> орбитали. Не круглые и не вытянутые, а одинаковые средние.</p>
+            <p style="margin-top:10px">Решение: атом <b>смешивает</b> (скрещивает) разные орбитали в одинаковые гибридные. Как краски: синяя + жёлтая = 2 порции одинаковой зелёной.</p>
+
+            <div class="orbital-scene" style="margin-top:18px;">
+                <div class="orbital-box">
+                    <div class="orb-s"></div>
+                    <div class="label">1 × s</div>
+                </div>
+                <div style="font-size:1.2em; color:#888;">+</div>
+                <div class="orbital-box">
+                    <div class="orb-p"><div class="lobe top"></div><div class="node"></div><div class="lobe bot"></div></div>
+                    <div class="label">3 × p</div>
+                </div>
+                <div class="mix-arrow">→</div>
+                <div class="orbital-box">
+                    <div class="orb-sp3"></div>
+                    <div class="label" style="color:#4ade80">4 × sp³</div>
+                </div>
+            </div>
+
+            <p style="margin-top:14px">Привязали 4 шарика к одной точке — они растолкались в разные стороны:</p>
+            <div class="balloon-scene">
+                <div class="balloon-group">
+                    <div class="title" style="color:#4ade80">sp³ — 4 шарика</div>
+                    <div class="balloons b-sp3">
+                        <div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div>
+                        <div class="balloon b1"></div><div class="balloon b2"></div><div class="balloon b3"></div><div class="balloon b4"></div>
+                    </div>
+                    <div class="angle-label">Тетраэдр<br>109.5°</div>
+                </div>
+                <div class="balloon-group">
+                    <div class="title" style="color:#f59e0b">sp² — 3 шарика</div>
+                    <div class="balloons b-sp2">
+                        <div class="line l1"></div><div class="line l2"></div><div class="line l3"></div>
+                        <div class="balloon b1"></div><div class="balloon b2"></div><div class="balloon b3"></div>
+                    </div>
+                    <div class="angle-label">Плоский ▲<br>120°</div>
+                </div>
+                <div class="balloon-group">
+                    <div class="title" style="color:#a78bfa">sp — 2 шарика</div>
+                    <div class="balloons b-sp">
+                        <div class="line l1"></div><div class="line l2"></div>
+                        <div class="balloon b1"></div><div class="balloon b2"></div>
+                    </div>
+                    <div class="angle-label">Линия<br>180°</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="font-weight:700; font-size:1.1em; color:#f59e0b; margin-bottom:14px;">🔢 Как определить тип гибридизации?</div>
+            <p>Считаешь, сколько «направлений» вокруг нужного атома:</p>
+            <p style="margin-top:10px; color:#aaa; font-size:0.88em;">σ-связь (сигма) — это КАЖДАЯ одинарная связь. В двойной связи одна σ + одна π. В тройной — одна σ + две π. Считаем только σ!</p>
+            <div class="algo-steps">
+                <div class="algo-step">Нарисуй структурную формулу и найди <b>нужный атом</b>.</div>
+                <div class="algo-step">Посчитай: <b>число σ-связей + число неподелённых пар</b> вокруг него.
+                    <div style="margin:12px 0 4px 0; background:#1a1a2e; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2); max-width:480px;">
+                        <img src="Разная гибридизация в одной молекуле.jpg" alt="Смешанная гибридизация" style="display:block; width:100%; height:auto; border-radius:8px;">
+                        <p style="padding:10px 14px 12px; margin:0; font-size:0.85em; color:#aaa; line-height:1.5;">
+                            <b style="color:#f59e0b">У каждого атома — своя гибридизация!</b> C вверху — sp³ (4σ). C в середине — sp² (C=O). O — sp² (1σ + 2 пары = 3). N — sp³ (3σ + 1 пара = 4). Красные точки — неподелённые пары.
+                        </p>
+                    </div>
+                </div>
+                <div class="algo-step">Результат → тип гибридизации (см. таблицы).</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <table class="cheat-table">
+                <tr><th>σ-связи + пары</th><th>Гибридизация</th><th>Геометрия</th><th>Угол</th><th>Пример</th></tr>
+                <tr><td><b>2</b></td><td>sp</td><td>Линейная</td><td>180°</td><td>CO₂, BeCl₂</td></tr>
+                <tr><td><b>3</b></td><td>sp²</td><td>Треугольная</td><td>120°</td><td>BF₃, C₂H₄</td></tr>
+                <tr><td><b>4</b></td><td>sp³</td><td>Тетраэдр</td><td>109.5°</td><td>CH₄, NH₃, H₂O</td></tr>
+            </table>
+
+            <div style="margin-top:14px; background:#1a1a2e; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+                <img src="Таблица гибридных связей с углами.jpg" alt="Таблица гибридизации из видео" style="display:block; width:100%; height:auto; border-radius:8px;">
+                <p style="padding:10px 14px 12px; margin:0; font-size:0.85em; color:#aaa; line-height:1.5;">
+                    <b style="color:#f59e0b">Та же таблица из видео в 3D:</b> 4 группы → sp³ (109.5°), 3 группы → sp² (120°), 2 группы → sp (180°).
+                </p>
+            </div>
+
+            <p style="margin-top:14px"><b>Подвох с NH₃ и H₂O:</b></p>
+            <p style="margin-top:6px">У азота в NH₃ — 3 связи + 1 неподелённая пара = <b>4</b> → sp³. Но форма не тетраэдр, а <b>пирамида</b> (одна «ножка» — невидимая пара).</p>
+            <p style="margin-top:6px">У кислорода в H₂O — 2 связи + 2 неподелённые пары = <b>4</b> → sp³. Форма — <b>уголок</b> (две «ножки» невидимые).</p>
+        </div>
+
+        <div class="card">
+            <div style="font-weight:700; font-size:1.1em; color:#f59e0b; margin-bottom:14px;">⚡ Возбуждённое состояние (вузовский уровень)</div>
+            <p>Иногда атому не хватает неспаренных электронов для нужного числа связей. Тогда он <b>возбуждается</b>: электрон перескакивает на свободную орбиталь.</p>
+            <p style="margin-top:10px"><b>Пример — углерод (C):</b></p>
+            <p style="margin-top:6px">Основное состояние: 1s² 2s² 2p² → всего 2 неспаренных электрона. Может сделать только 2 связи. Но в CH₄ — 4 связи!</p>
+            <p style="margin-top:6px">Решение: один электрон из 2s перепрыгивает на пустую 2p → получается 4 неспаренных электрона → 4 одинаковые sp³-связи.</p>
+            <p style="margin-top:10px; padding:10px; background:rgba(245,158,11,0.1); border-radius:8px;">
+                <b>2s² 2p²</b> → <span style="color:#f59e0b">возбуждение</span> → <b>2s¹ 2p³</b> → <span style="color:#4ade80">гибридизация</span> → <b>4 × sp³</b>
+            </p>
+            <p style="margin-top:12px"><b>Запомни:</b> сколько гибридных орбиталей смешали — столько и получили.</p>
+            <p style="margin-top:8px; font-size:1.05em; letter-spacing:0.02em;">1s + 3p = 4 sp³ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1s + 2p = 3 sp² &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1s + 1p = 2 sp</p>
+
+            <div style="margin-top:16px; background:#1a1a2e; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+                <img src="Гибридизация всех 4хэлектронов C.jpg" alt="sp³-гибридизация углерода" style="display:block; width:100%; height:auto; border-radius:8px;">
+                <p style="padding:10px 14px 12px; margin:0; font-size:0.85em; color:#aaa; line-height:1.5;">
+                    <b style="color:#4ade80">Углерод sp³ в 3D:</b> 4 гибридные орбитали направлены к вершинам тетраэдра, угол между ними 109.5°. Красные шарики — «благородное ядро» углерода.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="margin-bottom:24px; background:#1a1a2e; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+                <img src="Этилен c π-связью между C.jpg" alt="Этилен: σ-связь" style="display:block; width:100%; height:auto; border-radius:8px;">
+                <p style="padding:10px 14px 12px; margin:0; font-size:0.88em; color:#aaa; line-height:1.5;">
+                    <b style="color:#4ade80">Этилен (sp²):</b> Два углерода (чёрные) связаны σ-связью (стержень). У каждого C — по 2 водорода. Прозрачная «колбаса» вокруг — π-электронное облако. Молекула плоская, углы 120°.
+                </p>
+            </div>
+
+            <div style="margin-bottom:24px; background:#1a1a2e; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+                <img src="Этилен, π-подушки.jpg" alt="Этилен: π-орбитали" style="display:block; width:100%; height:auto; border-radius:8px;">
+                <p style="padding:10px 14px 12px; margin:0; font-size:0.88em; color:#aaa; line-height:1.5;">
+                    <b style="color:#a78bfa">π-орбитали этилена:</b> Четыре «подушки» сверху и снизу — это π-связь. Она не даёт молекуле крутиться вокруг оси C=C. Поэтому двойная связь жёсткая и плоская.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="margin-bottom:24px; background:#1a1a2e; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+                <img src="Ацетилен цветной.png" alt="Ацетилен: тройная связь" style="display:block; width:100%; height:auto; border-radius:8px;">
+                <p style="padding:10px 14px 12px; margin:0; font-size:0.88em; color:#aaa; line-height:1.5;">
+                    <b style="color:#a78bfa">Ацетилен (sp):</b> Тройная связь = 1σ + 2π. <b style="color:#60a5fa">Синяя</b> — одна π-связь, <b style="color:#ef4444">красная</b> — вторая, перпендикулярна первой. Два π-облака обхватывают σ как муфта → молекула строго линейная, 180°.
+                </p>
+            </div>
+
+            <p style="margin-bottom:12px">Лучшая визуализация орбиталей и гибридизации (на английском, но картинки говорят сами):</p>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
+                <iframe src="https://www.youtube.com/embed/wPw_LCmyjnI" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe>
+            </div>
+        </div>
+
+        <div class="card">
+            <p style="font-weight:700; color:#ef4444; margin-bottom:14px;">Цис-транс изомерия (пригодится позже):</p>
+
+            <div style="margin-bottom:24px; background:#1a1a2e; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+                <img src="Цис-транс с доской.jpg" alt="Цис-транс изомерия" style="display:block; width:100%; height:auto; border-radius:8px;">
+                <p style="padding:10px 14px 12px; margin:0; font-size:0.88em; color:#aaa; line-height:1.5;">
+                    <b style="color:#ef4444">Цис-транс изомерия:</b> Раз двойная связь не крутится, группы (X) могут быть по одну сторону (<b>cis / Z</b>) или по разные (<b>trans / E</b>). Красный бублик — π-связь, которая фиксирует молекулу.
+                </p>
+            </div>
+
+            <div style="margin-bottom:24px; background:#1a1a2e; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+                <img src="Этилен цис-транс изометрия.jpg" alt="Цис-транс 3D" style="display:block; width:100%; height:auto; border-radius:8px;">
+                <p style="padding:10px 14px 12px; margin:0; font-size:0.88em; color:#aaa; line-height:1.5;">
+                    <b style="color:#ef4444">Цис → Транс в 3D:</b> Жёлтые X по одну сторону (cis) или по разные (trans). Изомеризация — поворот вокруг двойной связи, для которого нужно сначала разорвать π-связь. На 1 моль требуется затратить ~70 ккал — это много!
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="font-weight:700; font-size:1.1em; color:#f59e0b; margin-bottom:14px;">🔗 Где работает гибридизация?</div>
+            <p><b>Только в ковалентных связях</b> — там, где атомы делят электроны и орбитали перекрываются.</p>
+
+            <table class="cheat-table" style="margin-top:14px;">
+                <tr><th>Тип связи</th><th>Гибридизация?</th><th>Почему</th></tr>
+                <tr><td>Ковалентная</td><td style="color:#4ade80"><b>Да ✓</b></td><td>Орбитали перекрываются → форма имеет значение</td></tr>
+                <tr><td>Ионная</td><td style="color:#ef4444"><b>Нет ✗</b></td><td>Электрон отдан целиком, перекрывания нет</td></tr>
+                <tr><td>Металлическая</td><td style="color:#ef4444"><b>Нет ✗</b></td><td>«Электронное море» — орбитали не направлены</td></tr>
+            </table>
+
+            <p style="margin-top:14px; padding:12px; background:rgba(96,165,250,0.1); border-radius:8px;">
+                <b style="color:#60a5fa">А комплексные соединения?</b> Там металл образует <b>ковалентные связи</b> с лигандами (по донорно-акцепторному механизму) → гибридизация работает! Например, у Fe²⁺ в [Fe(CN)₆]⁴⁻ — d²sp³-гибридизация (6 направлений → октаэдр). У Zn²⁺ в [Zn(NH₃)₄]²⁺ — sp³ (тетраэдр). Принцип тот же: считаем число направлений вокруг атома.
+            </p>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-primary" onclick="startQuiz('easy')">Перейти к задачам →</button>
+            <button class="btn btn-secondary" onclick="goSetup()">← Назад</button>
+        </div>
+    </div>
+
+    <!-- ═══════ QUIZ ═══════ -->
+    <div class="screen" id="screenQuiz">
+        <div class="card">
+            <div class="prog-wrap">
+                <div class="prog-info">
+                    <span id="progLabel">Вопрос 1 из 10</span>
+                    <span id="progScore">✓ 0 · ✗ 0</span>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+            </div>
+            <span class="topic-tag" id="quizTag">Лёгкие</span>
+            <span class="round-badge" id="roundBadge" style="display:none">Раунд 2</span>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsDiv"></div>
+            <div class="explanation" id="explanation"></div>
+            <div class="btn-wrap" id="nextBtnWrap" style="display:none;">
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Следующий →</button>
+                <button class="btn btn-secondary" onclick="goSetup()" style="margin-left:10px;">✕ Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ RESULTS ═══════ -->
+    <div class="screen" id="screenResults">
+        <div class="card" style="text-align:center;">
+            <div id="resultsGrade" style="font-size:1.4em; font-weight:700; margin-bottom:12px;"></div>
+            <div class="score-circle" id="scoreCircle">0%</div>
+            <div id="resultsSub" style="color:#aaa; margin-bottom:16px;"></div>
+            <div id="topicStats"></div>
+            <div class="btn-wrap" style="margin-top:20px;">
+                <button class="btn btn-primary" id="btnRepeat" style="display:none;" onclick="startRepeat()">
+                    Повторить ошибки (<span id="wrongCount">0</span>)
+                </button>
+                <button class="btn btn-secondary" onclick="goSetup()">← К выбору</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+// QUESTIONS
+// ─────────────────────────────────────────────────────────────────
+const ALL_Q = [
+  // ── ЛЁГКИЕ ────────────────────────────────────────────────────
+  { t:'easy',
+    q:'Что такое гибридизация орбиталей?',
+    o:['Образование ионной связи',
+       'Смешивание разных орбиталей (s, p) в одинаковые гибридные',
+       'Распад молекулы на атомы',
+       'Переход электрона с одного атома на другой'],
+    c:1,
+    e:'Гибридизация — это смешивание орбиталей разной формы (сфера s + гантели p) в несколько одинаковых гибридных орбиталей. Зачем? Чтобы образовать одинаковые связи (как в CH₄ — все 4 связи C–H равны).' },
+
+  { t:'easy',
+    q:'Сколько гибридных орбиталей образуется при sp³-гибридизации?',
+    o:['2', '3', '4', '6'],
+    c:2,
+    e:'sp³ = 1 орбиталь s + 3 орбитали p = <b>4</b> гибридные орбитали. Сколько смешали — столько и получили.' },
+
+  { t:'easy',
+    q:'Какой угол между связями при sp³-гибридизации?',
+    o:['90°', '109.5°', '120°', '180°'],
+    c:1,
+    e:'4 sp³-орбитали расталкиваются максимально далеко друг от друга → тетраэдр → угол 109.5°. Как 4 шарика, привязанных к одной точке.' },
+
+  { t:'easy',
+    q:'Какая геометрия у молекулы с sp²-гибридизацией атома (без неподелённых пар)?',
+    o:['Линейная', 'Угловая', 'Плоская треугольная', 'Тетраэдрическая'],
+    c:2,
+    e:'sp² = 3 орбитали → расталкиваются в плоский треугольник, углы 120°. Пример: BF₃ — бор в центре, три фтора по углам треугольника.' },
+
+  { t:'easy',
+    q:'sp-гибридизация даёт молекулу какой формы?',
+    o:['Треугольную', 'Тетраэдрическую', 'Линейную (прямую)', 'Пирамидальную'],
+    c:2,
+    e:'sp = 2 орбитали → расталкиваются на 180° → прямая линия. Пример: CO₂ → O=C=O — молекула вытянута в линию.' },
+
+  { t:'easy',
+    q:'Зачем атому углерода нужно возбуждённое состояние для образования 4 связей?',
+    o:['У C в основном состоянии только 2 неспаренных электрона — мало для 4 связей',
+       'Углерод не может образовывать связи без возбуждения',
+       'Возбуждение увеличивает заряд ядра',
+       'Это нужно только при высокой температуре'],
+    c:0,
+    e:'C: 1s² 2s² 2p² — в основном состоянии всего 2 неспаренных электрона (в 2p). Для 4 связей нужно 4 неспаренных → электрон из 2s прыгает на пустую 2p → 2s¹ 2p³ → 4 неспаренных → 4 одинаковые sp³-связи.' },
+
+  { t:'easy',
+    q:'Что считаем, чтобы определить тип гибридизации атома?',
+    o:['Число протонов в ядре',
+       'Число σ-связей + число неподелённых электронных пар',
+       'Общее число электронов в молекуле',
+       'Число π-связей'],
+    c:1,
+    e:'Алгоритм: посчитай σ-связи + неподелённые пары вокруг нужного атома. Сумма 2 → sp, 3 → sp², 4 → sp³. π-связи не считаем! Они не влияют на гибридизацию.' },
+
+  { t:'easy',
+    q:'В двойной связи C=O сколько σ-связей и сколько π-связей?',
+    o:['2σ + 0π', '0σ + 2π', '1σ + 1π', '1σ + 0π'],
+    c:2,
+    e:'Любая связь начинается с σ (сигма) — лобовое перекрывание. Вторая связь в двойной — это π (пи), боковое перекрывание. Двойная = 1σ + 1π. Тройная = 1σ + 2π.' },
+
+  { t:'easy',
+    q:'Какую форму имеют гибридные орбитали?',
+    o:['Все одинаковые — нечто среднее между s и p',
+       'Круглые, как s-орбиталь',
+       'Гантелевидные, как p-орбиталь',
+       'У каждой своя уникальная форма'],
+    c:0,
+    e:'В этом и смысл гибридизации: смешать разные (круглую s и вытянутые p) → получить несколько <b>одинаковых</b> орбиталей промежуточной формы.' },
+
+  { t:'easy',
+    q:'Сколько гибридных орбиталей получается при sp²-гибридизации?',
+    o:['2', '3', '4', '5'],
+    c:1,
+    e:'sp² = 1 орбиталь s + 2 орбитали p = <b>3</b> гибридные орбитали. Сколько смешали — столько и получили.' },
+
+  { t:'easy',
+    q:'Какой угол между связями при sp-гибридизации?',
+    o:['90°', '109.5°', '120°', '180°'],
+    c:3,
+    e:'sp = 2 орбитали → максимально далеко друг от друга → 180°. Как два шарика на верёвке — по разные стороны.' },
+
+  { t:'easy',
+    q:'Влияют ли π-связи на тип гибридизации?',
+    o:['Да, π-связи увеличивают число гибридных орбиталей',
+       'Да, каждая π-связь добавляет одну орбиталь',
+       'Нет, считаем только σ-связи и неподелённые пары',
+       'Только в тройных связях'],
+    c:2,
+    e:'π-связи образуются из НЕгибридных p-орбиталей, которые не участвуют в гибридизации. Считаем только σ-связи + неподелённые пары!' },
+
+  { t:'easy',
+    q:'Что получится, если смешать 1 орбиталь s и 1 орбиталь p?',
+    o:['2 гибридные sp-орбитали', '1 гибридную sp-орбиталь', '3 гибридные sp²-орбитали', '4 гибридные sp³-орбитали'],
+    c:0,
+    e:'1s + 1p = <b>2</b> одинаковых sp-орбитали. Сколько смешали — столько получили. Они направлены под 180° друг к другу.' },
+
+  // ── СРЕДНИЕ ───────────────────────────────────────────────────
+  { t:'medium',
+    q:'Определи гибридизацию углерода в метане CH₄.',
+    o:['sp', 'sp²', 'sp³', 'sp³d'],
+    c:2,
+    e:'C в CH₄: 4 σ-связи (C–H) + 0 неподелённых пар = <b>4</b> → <b>sp³</b>. Молекула — тетраэдр, угол 109.5°.' },
+
+  { t:'medium',
+    q:'Определи гибридизацию углерода в CO₂ (O=C=O).',
+    o:['sp', 'sp²', 'sp³', 'sp³d'],
+    c:0,
+    e:'C в CO₂: 2 двойные связи. Каждая двойная = 1σ + 1π. Считаем только σ: 2σ + 0 пар = <b>2</b> → <b>sp</b>. Линейная молекула, 180°.' },
+
+  { t:'medium',
+    q:'Определи гибридизацию бора в BF₃.',
+    o:['sp', 'sp²', 'sp³', 'Бор не гибридизуется'],
+    c:1,
+    e:'<div style="font-family:monospace;background:rgba(255,255,255,0.05);padding:10px;border-radius:6px;margin-bottom:8px;font-size:0.92em;line-height:1.7">' +
+       'Бор (B) — элемент №5, электронная конфигурация: 1s² 2s² 2p¹<br>' +
+       'Валентных электронов: <b>3</b> (2s² + 2p¹)<br><br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>' +
+       '&nbsp;F — <b style="color:#f59e0b">B</b> &nbsp;&nbsp;&nbsp; ← пустая p-орбиталь<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F</div>' +
+       'B в BF₃: 3σ-связи (B–F) + 0 неподелённых пар = <b>3</b> → <b>sp²</b>. Плоский треугольник, 120°. У бора всего 3 валентных электрона — все три в связях, неподелённых пар нет, зато осталась <b>пустая p-орбиталь</b> (это важно для сложного уровня!).' },
+
+  { t:'medium',
+    q:'Определи гибридизацию азота в NH₃.',
+    o:['sp', 'sp²', 'sp³', 'sp³d'],
+    c:2,
+    e:'N в NH₃: 3 σ-связи (N–H) + <b>1 неподелённая пара</b> = 4 → <b>sp³</b>. Форма — пирамида (не тетраэдр!), потому что одна «ножка» — невидимая пара электронов.' },
+
+  { t:'medium',
+    q:'Определи гибридизацию кислорода в H₂O.',
+    o:['sp', 'sp²', 'sp³', 'Не гибридизуется'],
+    c:2,
+    e:'O в H₂O: 2 σ-связи (O–H) + <b>2 неподелённые пары</b> = 4 → <b>sp³</b>. Форма — уголок (не тетраэдр!). Две «ножки» невидимые, две — связи с водородом. Угол ≈ 104.5° (чуть меньше 109.5° из-за отталкивания пар).' },
+
+  { t:'medium',
+    q:'Определи гибридизацию углерода в этилене C₂H₄ (H₂C=CH₂).',
+    o:['sp', 'sp²', 'sp³', 'sp³d'],
+    c:1,
+    e:'Каждый C: 2 σ-связи C–H + 1 σ-связь C=C (двойная = 1σ + 1π) = <b>3</b>σ + 0 пар → <b>sp²</b>. Плоская молекула, 120°.' },
+
+  { t:'medium',
+    q:'Определи гибридизацию углерода в ацетилене C₂H₂ (HC≡CH).',
+    o:['sp', 'sp²', 'sp³', 'sp³d²'],
+    c:0,
+    e:'Каждый C: 1 σ-связь C–H + 1 σ-связь C≡C (тройная = 1σ + 2π) = <b>2</b>σ + 0 пар → <b>sp</b>. Линейная молекула, 180°.' },
+
+  { t:'medium',
+    q:'У NH₃ гибридизация sp³, но форма — пирамида, а не тетраэдр. Почему?',
+    o:['Потому что N меньше C',
+       'Потому что одна из четырёх sp³-орбиталей занята неподелённой парой, а не связью',
+       'Потому что водород слишком лёгкий',
+       'На самом деле NH₃ — тетраэдр'],
+    c:1,
+    e:'Все 4 орбитали sp³ расположены как в тетраэдре. Но одна занята неподелённой парой (она невидима). Видим только 3 связи → форма пирамида. Гибридизация определяет расположение орбиталей, а форма молекулы — только видимых атомов.' },
+
+  { t:'medium',
+    q:'В формальдегиде H₂C=O какова гибридизация углерода?',
+    o:['sp', 'sp²', 'sp³', 'Углерод не гибридизован'],
+    c:1,
+    e:'C в H₂C=O: 2 σ-связи C–H + 1 σ-связь C=O (двойная = 1σ + 1π) = <b>3</b>σ → <b>sp²</b>. Плоская треугольная геометрия, 120°.' },
+
+  { t:'medium',
+    q:'Сколько σ-связей и π-связей в молекуле N₂ (N≡N)?',
+    o:['1σ + 2π', '3σ + 0π', '2σ + 1π', '0σ + 3π'],
+    c:0,
+    e:'Тройная связь = 1σ + 2π. Первая связь всегда σ (лобовое перекрывание), дополнительные — π (боковое). В N₂: 1 тройная связь → 1σ + 2π.' },
+
+  { t:'medium',
+    q:'Определи гибридизацию углерода в CH₃Cl (хлорметан).',
+    o:['sp', 'sp²', 'sp³', 'не гибридизован'],
+    c:2,
+    e:'C в CH₃Cl: 3σ (C–H) + 1σ (C–Cl) = <b>4</b>σ + 0 пар → <b>sp³</b>. Неважно, что один из атомов — хлор. Важно количество σ-связей.' },
+
+  { t:'medium',
+    q:'Какова гибридизация кислорода в формальдегиде H₂C=O?',
+    o:['sp', 'sp²', 'sp³', 'не гибридизован'],
+    c:1,
+    e:'O в H₂C=O: 1σ-связь (из двойной C=O) + <b>2 неподелённые пары</b> = 3 направления → <b>sp²</b>. Кислород использует 3 гибридные орбитали: одну на σ-связь с углеродом, две — на неподелённые пары.' },
+
+  { t:'medium',
+    q:'В молекуле C₂H₂ (ацетилен) какой угол H–C–C?',
+    o:['109.5°', '120°', '180°', '90°'],
+    c:2,
+    e:'Каждый C — sp-гибридизация (2σ). sp → линейная геометрия → угол 180°. Молекула вытянута в линию: H–C≡C–H.' },
+
+  { t:'medium',
+    q:'У какой молекулы гибридизация атома sp², хотя на нём есть неподелённая пара?',
+    o:['H₂O', 'NH₃', 'SO₂ (O=S=O с парой на S)', 'CH₄'],
+    c:2,
+    e:'S в SO₂: 2σ-связи (из двойных S=O) + 1 неподелённая пара = <b>3</b> → <b>sp²</b>. Форма — угловая (не линейная!), потому что пара «сидит» в одном из углов треугольника.' },
+
+  { t:'medium',
+    q:'Почему все 4 связи C–H в метане одинаковой длины?',
+    o:['Потому что все атомы H одинаковые',
+       'Потому что C образует 4 одинаковые sp³-гибридные орбитали',
+       'Это совпадение',
+       'Они не одинаковые — это упрощение'],
+    c:1,
+    e:'Без гибридизации у C были бы разные орбитали (1 × s и 3 × p). Связи C–H были бы разной длины и энергии. Но гибридизация «перемешивает» их в 4 одинаковых sp³ → все связи равны.' },
+
+  { t:'medium',
+    q:'У атома серы в H₂S — две связи и две неподелённые пары. Какая гибридизация?',
+    o:['sp', 'sp²', 'sp³', 'Сера не гибридизуется'],
+    c:2,
+    e:'S в H₂S: 2σ (S–H) + 2 неподелённые пары = <b>4</b> → <b>sp³</b>. Как у кислорода в H₂O — те же 4 направления, та же угловая форма. Угол H–S–H ≈ 92°, меньше чем у воды, потому что орбитали серы крупнее и пары давят сильнее.' },
+
+  // ── СЛОЖНЫЕ ───────────────────────────────────────────────────
+  { t:'hard',
+    q:'Запиши электронную конфигурацию углерода в возбуждённом состоянии.',
+    o:['1s² 2s² 2p²', '1s² 2s¹ 2p³', '1s² 2s² 2p⁴', '1s² 2p⁴'],
+    c:1,
+    e:'Основное: 1s² 2s² 2p². Возбуждённое: один электрон из 2s прыгает на пустую 2p → <b>1s² 2s¹ 2p³</b>. Теперь 4 неспаренных электрона → 4 связи.' },
+
+  { t:'hard',
+    q:'Определи гибридизацию серы в H₂SO₄.',
+    o:['sp', 'sp²', 'sp³', 'sp³d²'],
+    c:2,
+    e:'S в H₂SO₄: сера связана с 4 атомами кислорода (2 одинарных S–OH + 2 двойных S=O). Считаем σ: 4σ + 0 неподелённых пар = <b>4</b> → <b>sp³</b>. Сера использует d-орбитали для расширения валентности, но гибридизация формально sp³.' },
+
+  { t:'hard',
+    q:'Почему угол H–O–H в воде (104.5°) меньше тетраэдрического (109.5°)?',
+    o:['Потому что водород слишком маленький',
+       'Неподелённые пары отталкивают сильнее, чем связывающие пары, и сжимают угол',
+       'Потому что кислород электроотрицательнее углерода',
+       'Это экспериментальная ошибка, на самом деле 109.5°'],
+    c:1,
+    e:'Неподелённые пары занимают больше пространства, чем связывающие (они «толще»). Они давят на связи O–H, сжимая угол с 109.5° до 104.5°. В NH₃ то же: 1 пара сжимает угол H–N–H до 107°.' },
+
+  { t:'hard',
+    q:'Какая гибридизация атома азота в ионе NH₄⁺?',
+    o:['sp', 'sp²', 'sp³', 'Ион не может быть гибридизован'],
+    c:2,
+    e:'N в NH₄⁺: 4 σ-связи N–H + 0 неподелённых пар = <b>4</b> → <b>sp³</b>. В отличие от NH₃ (где 3 связи + 1 пара), тут пара ушла на образование 4-й связи с H⁺ (по донорно-акцепторному механизму). Форма — идеальный тетраэдр, угол 109.5°.' },
+
+  { t:'hard',
+    q:'Определи гибридизацию каждого углерода в CH₃–CH=CH₂ (пропилен).',
+    o:['Все три C — sp²',
+       'Все три C — sp³',
+       'C₁ — sp³, C₂ и C₃ — sp²',
+       'C₁ — sp², C₂ и C₃ — sp³'],
+    c:2,
+    e:'CH₃ (C₁): 3 связи C–H + 1 связь C–C = 4σ → <b>sp³</b>. CH= (C₂): 1 C–H + 1 C–C + 1 C=C(σ) = 3σ → <b>sp²</b>. =CH₂ (C₃): 2 C–H + 1 C=C(σ) = 3σ → <b>sp²</b>.' },
+
+  { t:'hard',
+    q:'В молекуле HCN (H–C≡N) какова гибридизация углерода?',
+    o:['sp', 'sp²', 'sp³', 'sp³d'],
+    c:0,
+    e:'C в HCN: 1σ (C–H) + 1σ (из тройной C≡N, которая = 1σ + 2π) = <b>2</b>σ → <b>sp</b>. Линейная молекула, угол H–C–N = 180°.' },
+
+  { t:'hard',
+    q:'Почему BeCl₂ линейная, хотя у Be нет p-электронов в основном состоянии (1s² 2s²)?',
+    o:['Be не образует ковалентных связей',
+       'Be возбуждается: 2s² → 2s¹2p¹, затем sp-гибридизация → 2 одинаковые связи под 180°',
+       'BeCl₂ на самом деле угловая',
+       'Хлор заставляет Be изогнуться'],
+    c:1,
+    e:'Be: 1s² 2s² — 0 неспаренных электронов! Но: 2s² → возбуждение → 2s¹ 2p¹ → 2 неспаренных → sp-гибридизация → 2 одинаковые связи Be–Cl под 180°. Линейная молекула.' },
+
+  { t:'hard',
+    q:'Может ли гибридизация быть sp³ при ДВУХ связях?',
+    o:['Нет, sp³ — это всегда 4 связи',
+       'Да — например, в H₂O: 2 связи + 2 неподелённые пары = 4 → sp³',
+       'Только если атом — металл',
+       'Да, но только в газовой фазе'],
+    c:1,
+    e:'Классический пример — вода! O в H₂O: 2 связи + 2 пары = 4 «направления» → sp³. Гибридизация определяется суммой (σ-связи + пары), а не только числом связей.' },
+
+  { t:'hard',
+    q:'В молекуле уксусной кислоты CH₃COOH какая гибридизация у C в группе COOH?',
+    o:['sp', 'sp²', 'sp³', 'sp³d'],
+    c:1,
+    e:'C в COOH: 1σ (C–C) + 1σ (C=O, из двойной) + 1σ (C–OH) = <b>3</b>σ → <b>sp²</b>. А C в CH₃ — sp³ (4σ). Разные атомы в одной молекуле — разная гибридизация!' },
+
+  { t:'hard',
+    q:'Какая гибридизация у атома N в молекуле NO₂⁻ (нитрит-ион)?',
+    o:['sp', 'sp²', 'sp³', 'sp³d'],
+    c:1,
+    e:'N в NO₂⁻: 2σ-связи (N–O) + 1 неподелённая пара = <b>3</b> → <b>sp²</b>. Форма — угловая. Пара электронов занимает одну из вершин треугольника.' },
+
+  { t:'hard',
+    q:'Почему двойная связь C=C не вращается?',
+    o:['Атомы слишком тяжёлые',
+       'π-связь фиксирует взаимное расположение — для вращения надо её разорвать (~70 ккал/моль)',
+       'σ-связь не позволяет',
+       'Она вращается, просто медленно'],
+    c:1,
+    e:'σ-связь — по оси, вращение вокруг неё свободно. Но π-связь — сверху и снизу, как «подушки». Поворот разрывает перекрывание p-орбиталей. Энергия барьера ~70 ккал/моль — это очень много. Поэтому cis/trans изомеры — разные вещества!' },
+
+  { t:'hard',
+    q:'Определи гибридизацию ВСЕХ тяжёлых атомов в глицине NH₂–CH₂–COOH.',
+    o:['N — sp³, оба C — sp³, O(=) — sp², O(–H) — sp³',
+       'N — sp², оба C — sp², оба O — sp²',
+       'N — sp³, C(CH₂) — sp³, C(COOH) — sp², O(=) — sp², O(–H) — sp³',
+       'Все sp³'],
+    c:2,
+    e:'N: 2σ(N–H) + 1σ(N–C) + 1 пара = 4 → <b>sp³</b>. C(CH₂): 2σ(C–H) + 1σ(C–N) + 1σ(C–C) = 4 → <b>sp³</b>. C(COOH): 1σ(C–C) + 1σ(C=O) + 1σ(C–OH) = 3 → <b>sp²</b>. O(=): 1σ + 2 пары = 3 → <b>sp²</b>. O(–H): 1σ(O–C) + 1σ(O–H) + 2 пары = 4 → <b>sp³</b>.' },
+
+  { t:'hard',
+    q:'Атом бора в BF₃ — sp². Что произойдёт с гибридизацией, если BF₃ присоединит F⁻ и станет BF₄⁻?',
+    o:['Останется sp²', 'Станет sp³', 'Станет sp', 'Станет sp³d'],
+    c:1,
+    e:'<div style="font-family:monospace;background:rgba(255,255,255,0.05);padding:10px;border-radius:6px;margin-bottom:8px;font-size:0.92em;line-height:1.7">' +
+       'BF₃ (3 связи, пустая орбиталь):<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>' +
+       '&nbsp;F — <b style="color:#f59e0b">B</b> &nbsp;&nbsp;&nbsp; ← пустая p-орбиталь!<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F<br><br>' +
+       'F⁻ даёт свою пару электронов → на пустую орбиталь B:<br><br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>' +
+       '&nbsp;F — <b style="color:#4ade80">B</b> — F &nbsp;&nbsp; [BF₄]⁻<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F</div>' +
+       'BF₃: 3σ + 0 пар = 3 → <b>sp²</b> (плоский треугольник). У бора всего 3 валентных электрона, но есть <b>пустая p-орбиталь</b>.<br>' +
+       'F⁻ отдаёт свою пару на эту пустую орбиталь (<b>донорно-акцепторная связь</b>).<br>' +
+       'BF₄⁻: 4σ + 0 пар = 4 → <b>sp³</b> (тетраэдр). Добавилась связь → изменился тип гибридизации.' },
+
+  { t:'hard',
+    q:'Определи гибридизацию азота в азотной кислоте HNO₃. Азот связан с тремя атомами кислорода.',
+    o:['sp (2 направления)', 'sp² (3 направления)', 'sp³ (у азота же пара!)', 'sp³d (пять связей)'],
+    c:1,
+    e:'<div style="font-family:monospace;background:rgba(255,255,255,0.05);padding:10px;border-radius:6px;margin-bottom:8px;font-size:0.92em;line-height:1.7">' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;O<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;‖<br>' +
+       'HO — <b style="color:#f59e0b">N</b> → O<br>' +
+       '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊖<br><br>' +
+       'σ-связи от N: 3 (N–OH, N=O, N→O)<br>' +
+       'Неподелённые пары: 0 (!)<br>' +
+       '3 + 0 = <b style="color:#4ade80">3 → sp²</b></div>' +
+       '<b>Подвох:</b> студенты помнят, что у азота в NH₃ есть неподелённая пара, и ждут sp³. Но в HNO₃ все 5 электронов азота задействованы!<br>' +
+       '• 2 электрона → двойная связь N=O (1σ + 1π)<br>' +
+       '• 1 электрон → σ-связь N–OH<br>' +
+       '• 2 электрона → донорная связь N→O (азот отдаёт пару на кислород)<br>' +
+       'Итого 3σ + 0 пар = 3 → <b>sp²</b>, плоская молекула вокруг N. Формальный заряд на N = +1.' },
+];
+
+// ─────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────
+const TAG_NAMES   = { 'easy': 'Лёгкие', 'medium': 'Средние', 'hard': 'Сложные' };
+const TAG_CLASSES = { 'easy': 'tag-easy', 'medium': 'tag-medium', 'hard': 'tag-hard' };
+const TOPIC_COLORS = { 'easy': '#4ade80', 'medium': '#60a5fa', 'hard': '#ef4444' };
+
+let queue = [], wrongQ = [], round = 1, idx = 0, queueSize = 0;
+let roundCorrect = 0, selectedTopics = [], statsPerTopic = {};
+let _currentQ, _isRetry, _opts = [], _correctOrig = 0;
+
+function shuffle(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function emojiBurst(emoji) {
+  const el = document.createElement('div');
+  el.className = 'emoji-burst'; el.textContent = emoji;
+  el.style.left = (30 + Math.random() * 40) + '%';
+  el.style.top = (20 + Math.random() * 30) + '%';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────────────────────────
+function goSetup() { showScreen('screenSetup'); }
+function showTheory() { showScreen('screenTheory'); }
+
+function startQuiz(topicKey) {
+  if (topicKey === 'all') {
+    selectedTopics = ['easy', 'medium', 'hard'];
+    queue = shuffle(ALL_Q);
+  } else {
+    selectedTopics = [topicKey];
+    queue = shuffle(ALL_Q.filter(q => q.t === topicKey));
+  }
+  wrongQ = []; round = 1; idx = 0;
+  queueSize = queue.length; roundCorrect = 0;
+  statsPerTopic = {};
+  selectedTopics.forEach(t => { statsPerTopic[t] = { c: 0, total: 0 }; });
+  queue.forEach(q => { if (statsPerTopic[q.t]) statsPerTopic[q.t].total++; });
+  showNextQuestion();
+}
+
+function startRepeat() {
+  queue = shuffle(wrongQ); wrongQ = [];
+  idx = 0; queueSize = queue.length; roundCorrect = 0; round++;
+  showNextQuestion();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// QUIZ
+// ─────────────────────────────────────────────────────────────────
+function showNextQuestion() {
+  if (idx >= queue.length) { showResults(); return; }
+  renderQuestion(queue[idx], false);
+}
+
+function renderQuestion(q, isRetry) {
+  _currentQ = q; _isRetry = !!isRetry;
+  showScreen('screenQuiz');
+
+  const pct = Math.round(idx / queueSize * 100);
+  document.getElementById('progLabel').textContent = `Вопрос ${idx + 1} из ${queueSize}`;
+  document.getElementById('progScore').textContent = `✓ ${roundCorrect} · ✗ ${idx - roundCorrect}`;
+  document.getElementById('progFill').style.width = pct + '%';
+
+  const tag = document.getElementById('quizTag');
+  tag.textContent = TAG_NAMES[q.t]; tag.className = 'topic-tag ' + TAG_CLASSES[q.t];
+  const rb = document.getElementById('roundBadge');
+  if (round > 1) { rb.style.display = 'inline-block'; rb.textContent = 'Раунд ' + round; }
+  else { rb.style.display = 'none'; }
+
+  document.getElementById('questionText').innerHTML = q.q;
+  _opts = shuffle(q.o.map((text, i) => ({ text, orig: i })));
+  _correctOrig = q.c;
+  document.getElementById('optionsDiv').innerHTML = _opts.map((opt, i) =>
+    `<div class="option" id="opt_${i}" onclick="pickAnswer(${i}, ${opt.orig})">${opt.text}</div>`
+  ).join('');
+  document.getElementById('explanation').style.display = 'none';
+  document.getElementById('explanation').innerHTML = q.e;
+  document.getElementById('nextBtnWrap').style.display = 'none';
+  const isLast = (idx === queueSize - 1);
+  document.getElementById('nextBtn').textContent = isLast ? 'Результаты →' : 'Следующий →';
+}
+
+function pickAnswer(displayIdx, origIdx) {
+  document.querySelectorAll('.option').forEach(o => o.classList.add('disabled'));
+  const isCorrect = (origIdx === _correctOrig);
+  const correctDisplayIdx = _opts.findIndex(o => o.orig === _correctOrig);
+
+  if (isCorrect) {
+    document.getElementById('opt_' + displayIdx).classList.add('correct');
+    if (!_isRetry) { roundCorrect++; if (round === 1 && statsPerTopic[_currentQ.t]) statsPerTopic[_currentQ.t].c++; }
+    emojiBurst('✅');
+  } else {
+    document.getElementById('opt_' + displayIdx).classList.add('wrong');
+    document.getElementById('opt_' + correctDisplayIdx).classList.add('correct');
+    wrongQ.push(_currentQ);
+  }
+
+  document.getElementById('progScore').textContent = `✓ ${roundCorrect} · ✗ ${(idx + 1) - roundCorrect}`;
+  document.getElementById('progFill').style.width = Math.round((idx + 1) / queueSize * 100) + '%';
+  document.getElementById('explanation').style.display = 'block';
+  document.getElementById('nextBtnWrap').style.display = 'flex';
+  idx++;
+}
+
+function nextQuestion() { showNextQuestion(); }
+
+// ─────────────────────────────────────────────────────────────────
+// RESULTS
+// ─────────────────────────────────────────────────────────────────
+function showResults() {
+  const pct = queueSize > 0 ? Math.round(roundCorrect / queueSize * 100) : 0;
+  let grade, cls;
+  if (pct >= 80)      { grade = 'Отлично!';       cls = 'score-great'; }
+  else if (pct >= 60) { grade = 'Хорошо!';        cls = 'score-ok'; }
+  else                { grade = 'Нужно повторить'; cls = 'score-bad'; }
+
+  document.getElementById('resultsGrade').textContent = grade;
+  const sc = document.getElementById('scoreCircle');
+  sc.textContent = pct + '%'; sc.className = 'score-circle ' + cls;
+
+  const roundLabel = round > 1 ? ` (Раунд ${round})` : '';
+  document.getElementById('resultsSub').textContent = `${roundCorrect} из ${queueSize} верно${roundLabel}`;
+
+  const statsDiv = document.getElementById('topicStats');
+  statsDiv.innerHTML = Object.entries(statsPerTopic).map(([t, s]) => {
+    const p = s.total > 0 ? Math.round(s.c / s.total * 100) : 0;
+    return `<div class="topic-stat">
+      <div class="ts-label">${TAG_NAMES[t]}</div>
+      <div class="ts-bar"><div class="ts-fill" style="width:${p}%; background:${TOPIC_COLORS[t]}"></div>
+      <div class="ts-num">${s.c}/${s.total}</div>
+    </div>`;
+  }).join('');
+
+  const btnR = document.getElementById('btnRepeat');
+  if (wrongQ.length > 0) { btnR.style.display = 'inline-block'; document.getElementById('wrongCount').textContent = wrongQ.length; }
+  else { btnR.style.display = 'none'; }
+  showScreen('screenResults');
+}
+
+showScreen('screenSetup');
+</script>
+</body>
+</html>

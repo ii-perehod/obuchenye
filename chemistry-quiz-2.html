@@ -66,6 +66,76 @@
         .tag-3а { background: rgba(96,165,250,0.2); color: #60a5fa; }
         .tag-3б { background: rgba(167,139,250,0.2); color: #a78bfa; }
         .tag-3в { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-3г { background: rgba(56,189,248,0.2); color: #38bdf8; }
+        .tag-3д { background: rgba(251,146,60,0.2); color: #fb923c; }
+
+        /* ── Анимация водородной связи ── */
+        .h-bond-scene { position: relative; margin: 16px 0; border-radius: 12px; background: rgba(0,50,100,0.3); padding: 20px 10px; }
+        .hb-row { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 16px; flex-wrap: wrap; }
+        .hb-row:last-child { margin-bottom: 0; }
+        .hb-atom { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff; position: relative; flex-shrink: 0; }
+        .hb-atom.big { width: 56px; height: 56px; font-size: 18px; }
+        .hb-atom-o { background: radial-gradient(circle at 35% 35%, #ff6b6b, #c0392b); }
+        .hb-atom-h { background: radial-gradient(circle at 35% 35%, #eee, #aaa); color: #333; width: 34px; height: 34px; font-size: 14px; }
+        .hb-atom-f { background: radial-gradient(circle at 35% 35%, #a78bfa, #7c3aed); }
+        .hb-atom-n { background: radial-gradient(circle at 35% 35%, #38bdf8, #0284c7); }
+        .hb-charge { position: absolute; top: -14px; font-size: 13px; font-weight: 700; }
+        .hb-charge.plus { color: #f87171; right: -2px; }
+        .hb-charge.minus { color: #60a5fa; left: -2px; }
+        .hb-cov-bond { width: 20px; height: 4px; background: #aaa; flex-shrink: 0; }
+        .hb-h-bond { width: 40px; height: 0; border-top: 3px dashed #38bdf8; flex-shrink: 0; animation: bond-glow 2s ease-in-out infinite; position: relative; }
+        .hb-h-bond::after { content: 'водородная связь'; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #38bdf8; white-space: nowrap; }
+        @keyframes bond-glow { 0%,100% { opacity: 1; border-color: #38bdf8; } 50% { opacity: 0.4; border-color: #7dd3fc; } }
+        .hb-label { text-align: center; font-size: 0.82em; color: #94a3b8; margin-top: 4px; }
+        .hb-example-title { font-size: 0.9em; font-weight: 700; color: #38bdf8; margin: 18px 0 8px; }
+        /* Анимация притяжения — молекула тянет другую */
+        .hb-pull-scene { display: flex; align-items: center; justify-content: center; margin: 20px 0 8px; }
+        .hb-pull-left { animation: pull-left 3s ease-in-out infinite; position: relative; display: flex; align-items: center; }
+        .hb-pull-right { animation: pull-right 3s ease-in-out infinite; position: relative; display: flex; align-items: center; }
+        .hb-pull-bond { width: 50px; animation: pull-bond 3s ease-in-out infinite; border-top: 3px dashed #38bdf8; }
+        @keyframes pull-left { 0%,100% { transform: translateX(0); } 50% { transform: translateX(10px); } }
+        @keyframes pull-right { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-10px); } }
+        @keyframes pull-bond { 0%,100% { width: 50px; opacity: 0.5; } 50% { width: 30px; opacity: 1; } }
+
+        /* ── Металлическая связь ── */
+        .metal-scene { position: relative; height: 210px; margin: 16px 0; border-radius: 12px; background: rgba(50,30,0,0.3); overflow: hidden; }
+        .metal-grid { display: grid; grid-template-columns: repeat(5, 44px); gap: 12px; justify-content: center; padding: 20px 10px 30px; }
+        .metal-ion { width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fb923c, #c2410c); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; z-index: 2; }
+        .free-e { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #fde68a; box-shadow: 0 0 6px #fde68a; z-index: 3; }
+        .free-e.e1 { animation: e-float1 3s ease-in-out infinite; }
+        .free-e.e2 { animation: e-float2 4s ease-in-out infinite; }
+        .free-e.e3 { animation: e-float3 3.5s ease-in-out infinite; }
+        .free-e.e4 { animation: e-float4 2.8s ease-in-out infinite; }
+        .free-e.e5 { animation: e-float5 3.2s ease-in-out infinite; }
+        .free-e.e6 { animation: e-float6 3.8s ease-in-out infinite; }
+        .free-e.e7 { animation: e-float7 2.5s ease-in-out infinite; }
+        @keyframes e-float1 { 0%,100% { left:25%; top:25px; } 25% { left:55%; top:100px; } 50% { left:70%; top:55px; } 75% { left:40%; top:145px; } }
+        @keyframes e-float2 { 0%,100% { left:65%; top:80px; } 33% { left:30%; top:35px; } 66% { left:50%; top:155px; } }
+        @keyframes e-float3 { 0%,100% { left:45%; top:155px; } 50% { left:25%; top:55px; } }
+        @keyframes e-float4 { 0%,100% { left:30%; top:115px; } 33% { left:60%; top:30px; } 66% { left:45%; top:85px; } }
+        @keyframes e-float5 { 0%,100% { left:60%; top:140px; } 50% { left:35%; top:25px; } }
+        @keyframes e-float6 { 0%,100% { left:35%; top:50px; } 50% { left:65%; top:130px; } }
+        @keyframes e-float7 { 0%,100% { left:55%; top:60px; } 33% { left:25%; top:145px; } 66% { left:72%; top:85px; } }
+        .metal-label { position: absolute; bottom: 6px; width: 100%; text-align: center; font-size: 0.78em; color: #fb923c; }
+
+        /* ── Соль: сдвиг и раскол ── */
+        .salt-scene { position: relative; margin: 16px 0; border-radius: 12px; background: rgba(0,30,60,0.3); padding: 16px; }
+        .salt-grid { display: flex; gap: 4px; justify-content: center; margin-bottom: 8px; }
+        .salt-row { display: flex; gap: 4px; }
+        .salt-ion { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
+        .ion-plus { background: radial-gradient(circle at 35% 35%, #60a5fa, #2563eb); }
+        .ion-minus { background: radial-gradient(circle at 35% 35%, #f87171, #dc2626); }
+        .salt-compare { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .salt-block { text-align: center; flex: 1; min-width: 140px; }
+        .salt-block .title { font-size: 0.82em; font-weight: 700; margin-bottom: 8px; }
+        .salt-rows { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+        .salt-row-shift { animation: salt-shift 4s ease-in-out infinite; }
+        @keyframes salt-shift { 0%,30% { transform: translateX(0); } 50%,80% { transform: translateX(20px); } 100% { transform: translateX(0); } }
+        .crack-line { width: 100%; height: 2px; background: #ef4444; margin: 2px 0; animation: crack-appear 4s ease-in-out infinite; }
+        @keyframes crack-appear { 0%,30% { opacity: 0; height: 2px; } 50%,80% { opacity: 1; height: 6px; background: #ef4444; } 100% { opacity: 0; } }
+        .repel-arrows { font-size: 0.7em; color: #ef4444; animation: repel-show 4s ease-in-out infinite; }
+        @keyframes repel-show { 0%,30% { opacity: 0; } 50%,80% { opacity: 1; } 100% { opacity: 0; } }
+        .salt-label { text-align: center; font-size: 0.78em; color: #94a3b8; margin-top: 8px; }
 
         .round-badge {
             display: inline-block; padding: 3px 12px; border-radius: 20px;
@@ -216,8 +286,8 @@
         <div class="card">
             <div style="font-size:1.05em; font-weight:700; margin-bottom:18px; color:#a78bfa;">Выбери тему:</div>
             <button class="topic-btn" onclick="startQuiz('all')">
-                <span class="t-label" style="color:#60a5fa">ВСЕ ТЕМЫ — 40 вопросов</span>
-                <span class="t-desc">Периодические свойства + Ковалентная связь + Полярность</span>
+                <span class="t-label" style="color:#60a5fa">ВСЕ ТЕМЫ — 58 вопросов</span>
+                <span class="t-desc">Периодические свойства + Ковалентная + Полярность + Водородная + Металлическая</span>
             </button>
             <button class="topic-btn" onclick="startQuiz('3а')">
                 <span class="t-label" style="color:#60a5fa">ТЕМА 3а — 14 вопросов</span>
@@ -231,9 +301,21 @@
                 <span class="t-label" style="color:#4ade80">ТЕМА 3в — 9 вопросов</span>
                 <span class="t-desc">Полярная / неполярная / ионная связь по ΔЭО</span>
             </button>
+            <button class="topic-btn" onclick="startQuiz('3г')">
+                <span class="t-label" style="color:#38bdf8">ТЕМА 3г — 10 вопросов</span>
+                <span class="t-desc">Водородная связь: почему вода жидкая, лёд плавает, и молекулы держатся за руки</span>
+            </button>
+            <button class="topic-btn" onclick="startQuiz('3д')">
+                <span class="t-label" style="color:#fb923c">ТЕМА 3д — 8 вопросов</span>
+                <span class="t-desc">Металлическая связь: электронный газ, проводимость, пластичность</span>
+            </button>
             <a href="stuart_brigleb.html" class="topic-btn" style="display:block;text-decoration:none;margin-top:6px;border-color:rgba(251,191,36,0.35)">
                 <span class="t-label" style="color:#fbbf24">🔬 ТРЕНАЖЁР — Модели Стюарта–Бриглеба</span>
                 <span class="t-desc">Направленность связи: срезы, углы, молекулы</span>
+            </a>
+            <a href="chemistry-hybrid.html" class="topic-btn" style="display:block;text-decoration:none;margin-top:6px;border-color:rgba(245,158,11,0.35)">
+                <span class="t-label" style="color:#f59e0b">🎈 ГИБРИДИЗАЦИЯ — отдельный тренажёр</span>
+                <span class="t-desc">На пальцах → вуз. Шарики, орбитали, 26 задач с объяснениями</span>
             </a>
         </div>
     </div>
@@ -390,6 +472,143 @@ const THEORY = {
       заряженными ионами</em>: металл отдал электрон (→ катион +), неметалл принял (→ анион −).<br>
       В NH₄Cl сразу два типа: ковалентные связи N–H <em>внутри</em> иона NH₄⁺,
       и ионная связь между NH₄⁺ и Cl⁻.</p>
+    `
+  },
+  '3г': {
+    title: 'Водородная связь',
+    html: `
+      <p><b>Водородная связь</b> — притяжение между H одной молекулы и электроотрицательным атомом (<b>F, O, N</b>) другой.</p>
+      <p style="margin-top:8px">Как это работает? Кислород (или фтор, азот) — жадный, тянет электроны от H на себя. H становится чуть <b style="color:#f87171">δ+</b>, а O чуть <b style="color:#60a5fa">δ−</b>. «Плюсик» на H тянется к «минусу» на O соседней молекулы:</p>
+
+      <div class="hb-example-title">💧 Пример 1: Вода (H₂O···H₂O)</div>
+      <div class="h-bond-scene">
+        <div class="hb-pull-scene">
+          <div class="hb-pull-left">
+            <div class="hb-atom hb-atom-h">H</div>
+            <div class="hb-cov-bond"></div>
+            <div class="hb-atom big hb-atom-o">O<span class="hb-charge minus">δ−</span></div>
+            <div class="hb-cov-bond"></div>
+            <div class="hb-atom hb-atom-h">H<span class="hb-charge plus">δ+</span></div>
+          </div>
+          <div class="hb-pull-bond"></div>
+          <div class="hb-pull-right">
+            <div class="hb-atom big hb-atom-o">O<span class="hb-charge minus">δ−</span></div>
+            <div class="hb-cov-bond"></div>
+            <div class="hb-atom hb-atom-h">H</div>
+          </div>
+        </div>
+        <div class="hb-label">H тянется к O соседней молекулы. Пунктир стягивается — молекулы «держатся за руки»</div>
+      </div>
+
+      <div class="hb-example-title">🧪 Пример 2: Фтороводород (HF···HF) — самая сильная водородная связь</div>
+      <div class="h-bond-scene">
+        <div class="hb-row">
+          <div class="hb-atom hb-atom-h">H<span class="hb-charge plus">δ+</span></div>
+          <div class="hb-cov-bond"></div>
+          <div class="hb-atom big hb-atom-f">F<span class="hb-charge minus">δ−</span></div>
+          <div class="hb-h-bond"></div>
+          <div class="hb-atom hb-atom-h">H<span class="hb-charge plus">δ+</span></div>
+          <div class="hb-cov-bond"></div>
+          <div class="hb-atom big hb-atom-f">F<span class="hb-charge minus">δ−</span></div>
+          <div class="hb-h-bond"></div>
+          <div class="hb-atom hb-atom-h">H<span class="hb-charge plus">δ+</span></div>
+          <div class="hb-cov-bond"></div>
+          <div class="hb-atom big hb-atom-f">F<span class="hb-charge minus">δ−</span></div>
+        </div>
+        <div class="hb-label">F — самый электроотрицательный элемент → самая сильная водородная связь</div>
+      </div>
+
+      <div class="hb-example-title">🧬 Пример 3: Аммиак (NH₃) — азот тоже умеет</div>
+      <div class="h-bond-scene">
+        <div class="hb-row">
+          <div class="hb-atom hb-atom-h">H</div>
+          <div class="hb-cov-bond"></div>
+          <div class="hb-atom big hb-atom-n">N<span class="hb-charge minus">δ−</span></div>
+          <div class="hb-cov-bond"></div>
+          <div class="hb-atom hb-atom-h">H<span class="hb-charge plus">δ+</span></div>
+          <div class="hb-h-bond"></div>
+          <div class="hb-atom big hb-atom-n">N<span class="hb-charge minus">δ−</span></div>
+          <div class="hb-cov-bond"></div>
+          <div class="hb-atom hb-atom-h">H</div>
+        </div>
+        <div class="hb-label">H(δ+) тянется к N(δ−) соседней молекулы. У каждого N ещё есть H сверху (не показан). Важно в ДНК и белках!</div>
+      </div>
+
+      <p style="margin-top:14px"><b>Где ещё водородная связь?</b></p>
+      <ul style="margin:8px 0 0 20px; line-height:1.8">
+        <li><b>ДНК</b> — две спирали держатся на водородных связях между основаниями (А···Т, Г···Ц)</li>
+        <li><b>Белки</b> — форма молекулы (спирали, складки) — водородные связи между N–H и C=O</li>
+        <li><b>Целлюлоза</b> — прочность дерева и бумаги — цепочки сахаров, скреплённые Н-связями</li>
+        <li><b>Спирт</b> (C₂H₅OH) — O–H группа даёт водородную связь, поэтому спирт жидкий, а не газ</li>
+      </ul>
+
+      <p style="margin-top:14px"><b>Почему вода жидкая, а не газ?</b> H₂O лёгкая — должна быть газом (как H₂S). Но каждая молекула образует до 4 водородных связей! Это «склеивает» их.</p>
+      <p style="margin-top:8px"><b>Почему лёд плавает?</b> Во льду Н-связи фиксируются в ажурную решётку с пустотами → лёд менее плотный, чем вода.</p>
+      <p style="margin-top:8px"><b>Энергия:</b> в 10–15 раз слабее ковалентной. Обозначение: три точки (···)</p>
+    `
+  },
+  '3д': {
+    title: 'Металлическая связь',
+    html: `
+      <div class="metal-scene">
+        <div class="metal-grid">
+          <div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div>
+          <div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div>
+          <div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div><div class="metal-ion">Cu⁺</div>
+        </div>
+        <div class="free-e e1"></div>
+        <div class="free-e e2"></div>
+        <div class="free-e e3"></div>
+        <div class="free-e e4"></div>
+        <div class="free-e e5"></div>
+        <div class="free-e e6"></div>
+        <div class="free-e e7"></div>
+        <div class="metal-label">Ионы Cu⁺ стоят в жёсткой решётке. Электроны (жёлтые) летают свободно — «электронный газ»</div>
+      </div>
+      <p><b>Металлическая связь</b> — ионы металлов стоят в <b>кристаллической решётке</b>, а их внешние электроны образуют общее «облако».</p>
+      <p style="margin-top:10px"><b>Почему проводят ток?</b> Свободные электроны двигаются под напряжением.</p>
+      <p style="margin-top:10px"><b>Почему блестят?</b> Электронный газ отражает свет.</p>
+      <p style="margin-top:10px"><b>Почему гнутся, а не ломаются?</b> Сравни с солью:</p>
+
+      <div class="salt-scene">
+        <div class="salt-compare">
+          <div class="salt-block">
+            <div class="title" style="color:#fb923c">🔧 Металл: сдвиг → связь держит</div>
+            <div class="salt-rows">
+              <div class="salt-row">
+                <div class="salt-ion ion-plus" style="background:radial-gradient(circle at 35% 35%, #fb923c, #c2410c)">Cu⁺</div>
+                <div class="salt-ion ion-plus" style="background:radial-gradient(circle at 35% 35%, #fb923c, #c2410c)">Cu⁺</div>
+                <div class="salt-ion ion-plus" style="background:radial-gradient(circle at 35% 35%, #fb923c, #c2410c)">Cu⁺</div>
+              </div>
+              <div class="salt-row salt-row-shift">
+                <div class="salt-ion ion-plus" style="background:radial-gradient(circle at 35% 35%, #fb923c, #c2410c)">Cu⁺</div>
+                <div class="salt-ion ion-plus" style="background:radial-gradient(circle at 35% 35%, #fb923c, #c2410c)">Cu⁺</div>
+                <div class="salt-ion ion-plus" style="background:radial-gradient(circle at 35% 35%, #fb923c, #c2410c)">Cu⁺</div>
+              </div>
+            </div>
+            <div style="font-size:0.75em; color:#4ade80; margin-top:6px">электронный газ перетекает → ОК ✓</div>
+          </div>
+          <div class="salt-block">
+            <div class="title" style="color:#ef4444">💥 Соль NaCl: сдвиг → раскол!</div>
+            <div class="salt-rows">
+              <div class="salt-row">
+                <div class="salt-ion ion-plus">Na⁺</div>
+                <div class="salt-ion ion-minus">Cl⁻</div>
+                <div class="salt-ion ion-plus">Na⁺</div>
+              </div>
+              <div class="crack-line"></div>
+              <div class="salt-row salt-row-shift">
+                <div class="salt-ion ion-minus">Cl⁻</div>
+                <div class="salt-ion ion-plus">Na⁺</div>
+                <div class="salt-ion ion-minus">Cl⁻</div>
+              </div>
+            </div>
+            <div class="repel-arrows">при сдвиге: Na⁺ ↔ Na⁺ отталкивание! → РАСКОЛ</div>
+          </div>
+        </div>
+        <div class="salt-label">Слева: металл гнётся — электроны перетекают. Справа: соль раскалывается — одинаковые заряды рядом</div>
+      </div>
+      <p style="margin-top:10px"><b>Свойства металлов:</b> теплопроводность, электропроводность, пластичность, блеск.</p>
     `
   }
 };
@@ -751,14 +970,178 @@ const ALL_Q = [
        'Связь через π-электроны'],
     c:1,
     e:'Ионная связь — электростатическое притяжение между положительным ионом (катионом) и отрицательным (анионом). Образуется при практически полном переходе электронов от металла к неметаллу.' },
+
+  // ── ТЕМА 3г: Водородная связь ─────────────────────────────────
+  { t:'3г',
+    q:'Что такое водородная связь?',
+    o:['Связь между двумя атомами водорода',
+       'Притяжение H одной молекулы к электроотрицательному атому (F, O, N) другой',
+       'Ковалентная связь внутри молекулы H₂',
+       'Ионная связь с участием водорода'],
+    c:1,
+    e:'Водородная связь — межмолекулярное притяжение: частично положительный H одной молекулы тянется к частично отрицательному F, O или N другой молекулы.' },
+
+  { t:'3г',
+    q:'Почему вода (H₂O) жидкая при комнатной температуре, хотя молекула очень лёгкая?',
+    o:['Из-за сильных ковалентных связей O–H',
+       'Из-за водородных связей между молекулами воды',
+       'Из-за ионных связей в воде',
+       'Потому что кислород тяжёлый'],
+    c:1,
+    e:'По массе H₂O должна быть газом (как H₂S). Но водородные связи «склеивают» молекулы — каждая H₂O образует до 4 водородных связей с соседями. Это и держит воду жидкой.' },
+
+  { t:'3г',
+    q:'Почему лёд плавает на воде?',
+    o:['Лёд содержит пузырьки воздуха',
+       'В кристалле льда водородные связи создают ажурную решётку с пустотами',
+       'При замерзании вода расширяется из-за ионных связей',
+       'Это особенность только пресной воды'],
+    c:1,
+    e:'Во льду молекулы H₂O выстраиваются в правильную ажурную структуру с пустотами (из-за фиксированных водородных связей). Поэтому лёд менее плотный, чем жидкая вода — и плавает!' },
+
+  { t:'3г',
+    q:'Во сколько раз водородная связь слабее ковалентной?',
+    o:['В 2–3 раза',
+       'В 10–15 раз',
+       'В 100 раз',
+       'Они примерно равны'],
+    c:1,
+    e:'Водородная связь в 10–15 раз слабее ковалентной. Поэтому она легко рвётся (вода испаряется при 100°C), но достаточно сильна, чтобы удерживать молекулы вместе при комнатной температуре.' },
+
+  { t:'3г',
+    q:'В каком из веществ есть водородная связь между молекулами?',
+    o:['CH₄ (метан)',
+       'HF (фтороводород)',
+       'CO₂ (углекислый газ)',
+       'Cl₂ (хлор)'],
+    c:1,
+    e:'HF — классический пример: H–F···H–F. Фтор — самый электроотрицательный элемент, поэтому водородная связь в HF очень сильная. В CH₄ нет, потому что C недостаточно электроотрицателен.' },
+
+  { t:'3г',
+    q:'Какие атомы могут образовывать водородную связь с водородом?',
+    o:['Любые неметаллы',
+       'Только F, O, N — самые электроотрицательные',
+       'Только галогены (F, Cl, Br, I)',
+       'Только кислород'],
+    c:1,
+    e:'Водородную связь образуют F, O и N — элементы с высокой электроотрицательностью и маленьким атомным радиусом. Они сильно оттягивают электроны от H, делая его «плюсовым».' },
+
+  { t:'3г',
+    q:'Что происходит с водородными связями при кипении воды?',
+    o:['Рвутся ковалентные связи O–H внутри молекулы',
+       'Рвутся водородные связи между молекулами, сами молекулы H₂O целы',
+       'Вода разлагается на H₂ и O₂',
+       'Ничего — молекулы просто двигаются быстрее'],
+    c:1,
+    e:'При кипении рвутся именно межмолекулярные водородные связи. Молекулы H₂O остаются целыми — улетают в пар. Ковалентные связи O–H внутри молекулы гораздо прочнее и не рвутся при 100°C.' },
+
+  { t:'3г',
+    q:'Как обозначается водородная связь?',
+    o:['Сплошной линией: H–F–H–F',
+       'Тремя точками: H–F···H–F',
+       'Двойной линией: H–F═H–F',
+       'Стрелкой: H–F→H–F'],
+    c:1,
+    e:'Водородная связь обозначается тремя точками (···), чтобы отличить её от ковалентной (сплошная линия). H–F···H–F значит: внутри молекулы связь ковалентная, между молекулами — водородная.' },
+
+  { t:'3г',
+    q:'Водородная связь — это межмолекулярная или внутримолекулярная связь?',
+    o:['Только внутримолекулярная',
+       'Может быть и межмолекулярной, и внутримолекулярной',
+       'Только межмолекулярная',
+       'Это вообще не химическая связь'],
+    c:1,
+    e:'Водородная связь бывает обоих типов! Межмолекулярная — между молекулами (вода, HF). Внутримолекулярная — внутри больших молекул (например, в ДНК двойная спираль держится на водородных связях).' },
+
+  { t:'3г',
+    q:'Почему H₂S — газ, а H₂O — жидкость при комнатной температуре, хотя H₂S тяжелее?',
+    o:['H₂O имеет ковалентные связи, а H₂S — ионные',
+       'Между молекулами H₂O есть водородные связи, а между H₂S — нет',
+       'Кислород легче серы, поэтому молекулы H₂O движутся медленнее',
+       'H₂S — на самом деле тоже жидкость'],
+    c:1,
+    e:'Сера (S) недостаточно электроотрицательна для образования водородных связей. Поэтому молекулы H₂S почти не «склеены» и легко разлетаются — это газ. А H₂O скреплена водородными связями и остаётся жидкостью.' },
+
+  // ── ТЕМА 3д: Металлическая связь ──────────────────────────────
+  { t:'3д',
+    q:'Что такое металлическая связь?',
+    o:['Связь между атомами металлов через общее электронное облако',
+       'Связь металла с неметаллом через перенос электрона',
+       'Связь через общую пару электронов',
+       'Водородная связь в металлах'],
+    c:0,
+    e:'Металлическая связь — атомы металлов отдают внешние электроны в общее «облако» (электронный газ). Положительные ионы стоят в решётке, а электроны свободно летают между ними.' },
+
+  { t:'3д',
+    q:'Что такое «электронный газ» в металле?',
+    o:['Газообразный металл',
+       'Совокупность свободных электронов, общих для всех атомов в решётке',
+       'Электроны, прочно привязанные к своим атомам',
+       'Газ, который выделяется при нагревании металла'],
+    c:1,
+    e:'Электронный газ — это все валентные электроны, которые «оторвались» от своих атомов и свободно перемещаются по всему кристаллу. Они не принадлежат ни одному конкретному атому.' },
+
+  { t:'3д',
+    q:'Почему металлы проводят электрический ток?',
+    o:['Потому что в них есть ионная связь',
+       'Потому что свободные электроны легко перемещаются под действием напряжения',
+       'Потому что атомы металлов маленькие',
+       'Потому что металлы тяжёлые'],
+    c:1,
+    e:'Свободные электроны (электронный газ) легко двигаются в одном направлении при подключении напряжения — это и есть электрический ток. Чем больше свободных электронов, тем лучше проводимость.' },
+
+  { t:'3д',
+    q:'Почему металлы пластичные (гнутся), а ионные кристаллы (соль) — хрупкие?',
+    o:['Металлы мягче, потому что атомы меньше',
+       'В металле при сдвиге слоёв электронное облако перетекает, а в ионном кристалле одноимённые заряды отталкиваются',
+       'Металлы содержат воду',
+       'Ионные кристаллы сделаны из более тяжёлых атомов'],
+    c:1,
+    e:'В металле слои атомов могут скользить друг по другу — электронный газ «перетекает» и продолжает связывать. А в NaCl при сдвиге Na⁺ оказывается напротив Na⁺ → отталкивание → кристалл раскалывается.' },
+
+  { t:'3д',
+    q:'Почему металлы блестят?',
+    o:['Из-за гладкой поверхности',
+       'Свободные электроны поглощают и переизлучают свет',
+       'Из-за ковалентных связей',
+       'Только полированные металлы блестят, это не связано со связью'],
+    c:1,
+    e:'Электронный газ на поверхности металла взаимодействует со светом: поглощает фотоны и тут же переизлучает — мы видим это как блеск. Поэтому все металлы блестят на свежем срезе.' },
+
+  { t:'3д',
+    q:'Какое свойство НЕ характерно для веществ с металлической связью?',
+    o:['Электропроводность',
+       'Хрупкость',
+       'Теплопроводность',
+       'Пластичность'],
+    c:1,
+    e:'Хрупкость — это свойство ионных кристаллов (соль, сода), а не металлов. Металлы пластичны: их можно ковать, тянуть в проволоку, раскатывать в фольгу — и всё благодаря электронному газу.' },
+
+  { t:'3д',
+    q:'В каком веществе присутствует металлическая связь?',
+    o:['NaCl',
+       'H₂O',
+       'Fe (железо)',
+       'CO₂'],
+    c:2,
+    e:'Металлическая связь — только в металлах и сплавах. Fe (железо) — металл, в нём ионы Fe²⁺ окружены свободными электронами. NaCl — ионная связь, H₂O — ковалентная, CO₂ — ковалентная.' },
+
+  { t:'3д',
+    q:'Чем металлическая связь отличается от ионной?',
+    o:['В металлической связи электроны принадлежат всем атомам, а в ионной — переходят от одного к другому',
+       'Металлическая связь сильнее ионной',
+       'Ионная связь есть только в газах',
+       'Разницы нет — это одно и то же'],
+    c:0,
+    e:'Ключевое отличие: в ионной связи электрон полностью переходит от металла к неметаллу (Na → Cl). В металлической — электроны не переходят никуда, а становятся общими для ВСЕХ атомов в кристалле.' },
 ];
 
 // ─────────────────────────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────────────────────────
-const TAG_NAMES   = { '3а': 'Периодические свойства', '3б': 'Ковалентная связь', '3в': 'Полярность' };
-const TAG_CLASSES = { '3а': 'tag-3а', '3б': 'tag-3б', '3в': 'tag-3в' };
-const TOPIC_COLORS = { '3а': '#60a5fa', '3б': '#a78bfa', '3в': '#4ade80' };
+const TAG_NAMES   = { '3а': 'Периодические свойства', '3б': 'Ковалентная связь', '3в': 'Полярность', '3г': 'Водородная связь', '3д': 'Металлическая связь' };
+const TAG_CLASSES = { '3а': 'tag-3а', '3б': 'tag-3б', '3в': 'tag-3в', '3г': 'tag-3г', '3д': 'tag-3д' };
+const TOPIC_COLORS = { '3а': '#60a5fa', '3б': '#a78bfa', '3в': '#4ade80', '3г': '#38bdf8', '3д': '#fb923c' };
 
 let queue = [];
 let wrongQ = [];
@@ -807,7 +1190,7 @@ function goSetup() { showScreen('screenSetup'); }
 
 function startQuiz(topicKey) {
   if (topicKey === 'all') {
-    selectedTopics = ['3а', '3б', '3в'];
+    selectedTopics = ['3а', '3б', '3в', '3г', '3д'];
     queue = shuffle(ALL_Q);
   } else {
     selectedTopics = [topicKey];
