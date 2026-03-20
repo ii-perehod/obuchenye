@@ -179,6 +179,7 @@
         }
         .error-item .err-q { color: #e0e0e0; font-weight: 600; margin-bottom: 4px; }
         .error-item .err-a { color: #4ade80; font-size: 0.88em; }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
     </style>
 </head>
 <body>
@@ -243,7 +244,7 @@
             <p><b style="color:#ef4444">Повысили давление</b> → равновесие смещается туда, где <b>МЕНЬШЕ</b> молекул газа.</p>
             <p><b style="color:#60a5fa">Понизили давление</b> → равновесие смещается туда, где <b>БОЛЬШЕ</b> молекул газа.</p>
             <div class="analogy">
-                <b>Аналогия:</b> В лифт набилось 5 человек справа и 2 слева. Двери сжимаются (давление вверх) → люди перемещаются туда, где свободнее (2 человека = меньше). Двери раздвигаются (давление вниз) → люди расходятся туда, где больше места (5 человек = больше).
+                <b>Аналогия:</b> В автобус набилось народу — все стоят, не шевелятся (высокое давление). Система стремится «сжаться» — занять как можно меньше места (→ меньше молекул). Часть людей вышла — стало свободнее (давление упало) — все закопошились, расправились, телефоны достали, рюкзаки сняли — заняли БОЛЬШЕ места (→ больше молекул).
             </div>
         </div>
 
@@ -295,7 +296,7 @@
 
         <div class="card">
             <h2>Температура</h2>
-            <p>Экзотермическая реакция (выделяет тепло):</p>
+            <p><b><span style="color:#f59e0b">Экзо</span>термическая</b> реакция (выделяет тепло). Легко запомнить: на пляже жарко, пальмы, <span style="color:#f59e0b"><b>экзо</b></span>тика — тепло наружу.</p>
             <div class="formula-box">
                 A + B → C + Q
                 <span class="label">Q > 0, тепло выделяется</span>
@@ -367,10 +368,7 @@
                 <div class="result-score" id="quizResultScore"></div>
                 <div class="result-text" id="quizResultText"></div>
                 <div class="error-list" id="quizErrors"></div>
-                <div class="btn-wrap">
-                    <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
-                    <button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>
-                </div>
+                <div class="btn-wrap" id="quizResultBtns"></div>
             </div>
         </div>
 
@@ -381,7 +379,8 @@
     </div>
 
     <!-- SCREEN 4: TRAINER -->
-    <div id="trainScreen" class="screen">
+    <div id="trainScreen" class="screen" style="position:relative;">
+        <button style="position:absolute;top:12px;right:16px;background:none;border:1px solid rgba(255,255,255,0.2);color:#888;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:0.82em;" onclick="showScreen('menuScreen')">✕ Выйти</button>
         <h1>Тренажёр</h1>
         <p class="subtitle">Реакция + воздействие → куда сместится?</p>
 
@@ -597,7 +596,7 @@ function startQuiz() {
     hard.forEach(q => q._diff = 'hard');
     quizQuestions = [...easy, ...medium, ...hard];
     // shuffle within difficulty groups already, keep order easy→medium→hard
-    quizIndex = 0; quizCorrect = 0; quizErrors = [];
+    quizIndex = 0; quizCorrect = 0; quizErrors = []; quizTotalAsked = 0;
     document.getElementById('quizArea').style.display = 'block';
     document.getElementById('quizResults').style.display = 'none';
     document.getElementById('formalNav').style.display = 'none';
@@ -646,7 +645,7 @@ function selectQuizOption(idx, btn) {
         btn.classList.add('correct');
     } else {
         btn.classList.add('wrong');
-        quizErrors.push({ q: q.q, correctAns: q.opts[q.ans] });
+        quizErrors.push({ q: q.q, correctAns: q.opts[q.ans], full: q });
     }
     document.getElementById('quizExplain').innerHTML = q.explain;
     document.getElementById('quizExplain').style.display = 'block';
@@ -663,22 +662,43 @@ function nextQuizQuestion() {
     }
 }
 
+let quizTotalAsked = 0; // total unique questions asked across all rounds
+
 function showQuizResults() {
     document.getElementById('quizArea').style.display = 'none';
     document.getElementById('quizResults').style.display = 'block';
-    const pct = Math.round(quizCorrect / quizQuestions.length * 100);
-    document.getElementById('quizResultScore').textContent = `${quizCorrect} / ${quizQuestions.length} (${pct}%)`;
-    let text = pct === 100 ? 'Отлично! Всё верно!' : pct >= 75 ? 'Хороший результат!' : pct >= 50 ? 'Неплохо, но стоит повторить.' : 'Нужно ещё раз перечитать теорию.';
+    if (!quizTotalAsked) quizTotalAsked = quizQuestions.length;
+    const pct = Math.round(quizCorrect / quizTotalAsked * 100);
+    document.getElementById('quizResultScore').textContent = `${quizCorrect} / ${quizTotalAsked} (${pct}%)`;
+    let text = pct === 100 ? '🎉 Молодец! Всё верно!' : pct >= 75 ? 'Хороший результат!' : pct >= 50 ? 'Неплохо, но стоит повторить.' : 'Нужно ещё раз перечитать теорию.';
     document.getElementById('quizResultText').textContent = text;
 
     const errDiv = document.getElementById('quizErrors');
     errDiv.innerHTML = '';
+    const btnsDiv = document.getElementById('quizResultBtns');
+
     if (quizErrors.length > 0) {
-        errDiv.innerHTML = '<h3 style="color:#ef4444;margin-bottom:10px">Ошибки:</h3>';
+        errDiv.innerHTML = '<h3 style="color:#ef4444;margin-bottom:10px;">Ошибки:</h3>';
         quizErrors.forEach(e => {
             errDiv.innerHTML += `<div class="error-item"><div class="err-q">${e.q}</div><div class="err-a">Правильный ответ: ${e.correctAns}</div></div>`;
         });
+        btnsDiv.innerHTML = `<button class="btn btn-primary" onclick="retryQuizErrors()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;">🔁 Повторить ошибки (${quizErrors.length})</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>`;
+    } else {
+        btnsDiv.innerHTML = `<button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>`;
     }
+}
+
+function retryQuizErrors() {
+    // Show theory screen briefly, then start quiz with only error questions
+    quizQuestions = shuffle(quizErrors.map(e => e.full));
+    quizIndex = 0;
+    quizErrors = [];
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
 }
 
 // ===================== TRAINER DATA =====================
