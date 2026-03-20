@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Кинетика (скорость реакций)</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .card h2 { font-size: 1.15em; margin-bottom: 14px; color: #fff; }
+        .card h3 { font-size: 1em; margin: 16px 0 8px; color: #00d2ff; }
+        .card p, .card li { line-height: 1.7; margin-bottom: 8px; color: #ccc; }
+        .card ul { padding-left: 20px; }
+        .card .formula-box {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 1.1em;
+            text-align: center; color: #00d2ff;
+        }
+        .card .formula-box .label { font-size: 0.75em; color: #888; font-family: 'Segoe UI', Arial, sans-serif; display: block; margin-top: 6px; }
+        .card .analogy {
+            background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .analogy b { color: #f59e0b; }
+        .card .warning {
+            background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .warning b { color: #ef4444; }
+        .card table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .card th, .card td { border: 1px solid rgba(255,255,255,0.15); padding: 8px 12px; text-align: center; font-size: 0.9em; }
+        .card th { background: rgba(0,210,255,0.1); color: #00d2ff; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Buttons */
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d2ff, #7b2ff7); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,210,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-wrap { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+
+        /* Progress */
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #7b2ff7); border-radius: 10px; transition: width 0.4s; }
+
+        /* Tags */
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .tag-theory { background: rgba(0,210,255,0.2); color: #00d2ff; }
+        .tag-easy { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-medium { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .tag-hard { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+        /* Quiz options */
+        .quiz-option {
+            display: block; width: 100%; padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+            background: rgba(255,255,255,0.04); color: #e0e0e0;
+            font-size: 0.95em; cursor: pointer; margin-bottom: 8px;
+            text-align: left; transition: all 0.2s;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .quiz-option.correct { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+        .quiz-option.wrong { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+        .quiz-explain {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+            font-size: 0.88em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .quiz-explain b { color: #00d2ff; }
+
+        /* ── Calculator trainer ── */
+        .calc-task-card {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px; padding: 16px 20px; margin-bottom: 12px;
+        }
+        .calc-task-card .task-title { font-size: 0.78em; color: #888; margin-bottom: 8px; }
+        .calc-reaction {
+            font-size: 1.3em; text-align: center; margin: 8px 0 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .calc-reaction .coef {
+            color: #f59e0b; cursor: pointer; padding: 2px 4px; border-radius: 4px;
+            border: 1px solid transparent; transition: all 0.15s; font-weight: 700;
+        }
+        .calc-reaction .coef:hover { border-color: #f59e0b; background: rgba(245,158,11,0.15); }
+        .calc-reaction .coef:active { transform: scale(0.9); }
+        .calc-reaction .substance { color: #e0e0e0; }
+        .calc-reaction .arrow { color: #888; margin: 0 8px; }
+
+        .calc-given {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px; margin-top: 10px;
+        }
+        .calc-given-item {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px; padding: 8px 12px; text-align: center;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .calc-given-item:hover { background: rgba(0,210,255,0.1); border-color: #00d2ff; }
+        .calc-given-item:active { transform: scale(0.95); }
+        .calc-given-item .gi-label { font-size: 0.7em; color: #888; display: block; }
+        .calc-given-item .gi-value { font-size: 1.1em; font-weight: 700; color: #00d2ff; }
+        .calc-given-item .gi-unit { font-size: 0.7em; color: #666; }
+        .calc-given-item.used { border-color: rgba(0,210,255,0.3); background: rgba(0,210,255,0.05); }
+
+        .calc-find {
+            margin-top: 10px; padding: 8px 14px; background: rgba(123,47,247,0.1);
+            border: 1px solid rgba(123,47,247,0.3); border-radius: 8px;
+            font-size: 0.9em; color: #b388ff; text-align: center;
+        }
+
+        /* Expression input */
+        .expr-wrap {
+            background: rgba(0,0,0,0.35); border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; min-height: 48px;
+            display: flex; align-items: center; flex-wrap: wrap; gap: 3px;
+            font-size: 1.2em; font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .tok { padding: 1px 4px; border-radius: 4px; white-space: nowrap; }
+        .tok-val { color: #00d2ff; background: rgba(0,210,255,0.1); }
+        .tok-coef { color: #f59e0b; background: rgba(245,158,11,0.1); }
+        .tok-op { color: #999; padding: 0 2px; }
+        .tok-par { color: #e040fb; }
+        .cursor-blink { display: inline-block; width: 2px; height: 1.1em; background: #00d2ff; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 2px; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Controls */
+        .controls { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; justify-content: center; }
+        .ctrl-btn {
+            width: 50px; height: 42px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06); color: #ccc; font-size: 1.1em; font-weight: 600;
+            cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-1px); }
+        .ctrl-btn:active { transform: scale(0.95); }
+        .ctrl-btn.op { color: #f59e0b; }
+        .ctrl-btn.eq { background: rgba(0,210,255,0.2); border-color: #00d2ff; color: #00d2ff; width: 64px; font-size: 1.15em; }
+        .ctrl-btn.eq:hover { background: rgba(0,210,255,0.35); }
+        .ctrl-btn.del { color: #ff5252; }
+        .ctrl-btn.clr { color: #ff5252; font-size: 0.78em; }
+        .ctrl-btn.num { color: #4ade80; }
+
+        /* Numpad */
+
+        /* Feedback */
+        .calc-feedback { border-radius: 10px; padding: 14px 18px; margin-top: 12px; display: none; font-size: 0.9em; line-height: 1.7; }
+        .calc-feedback.correct { display: block; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); }
+        .calc-feedback.wrong { display: block; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
+        .calc-feedback .fb-title { font-weight: 700; margin-bottom: 6px; }
+        .calc-feedback.correct .fb-title { color: #4ade80; }
+        .calc-feedback.wrong .fb-title { color: #ef4444; }
+        .calc-feedback b { color: #00d2ff; }
+
+        .back-link { display: inline-block; margin-bottom: 8px; color: #00d2ff; text-decoration: none; font-size: 0.82em; opacity: 0.7; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 1; }
+
+        /* Score */
+        .score-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; padding: 8px 14px;
+            background: rgba(255,255,255,0.03); border-radius: 10px;
+        }
+        .score-bar .score-text { font-size: 0.85em; color: #888; }
+        .score-bar .score-num { font-weight: 700; color: #00d2ff; }
+
+        /* Exit button */
+        .exit-btn {
+            position: fixed; top: 12px; right: 16px; z-index: 100;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px; padding: 6px 14px; color: #888; font-size: 0.82em;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .exit-btn:hover { background: rgba(255,255,255,0.15); color: #e0e0e0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; На главную</a>
+    <h1>Кинетика: скорость реакций</h1>
+    <div class="subtitle">Теория &rarr; Квиз &rarr; Тренажёр-калькулятор</div>
+
+    <!-- ═══════════════ MENU SCREEN ═══════════════ -->
+    <div class="screen active" id="menuScreen">
+        <button class="topic-btn" onclick="showScreen('theorySimple')">
+            <span class="t-label" style="color:#f59e0b;">📖 Теория</span>
+            <span class="t-desc">На пальцах &rarr; по-взрослому</span>
+        </button>
+        <button class="topic-btn" onclick="startQuiz()">
+            <span class="t-label" style="color:#4ade80;">🧠 Квиз «Как понял?»</span>
+            <span class="t-desc" id="quizDesc">Проверь понимание — 3 уровня сложности</span>
+        </button>
+        <button class="topic-btn" onclick="startCalc()">
+            <span class="t-label" style="color:#00d2ff;">🔢 Тренажёр-калькулятор</span>
+            <span class="t-desc">Задачи на расчёт — закон действующих масс, Вант-Гофф</span>
+        </button>
+    </div>
+
+    <!-- ═══════════════ THEORY: НА ПАЛЬЦАХ ═══════════════ -->
+    <div class="screen" id="theorySimple">
+        <div class="card">
+            <span class="topic-tag tag-theory">На пальцах</span>
+            <h2>🚗 Что такое скорость реакции?</h2>
+            <div class="analogy">
+                <b>Аналогия:</b> Скорость машины — сколько <b>километров</b> за <b>час</b>. Скорость реакции — сколько <b>вещества</b> образуется (или расходуется) за <b>секунду</b>.
+            </div>
+            <p>Представь: ты бросил шипучую таблетку в воду. Пузырьки пошли быстро, потом всё медленнее. Вот эта «быстрота пузырьков» — и есть скорость реакции.</p>
+            <p>Измеряем в <b>моль / (литр × секунда)</b> — сколько моль вещества появляется в литре раствора каждую секунду.</p>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">На пальцах</span>
+            <h2>🏠 Где происходит реакция?</h2>
+            <div class="analogy">
+                <b>Гомогенная</b> (однородная среда) — как соль в воде: всё перемешано, реакция идёт <b>во всём объёме</b>. Скорость считаем на <b>литр</b>.
+            </div>
+            <div class="analogy">
+                <b>Гетерогенная</b> (разные фазы) — как ржавчина на гвозде: реакция идёт только <b>на поверхности</b> соприкосновения. Скорость считаем на <b>см²</b>.
+            </div>
+            <p>Поэтому формулы разные: для гомогенной делим на объём, для гетерогенной — на площадь.</p>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">На пальцах</span>
+            <h2>🎛️ Что влияет на скорость?</h2>
+            <p>Четыре главных фактора:</p>
+            <table>
+                <tr><th>Фактор</th><th>Аналогия</th><th>Эффект</th></tr>
+                <tr><td><b>Концентрация</b></td><td>Больше народу на танцполе → больше столкновений</td><td>↑ концентрация → ↑ скорость</td></tr>
+                <tr><td><b>Температура</b></td><td>Горячая вода растворяет сахар быстрее</td><td>+10°C → скорость в 2-4 раза ↑</td></tr>
+                <tr><td><b>Катализатор</b></td><td>Лифт вместо лестницы — тот же этаж, но легче добраться</td><td>Снижает «барьер», не расходуется</td></tr>
+                <tr><td><b>Природа веществ</b></td><td>Бумага горит легко, кирпич — нет</td><td>Зависит от конкретных веществ</td></tr>
+            </table>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-primary" onclick="showScreen('theoryFormal')">По-взрослому &rarr;</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">На главную</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════ THEORY: ПО-ВЗРОСЛОМУ ═══════════════ -->
+    <div class="screen" id="theoryFormal">
+        <div class="card">
+            <span class="topic-tag tag-theory">По-взрослому</span>
+            <h2>📐 Формула скорости</h2>
+            <h3>Гомогенная реакция (в растворе/газе)</h3>
+            <div class="formula-box">
+                v = ± ΔC / Δt
+                <span class="label">моль / (л · с)</span>
+            </div>
+            <p><b>ΔC</b> — изменение молярной концентрации (моль/л). Когда речь идёт о конкретном веществе, его молярную концентрацию записывают в квадратных скобках: <b>[H₂]</b>, <b>[O₂]</b>, <b>[NO]</b> и т.д. То есть <b>C</b> и <b>[H₂]</b> — это одно и то же, просто <b>C</b> — общее обозначение, а <b>[H₂]</b> — для конкретного вещества.<br>
+            <b>Δt</b> — промежуток времени (с)<br>
+            <b>±</b> — плюс для продуктов (образуются), минус для реагентов (расходуются), чтобы скорость была положительной.</p>
+
+            <h3>Гетерогенная реакция (на поверхности)</h3>
+            <div class="formula-box">
+                v = ± Δν / (S · Δt)
+                <span class="label">моль / (см² · с)</span>
+            </div>
+            <p><b>Δν</b> — изменение количества вещества (моль)<br>
+            <b>S</b> — площадь поверхности (см²)</p>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">По-взрослому</span>
+            <h2>⚖️ Закон действующих масс</h2>
+            <p>Скорость реакции при постоянной температуре пропорциональна произведению концентраций реагирующих веществ в степенях их <b>стехиометрических коэффициентов</b>.</p>
+            <div class="analogy">
+                <b>Стехиометрия</b> (от греч. «стойхейон» — элемент, «метрон» — мера) — это наука о <b>пропорциях</b>, в которых вещества вступают в реакцию. Буквально: «измерение элементов».<br><br>
+                <b>Стехиометрический коэффициент</b> — большое число <b>перед</b> формулой вещества в уравнении. Оно показывает, <b>сколько молекул</b> (или моль) этого вещества участвует в реакции.<br><br>
+                Например, <b>2</b>H₂ + O₂ → <b>2</b>H₂O — двойки перед H₂ и H₂O это стехиометрические коэффициенты (2 молекулы водорода + 1 молекула кислорода → 2 молекулы воды). А маленькая двойка внизу (H<b>₂</b>) — это <b>индекс</b>, он показывает количество атомов внутри молекулы. Не путай!
+            </div>
+
+            <h3>Что значат квадратные скобки [ ]?</h3>
+            <p><b>[A]</b> читается как «концентрация вещества A». Квадратные скобки — это общепринятое сокращение для <b>молярной концентрации</b> (сколько моль вещества растворено в 1 литре). Единица: <b>моль/л</b>.</p>
+            <p>Когда пишут [NO] = 0.5 — значит, в каждом литре раствора содержится 0.5 моль NO.</p>
+
+            <div class="formula-box">
+                mA + nB → продукты<br><br>
+                v = k · [A]<sup>m</sup> · [B]<sup>n</sup>
+                <span class="label">k — константа скорости; [A], [B] — молярные концентрации веществ A и B (моль/л); m, n — коэффициенты перед веществами в уравнении</span>
+            </div>
+            <div class="warning">
+                <b>Важно!</b> Степени — это коэффициенты <b>перед</b> веществом в уравнении (большие числа), а <b>не индексы</b> (маленькие внизу) в формуле вещества. Коэффициент 1 не пишется, но подразумевается.
+            </div>
+            <p><b>Пример:</b> 2NO + O₂ → 2NO₂</p>
+            <div class="formula-box">
+                v = k · [NO]² · [O₂]¹ = k · [NO]² · [O₂]
+                <span class="label">Читается: «Скорость реакции равна произведению константы скорости k на молярную концентрацию NO в квадрате и молярную концентрацию O₂»</span>
+            </div>
+            <p>Коэффициент <b>2</b> перед NO → степень 2. Перед O₂ коэффициент <b>1</b> (не написан, но подразумевается) → степень 1.</p>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">По-взрослому</span>
+            <h2>🔑 Константа скорости k</h2>
+
+            <h3>Что такое k?</h3>
+            <p>Константа скорости — это <b>«паспорт» реакции</b>. Она показывает, насколько быстро идёт именно эта реакция, когда все концентрации равны 1 моль/л.</p>
+            <div class="analogy">
+                <b>Аналогия:</b> У каждого человека своя скорость ходьбы. Кто-то быстро ходит, кто-то медленно — даже по одной и той же дорожке. Вот k — это «скорость ходьбы» конкретной реакции. А концентрации — это «длина шагов» (чем больше, тем быстрее доберёшься).
+            </div>
+
+            <h3>Почему k разная у разных реакций?</h3>
+            <ul>
+                <li><b>Природа веществ</b> — взрыв водорода и ржавление железа идут с совершенно разной скоростью</li>
+                <li><b>Температура</b> — при нагревании k растёт (именно это описывает Вант-Гофф)</li>
+                <li><b>Катализатор</b> — меняет k, делая реакцию быстрее</li>
+            </ul>
+            <p>Для каждой конкретной реакции при конкретной температуре <b>k — число, которое дано в задаче</b>. Его не надо выводить или вычислять.</p>
+
+            <h3>Единицы измерения k — проверяем по формуле!</h3>
+            <p>Скорость реакции v всегда измеряется в <b>моль/(л·с)</b>. Концентрации — в <b>моль/л</b>. Значит, единицы k должны «добить» формулу до правильных единиц.</p>
+
+            <div class="formula-box" style="text-align:left; font-size:0.95em; line-height:2.2;">
+                <div style="color:#888; margin-bottom:8px;">Простейший случай: v = k · [A] · [B]</div>
+                <div style="color:#f59e0b;">
+                    <span style="color:#4ade80;">моль/(л·с)</span> = [k] × <span style="color:#60a5fa;">моль/л</span> × <span style="color:#60a5fa;">моль/л</span>
+                </div>
+                <div style="margin-top:6px;">
+                    <span style="color:#4ade80;">моль/(л·с)</span> = [k] × <span style="color:#60a5fa;">моль²/л²</span>
+                </div>
+                <div style="margin-top:6px;">
+                    [k] = <span style="color:#4ade80;">моль/(л·с)</span> ÷ <span style="color:#60a5fa;">моль²/л²</span> = <b style="color:#fff;">л/(моль·с)</b>
+                </div>
+            </div>
+
+            <div class="formula-box" style="text-align:left; font-size:0.95em; line-height:2.2;">
+                <div style="color:#888; margin-bottom:8px;">Если степени больше: v = k · [A]² · [B]</div>
+                <div style="color:#f59e0b;">
+                    <span style="color:#4ade80;">моль/(л·с)</span> = [k] × <span style="color:#60a5fa;">моль²/л²</span> × <span style="color:#60a5fa;">моль/л</span>
+                </div>
+                <div style="margin-top:6px;">
+                    <span style="color:#4ade80;">моль/(л·с)</span> = [k] × <span style="color:#60a5fa;">моль³/л³</span>
+                </div>
+                <div style="margin-top:6px;">
+                    [k] = <span style="color:#4ade80;">моль/(л·с)</span> ÷ <span style="color:#60a5fa;">моль³/л³</span> = <b style="color:#fff;">л²/(моль²·с)</b>
+                </div>
+            </div>
+
+            <div class="warning">
+                <b>Вывод:</b> единицы измерения k <b>зависят от формулы!</b> Чем больше степеней у концентраций, тем «мощнее» единицы k. Это нормально — у каждой реакции свои единицы k.
+            </div>
+
+            <div class="analogy">
+                <b>Как проверить себя:</b> подставь единицы измерения вместо чисел. Если слева моль/(л·с) и справа моль/(л·с) — формула собрана правильно. Если не сходится — где-то ошибка в степенях.
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">По-взрослому</span>
+            <h2>🌡️ Правило Вант-Гоффа</h2>
+            <div class="formula-box">
+                v₂ = v₁ · γ<sup>(t₂ − t₁) / 10</sup>
+                <span class="label">Читается: «Новая скорость равна старой скорости, умноженной на гамма в степени, которая равна разности температур, делённой на десять»</span>
+            </div>
+            <p>При увеличении температуры на каждые <b>10°C</b> скорость реакции возрастает в <b>γ раз</b> (обычно в 2–4 раза).</p>
+
+            <h3>Разберём формулу по частям:</h3>
+            <ul>
+                <li><b>v₁</b> — скорость при начальной температуре (то, что было «до»)</li>
+                <li><b>v₂</b> — скорость при новой температуре (то, что хотим найти)</li>
+                <li><b>t₁</b> — начальная температура (°C)</li>
+                <li><b>t₂</b> — конечная температура (°C)</li>
+                <li><b>γ</b> (гамма) — «температурный коэффициент», обычно от 2 до 4. Дан в условии задачи</li>
+                <li><b>(t₂ − t₁) / 10</b> — считаем, на сколько «десяток градусов» изменилась температура. Это и есть <b>степень</b>, в которую возводим γ</li>
+            </ul>
+
+            <h3>Пример: нагревание</h3>
+            <p>γ = 3, нагрели с 20°C до 50°C.</p>
+            <div class="analogy">
+                <b>Шаг 1:</b> t₂ − t₁ = 50 − 20 = 30°C<br>
+                <b>Шаг 2:</b> (t₂ − t₁) / 10 = 30 / 10 = 3 — это степень<br>
+                <b>Шаг 3:</b> γ<sup>степень</sup> = 3³ = 3 × 3 × 3 = 27<br>
+                <b>Шаг 4:</b> v₂ = v₁ · 27
+            </div>
+            <div class="formula-box">
+                v₂ = v₁ · 3<sup>(50−20)/10</sup> = v₁ · 3<sup>3</sup> = v₁ · 27
+            </div>
+            <p>Скорость выросла в <b>27 раз</b>!</p>
+
+            <h3>Пример: охлаждение</h3>
+            <p>γ = 3, охладили с 60°C до 30°C. v₁ = 81 моль/(л·с).</p>
+            <div class="analogy">
+                <b>Шаг 1:</b> t₂ − t₁ = 30 − 60 = −30°C (отрицательное — мы <b>охлаждаем</b>)<br>
+                <b>Шаг 2:</b> (t₂ − t₁) / 10 = −30 / 10 = −3 — степень отрицательная<br>
+                <b>Шаг 3:</b> γ<sup>степень</sup> = 3<sup>−3</sup> = 1 / 3³ = 1 / 27<br>
+                <b>Шаг 4:</b> v₂ = v₁ · (1/27) = 81 / 27 = 3 моль/(л·с)
+            </div>
+            <div class="formula-box">
+                v₂ = 81 · 3<sup>(30−60)/10</sup> = 81 · 3<sup>−3</sup> = 81 / 27 = 3
+            </div>
+            <p>Скорость <b>уменьшилась</b> в 27 раз! Отрицательная степень = деление вместо умножения.</p>
+            <div class="warning">
+                <b>Запомни:</b> нагрев → степень положительная → умножаем (скорость растёт).<br>
+                Охлаждение → степень отрицательная → делим (скорость падает).
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">По-взрослому</span>
+            <h2>⚡ Катализатор</h2>
+            <p><b>Катализатор</b> — вещество, которое увеличивает скорость реакции, но <b>не расходуется</b> в результате её протекания.</p>
+            <p>Механизм: снижает <b>энергию активации</b> — тот минимальный «барьер» энергии, который нужно преодолеть, чтобы реакция пошла.</p>
+            <div class="analogy">
+                <b>Аналогия:</b> Два человека хотят познакомиться, но стесняются подойти друг к другу (высокая энергия активации). Тут появляется <b>сваха</b> (или Тиндер) — она знакомит их, снижает барьер. Результат — пара — тот же, что мог бы быть и без свахи, но <b>произошло быстрее</b>. При этом сваха не «расходуется» — она идёт знакомить следующих.
+            </div>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-primary" onclick="startQuiz()">Квиз «Как понял?» &rarr;</button>
+            <button class="btn btn-secondary" onclick="showScreen('theorySimple')">← На пальцах</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">На главную</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════ QUIZ SCREEN ═══════════════ -->
+    <div class="screen" id="quizScreen">
+        <button class="exit-btn" onclick="showScreen('menuScreen')">✕ Выйти</button>
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="quizProgress">Вопрос 1 из 10</span>
+                <span id="quizScore">✓ 0 · ✗ 0</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="quizProgFill" style="width:0%"></div></div>
+        </div>
+        <div id="quizTag"></div>
+        <div class="card" id="quizCard">
+            <div id="quizQuestion" style="font-size:1.05em; margin-bottom:16px;"></div>
+            <div id="quizOptions"></div>
+            <div class="quiz-explain" id="quizExplain"></div>
+            <div class="btn-wrap" id="quizBtnWrap" style="display:none;">
+                <button class="btn btn-primary" id="quizNextBtn" onclick="quizNext()">Далее &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ QUIZ RESULTS ═══════════════ -->
+    <div class="screen" id="quizResults">
+        <div class="card" style="text-align:center;">
+            <h2 id="quizResultTitle"></h2>
+            <p id="quizResultText" style="margin:14px 0;"></p>
+            <div id="quizResultErrors"></div>
+            <div class="btn-wrap">
+                <button class="btn btn-primary" id="quizRetryBtn" onclick="startQuiz()">Пройти заново</button>
+                <button class="btn btn-secondary" onclick="startCalc()">Калькулятор &rarr;</button>
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">На главную</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ CALCULATOR TRAINER ═══════════════ -->
+    <div class="screen" id="calcScreen">
+        <button class="exit-btn" onclick="showScreen('menuScreen')">✕ Выйти</button>
+        <div class="score-bar">
+            <span class="score-text">Задача <span class="score-num" id="calcNum">1</span> из <span id="calcTotal">10</span></span>
+            <span class="score-text">Верно: <span class="score-num" id="calcCorrect">0</span></span>
+        </div>
+
+        <div class="calc-task-card" id="calcTaskCard">
+            <div class="task-title" id="calcTaskTitle">Дано:</div>
+            <div class="calc-reaction" id="calcReaction"></div>
+            <div class="calc-given" id="calcGiven"></div>
+            <div class="calc-find" id="calcFind"></div>
+        </div>
+
+        <div class="expr-wrap" id="calcExpr"><span class="cursor-blink"></span></div>
+
+        <div class="controls">
+            <button class="ctrl-btn num" data-act="n10">10</button>
+            <button class="ctrl-btn op" data-o="+">+</button>
+            <button class="ctrl-btn op" data-o="−">−</button>
+            <button class="ctrl-btn op" data-o="×">×</button>
+            <button class="ctrl-btn op" data-o="/">÷</button>
+            <button class="ctrl-btn op" data-o="^">^</button>
+            <button class="ctrl-btn op" data-o="(">(</button>
+            <button class="ctrl-btn op" data-o=")">)</button>
+            <button class="ctrl-btn op" data-act="abs">| |</button>
+            <button class="ctrl-btn op" data-o=".">.</button>
+            <button class="ctrl-btn del" data-act="del">⌫</button>
+            <button class="ctrl-btn clr" data-act="clr">AC</button>
+            <button class="ctrl-btn eq" data-act="eq">=</button>
+        </div>
+
+        <div class="calc-feedback" id="calcFeedback"></div>
+    </div>
+
+    <!-- ═══════════════ CALCULATOR RESULTS ═══════════════ -->
+    <div class="screen" id="calcResults">
+        <div class="card" style="text-align:center;">
+            <h2 id="calcResultTitle"></h2>
+            <p id="calcResultText" style="margin:14px 0;"></p>
+            <div class="btn-wrap">
+                <button class="btn btn-primary" onclick="startCalc()">Ещё задачи</button>
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">На главную</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ═══════════════ NAVIGATION ═══════════════ */
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.exit-btn').forEach(b => b.style.display = (id === 'quizScreen' || id === 'calcScreen') ? '' : 'none');
+    window.scrollTo(0, 0);
+}
+
+/* ═══════════════ QUIZ DATA ═══════════════ */
+const quizData = {
+easy: [
+    {q:'Что изучает химическая кинетика?',
+     o:['Состав веществ','Скорость химических реакций','Строение атома','Типы связей'], c:1,
+     e:'Кинетика — раздел химии, изучающий <b>скорость</b> химических реакций и факторы, которые на неё влияют.', card:'speed'},
+    {q:'Гомогенная реакция протекает...',
+     o:['На поверхности','Во всём объёме','Только в газах','Только в жидкостях'], c:1,
+     e:'Гомогенная = <b>однородная среда</b>. Реакция идёт во всём объёме, потому что реагенты перемешаны на молекулярном уровне.', card:'homo'},
+    {q:'Что НЕ является фактором, влияющим на скорость реакции?',
+     o:['Температура','Концентрация','Цвет раствора','Катализатор'], c:2,
+     e:'На скорость влияют: <b>концентрация</b>, <b>температура</b>, <b>катализатор</b> и <b>природа веществ</b>. Цвет — это оптическое свойство, к скорости отношения не имеет.', card:'factors'},
+    {q:'Почему при увеличении концентрации реакция ускоряется?',
+     o:['Молекулы становятся тяжелее','Молекулы чаще сталкиваются','Температура растёт','Появляется катализатор'], c:1,
+     e:'Больше молекул в единице объёма → <b>чаще сталкиваются</b> друг с другом → больше «удачных» столкновений → реакция идёт быстрее.', card:'factors'},
+    {q:'Катализатор после реакции...',
+     o:['Полностью расходуется','Остаётся неизменным','Превращается в продукт','Испаряется'], c:1,
+     e:'Катализатор <b>не расходуется</b>. Он участвует в реакции, но в конце остаётся таким же, каким был. Поэтому его не записывают в уравнение.', card:'catalyst'},
+    {q:'Какая из этих реакций — гетерогенная?',
+     o:['Уксус + сода в воде','H₂ + Cl₂ (оба газа)','Горение угля (твёрдое + газ)','Нейтрализация в растворе'], c:2,
+     e:'Гетерогенная = реагенты в <b>разных фазах</b>. Уголь (твёрдый) + кислород (газ) — разные фазы, реакция идёт <b>на поверхности</b> угля.', card:'homo'},
+    {q:'Что означает запись [NO]?',
+     o:['Масса NO в граммах','Молярная концентрация NO (моль/л)','Количество атомов NO','Объём NO в литрах'], c:1,
+     e:'Квадратные скобки — стандартное обозначение <b>молярной концентрации</b>: сколько моль вещества растворено в 1 литре. [NO] = 0.5 значит 0.5 моль NO на литр.', card:'masslaw'},
+    {q:'Шипучую таблетку бросили в горячую воду вместо холодной. Что произойдёт?',
+     o:['Растворится медленнее','Растворится быстрее','Скорость не изменится','Не растворится вообще'], c:1,
+     e:'Повышение температуры <b>ускоряет</b> реакцию. Молекулы двигаются быстрее → сталкиваются сильнее и чаще → реакция идёт быстрее.', card:'vanthoff'},
+],
+medium: [
+    {q:'В законе действующих масс коэффициенты из уравнения становятся...',
+     o:['Множителями перед концентрацией','Степенями концентрации','Делителями','Слагаемыми'], c:1,
+     e:'Коэффициенты становятся <b>степенями</b>. Для 2A + B → C: v = k·[A]<sup>2</sup>·[B]. Двойка — не множитель (не 2·[A]), а степень ([A]²). Это принципиально разные вещи!', card:'masslaw'},
+    {q:'В уравнении 2NO + O₂ → 2NO₂ — что является стехиометрическим коэффициентом?',
+     o:['Двойка внизу в O₂','Двойка перед NO','И то, и другое','Ни то, ни другое'], c:1,
+     e:'Стехиометрический коэффициент — <b>большое число перед формулой</b> (2 перед NO). Маленькая двойка внизу в O₂ — это <b>индекс</b>, он показывает число атомов в молекуле. Не путай!', card:'masslaw'},
+    {q:'Почему в формуле скорости v = ±ΔC/Δt стоит знак ±?',
+     o:['Это ошибка в формуле','Чтобы скорость всегда была положительной','Скорость бывает отрицательной','Для красоты'], c:1,
+     e:'Концентрация <b>реагентов</b> уменьшается (ΔC < 0), а скорость должна быть положительной. Минус перед дробью «переворачивает» знак. Для продуктов ΔC > 0 → берём плюс.', card:'speed'},
+    {q:'В чём отличие формулы скорости гетерогенной реакции от гомогенной?',
+     o:['Делим на площадь поверхности, а не на объём','Нет никакой разницы','Используем массу вместо моль','Убираем знак ±'], c:0,
+     e:'Гетерогенная реакция идёт <b>на поверхности</b>. Поэтому вместо объёма (л) используем площадь поверхности (см²): v = Δν / (<b>S</b> · Δt).', card:'homo'},
+    {q:'Почему измельчение мела ускоряет его реакцию с кислотой?',
+     o:['Мел становится другим веществом','Увеличивается площадь поверхности','Температура повышается от трения','Кислота становится крепче'], c:1,
+     e:'Измельчение <b>увеличивает площадь поверхности</b> контакта с кислотой. Больше площадь → больше молекул кислоты одновременно «достают» до мела → быстрее.', card:'homo'},
+    {q:'Катализатор ускоряет реакцию за счёт...',
+     o:['Увеличения концентрации реагентов','Нагревания раствора','Снижения энергии активации','Увеличения давления'], c:2,
+     e:'Катализатор <b>снижает энергию активации</b> — минимальную энергию, нужную для начала реакции. Как более пологий перевал через горы: путь тот же, но «забираться» легче.', card:'catalyst'},
+    {q:'Что такое энергия активации?',
+     o:['Энергия, выделяемая при реакции','Минимальная энергия для начала реакции','Энергия катализатора','Температура реакции'], c:1,
+     e:'Энергия активации — это <b>минимальный барьер</b>, который молекулы должны преодолеть, чтобы реакция пошла. Не все столкновения приводят к реакции — только достаточно «энергичные».', card:'catalyst'},
+    {q:'Что означает γ (гамма) в правиле Вант-Гоффа?',
+     o:['Скорость реакции','Во сколько раз растёт скорость при нагреве на 10°C','Температура кипения','Концентрация катализатора'], c:1,
+     e:'γ — <b>температурный коэффициент</b>. Показывает, во сколько раз увеличивается скорость при повышении температуры на каждые 10°C. Обычно γ = 2–4, даётся в условии задачи.', card:'vanthoff'},
+],
+hard: [
+    {q:'В законе действующих масс v = k·[A]²·[B] — почему продукты реакции НЕ входят в формулу?',
+     o:['Входят, просто не написали','Потому что скорость зависит только от реагентов','Продуктов ещё нет','Это ошибка в формуле'], c:1,
+     e:'Скорость <b>прямой</b> реакции зависит от того, что <b>сталкивается</b>, — а сталкиваются реагенты. Продукты — результат столкновения, они на скорость прямой реакции не влияют.', card:'masslaw'},
+    {q:'Реакция A + B → C идёт в растворе. Добавили воды (разбавили). Что произойдёт со скоростью?',
+     o:['Увеличится','Уменьшится','Не изменится','Реакция остановится'], c:1,
+     e:'Разбавление <b>снижает концентрацию</b> обоих реагентов. Меньше молекул в литре → реже сталкиваются → скорость <b>падает</b>.', card:'factors'},
+    {q:'Кусок железа и железные опилки положили в кислоту. Где реакция пойдёт быстрее?',
+     o:['С куском — он тяжелее','С опилками — больше поверхность','Одинаково — железо одно и то же','Нигде — железо не реагирует с кислотой'], c:1,
+     e:'Масса одинаковая, но <b>опилки имеют огромную площадь поверхности</b> по сравнению с цельным куском. Гетерогенная реакция идёт на поверхности → больше поверхность = быстрее.', card:'homo'},
+    {q:'Если температуру снижают (охлаждают), что происходит со скоростью реакции?',
+     o:['Увеличивается','Уменьшается','Не меняется','Зависит от катализатора'], c:1,
+     e:'Охлаждение — обратный эффект нагревания. Молекулы двигаются <b>медленнее</b>, сталкиваются реже и слабее → скорость <b>падает</b>. Именно поэтому еду хранят в холодильнике — замедляют реакции порчи.', card:'vanthoff'},
+    {q:'Почему еда портится медленнее в холодильнике? Какой фактор скорости здесь работает?',
+     o:['Катализатор','Концентрация','Температура','Природа веществ'], c:2,
+     e:'В холодильнике низкая <b>температура</b>. Химические реакции разложения (порча) идут медленнее при низкой температуре — правило Вант-Гоффа в быту!', card:'vanthoff'},
+    {q:'Для записи закона действующих масс нужно смотреть на...',
+     o:['Индексы в формулах веществ (маленькие внизу)','Коэффициенты перед веществами (большие)','Температуру реакции','Массу веществ в граммах'], c:1,
+     e:'Степени в законе действующих масс = <b>коэффициенты перед веществами</b> (большие числа перед формулой). Индексы (маленькие внизу, внутри формулы) — это другое, они к скорости отношения не имеют.', card:'masslaw'},
+]
+};
+
+/* ═══════════════ QUIZ ENGINE ═══════════════ */
+let qList = [], qIdx = 0, qCorrect = 0, qWrong = 0, qLocked = false;
+let qErrors = []; // {question, correctAnswer, card}
+
+function startQuiz() {
+    // Build mixed quiz: 4 easy + 4 medium + 4 hard = 12
+    const pick = (arr, n) => { const s = [...arr].sort(() => Math.random() - 0.5); return s.slice(0, n); };
+    qList = [
+        ...pick(quizData.easy, 4).map(q => ({...q, diff:'easy'})),
+        ...pick(quizData.medium, 4).map(q => ({...q, diff:'medium'})),
+        ...pick(quizData.hard, 4).map(q => ({...q, diff:'hard'}))
+    ];
+    qIdx = 0; qCorrect = 0; qWrong = 0; qLocked = false; qErrors = [];
+    showScreen('quizScreen');
+    renderQuiz();
+}
+
+function renderQuiz() {
+    const q = qList[qIdx];
+    const total = qList.length;
+    document.getElementById('quizProgress').textContent = `Вопрос ${qIdx + 1} из ${total}`;
+    document.getElementById('quizScore').textContent = `✓ ${qCorrect} · ✗ ${qWrong}`;
+    document.getElementById('quizProgFill').style.width = ((qIdx / total) * 100) + '%';
+
+    const tagMap = {easy: ['Лёгкие', 'tag-easy'], medium: ['Средние', 'tag-medium'], hard: ['Сложные', 'tag-hard']};
+    const [tl, tc] = tagMap[q.diff];
+    document.getElementById('quizTag').innerHTML = `<span class="topic-tag ${tc}">${tl}</span>`;
+
+    document.getElementById('quizQuestion').innerHTML = q.q;
+
+    const optDiv = document.getElementById('quizOptions');
+    optDiv.innerHTML = '';
+    q.o.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.innerHTML = opt;
+        btn.onclick = () => quizAnswer(i, btn);
+        optDiv.appendChild(btn);
+    });
+
+    document.getElementById('quizExplain').style.display = 'none';
+    document.getElementById('quizBtnWrap').style.display = 'none';
+    qLocked = false;
+}
+
+function quizAnswer(idx, btn) {
+    if (qLocked) return;
+    qLocked = true;
+    const q = qList[qIdx];
+    const correct = idx === q.c;
+
+    // Highlight
+    const opts = document.querySelectorAll('.quiz-option');
+    opts.forEach((o, i) => {
+        if (i === q.c) o.classList.add('correct');
+        if (i === idx && !correct) o.classList.add('wrong');
+        o.style.pointerEvents = 'none';
+    });
+
+    if (correct) { qCorrect++; } else {
+        qWrong++;
+        qErrors.push({ question: q.q, correctAnswer: q.o[q.c], card: q.card });
+    }
+
+    document.getElementById('quizScore').textContent = `✓ ${qCorrect} · ✗ ${qWrong}`;
+
+    // Show explanation
+    const expl = document.getElementById('quizExplain');
+    expl.innerHTML = q.e;
+    expl.style.display = 'block';
+
+    // Show next button
+    const wrap = document.getElementById('quizBtnWrap');
+    wrap.style.display = 'flex';
+    document.getElementById('quizNextBtn').textContent = qIdx < qList.length - 1 ? 'Далее →' : 'Результаты →';
+}
+
+function quizNext() {
+    qIdx++;
+    if (qIdx >= qList.length) {
+        showQuizResults();
+        return;
+    }
+    renderQuiz();
+}
+
+function showQuizResults() {
+    const pct = Math.round(qCorrect / qList.length * 100);
+    let title, text;
+    if (pct >= 90) { title = '🎉 Отлично!'; text = `${qCorrect}/${qList.length} (${pct}%) — тема освоена!`; }
+    else if (pct >= 70) { title = '👍 Хорошо!'; text = `${qCorrect}/${qList.length} (${pct}%) — ещё чуть-чуть практики.`; }
+    else { title = '📖 Стоит повторить'; text = `${qCorrect}/${qList.length} (${pct}%) — перечитай теорию и попробуй снова.`; }
+
+    document.getElementById('quizResultTitle').textContent = title;
+    document.getElementById('quizResultText').textContent = text;
+
+    // Show errors
+    const errDiv = document.getElementById('quizResultErrors');
+    if (qErrors.length > 0) {
+        let html = '<div style="text-align:left; margin:16px 0;"><p style="color:#ef4444; font-weight:700; margin-bottom:10px;">Ошибки:</p>';
+        qErrors.forEach(e => {
+            html += `<div style="background:rgba(239,68,68,0.08); border-radius:8px; padding:10px 14px; margin-bottom:8px; font-size:0.88em;">
+                <div style="color:#ccc;">${e.question}</div>
+                <div style="color:#4ade80; margin-top:4px;">Правильный ответ: ${e.correctAnswer}</div>
+            </div>`;
+        });
+        html += '</div>';
+        errDiv.innerHTML = html;
+    } else {
+        errDiv.innerHTML = '';
+    }
+
+    showScreen('quizResults');
+}
+
+/* ═══════════════ CALCULATOR DATA ═══════════════ */
+/* Задачи делятся на 2 блока: withFormula (первые, перемешиваются отдельно) и noFormula */
+const calcWithFormula = [
+    // === Закон действующих масс ===
+    {type:'masslaw', title:'Вычислите скорость реакции по закону действующих масс',
+     reaction:{parts:[{type:'coef',val:'2'},{type:'sub',val:'H₂'},{type:'text',val:' + '},{type:'sub',val:'O₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'H₂O'}]},
+     given:[{label:'константа скорости',value:0.5,unit:'',display:'0.5'},{label:'концентрация водорода',value:0.3,unit:'моль/л',display:'0.3'},{label:'концентрация кислорода',value:0.1,unit:'моль/л',display:'0.1'}],
+     find:'v = k · [H₂]² · [O₂] = ?', answer:0.0045, tolerance:0.0005,
+     explanation:'Водород — H₂ (коэф. 2), кислород — O₂ (коэф. 1).<br>v = k · [H₂]² · [O₂] = <b>0.5</b> × <b>0.3</b>² × <b>0.1</b> = 0.5 × 0.09 × 0.1 = <b>0.0045</b>'},
+    {type:'masslaw', title:'Вычислите скорость реакции',
+     reaction:{parts:[{type:'sub',val:'N₂'},{type:'text',val:' + '},{type:'coef',val:'3'},{type:'sub',val:'H₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'NH₃'}]},
+     given:[{label:'константа скорости',value:0.4,unit:'',display:'0.4'},{label:'концентрация азота',value:0.2,unit:'моль/л',display:'0.2'},{label:'концентрация водорода',value:0.1,unit:'моль/л',display:'0.1'}],
+     find:'v = k · [N₂] · [H₂]³ = ?', answer:0.00008, tolerance:0.00001,
+     explanation:'Азот — N₂ (коэф. 1), водород — H₂ (коэф. 3).<br>v = k · [N₂] · [H₂]³ = <b>0.4</b> × <b>0.2</b> × <b>0.1</b>³ = 0.4 × 0.2 × 0.001 = <b>0.00008</b>'},
+    {type:'masslaw', title:'Вычислите скорость реакции',
+     reaction:{parts:[{type:'coef',val:'2'},{type:'sub',val:'NO'},{type:'text',val:' + '},{type:'sub',val:'O₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'NO₂'}]},
+     given:[{label:'константа скорости',value:1.2,unit:'',display:'1.2'},{label:'концентрация оксида азота',value:0.5,unit:'моль/л',display:'0.5'},{label:'концентрация кислорода',value:0.4,unit:'моль/л',display:'0.4'}],
+     find:'v = k · [NO]² · [O₂] = ?', answer:0.12, tolerance:0.005,
+     explanation:'Оксид азота — NO (коэф. 2), кислород — O₂ (коэф. 1).<br>v = k · [NO]² · [O₂] = <b>1.2</b> × <b>0.5</b>² × <b>0.4</b> = 1.2 × 0.25 × 0.4 = <b>0.12</b>'},
+    {type:'masslaw', title:'Вычислите скорость реакции',
+     reaction:{parts:[{type:'coef',val:'2'},{type:'sub',val:'SO₂'},{type:'text',val:' + '},{type:'sub',val:'O₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'SO₃'}]},
+     given:[{label:'константа скорости',value:0.8,unit:'',display:'0.8'},{label:'концентрация сернистого газа',value:0.4,unit:'моль/л',display:'0.4'},{label:'концентрация кислорода',value:0.2,unit:'моль/л',display:'0.2'}],
+     find:'v = k · [SO₂]² · [O₂] = ?', answer:0.0256, tolerance:0.001,
+     explanation:'Сернистый газ — SO₂ (коэф. 2), кислород — O₂ (коэф. 1).<br>v = k · [SO₂]² · [O₂] = <b>0.8</b> × <b>0.4</b>² × <b>0.2</b> = 0.8 × 0.16 × 0.2 = <b>0.0256</b>'},
+    // === Вант-Гофф с формулой ===
+    {type:'vanthoff', title:'Правило Вант-Гоффа: найдите новую скорость',
+     reaction:{parts:[{type:'text',val:'Нагревание'}]},
+     given:[{label:'начальная скорость',value:0.5,unit:'моль/(л·с)',display:'0.5'},{label:'начальная температура',value:20,unit:'°C',display:'20'},{label:'конечная температура',value:50,unit:'°C',display:'50'},{label:'температурный коэффициент γ',value:3,unit:'',display:'3'}],
+     find:'v₂ = v₁ · γ<sup>(t₂−t₁)/10</sup> = ?', answer:13.5, tolerance:0.1,
+     explanation:'v₂ = v₁ · γ<sup>(t₂−t₁)/10</sup> = <b>0.5</b> × <b>3</b><sup>(50−20)/10</sup> = 0.5 × 3³ = 0.5 × 27 = <b>13.5</b>'},
+    {type:'vanthoff', title:'Правило Вант-Гоффа: найдите скорость при охлаждении',
+     reaction:{parts:[{type:'text',val:'Охлаждение'}]},
+     given:[{label:'начальная скорость',value:81,unit:'моль/(л·с)',display:'81'},{label:'начальная температура',value:60,unit:'°C',display:'60'},{label:'конечная температура',value:30,unit:'°C',display:'30'},{label:'температурный коэффициент γ',value:3,unit:'',display:'3'}],
+     find:'v₂ = v₁ · γ<sup>(t₂−t₁)/10</sup> = ?', answer:3, tolerance:0.1,
+     explanation:'v₂ = <b>81</b> × <b>3</b><sup>(30−60)/10</sup> = 81 × 3<sup>−3</sup> = 81 / 27 = <b>3</b>'},
+    // === Скорость ΔC/Δt с формулой ===
+    {type:'speed', title:'Вычислите среднюю скорость реакции',
+     reaction:{parts:[{type:'text',val:'A → B (реагент расходуется)'}]},
+     given:[{label:'начальная концентрация реагента',value:0.8,unit:'моль/л',display:'0.8'},{label:'конечная концентрация реагента',value:0.2,unit:'моль/л',display:'0.2'},{label:'время реакции',value:5,unit:'с',display:'5'}],
+     find:'v = |C₂ − C₁| / Δt = ?', answer:0.12, tolerance:0.005,
+     explanation:'v = |C₂ − C₁| / Δt = |<b>0.2</b> − <b>0.8</b>| / <b>5</b> = 0.6 / 5 = <b>0.12</b> моль/(л·с)'},
+    // === Изменение концентрации с формулой ===
+    {type:'masslaw_change', title:'Как изменится скорость?',
+     reaction:{parts:[{type:'coef',val:'2'},{type:'sub',val:'SO₂'},{type:'text',val:' + '},{type:'sub',val:'O₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'SO₃'}]},
+     given:[{label:'концентрацию сернистого газа увеличили в',value:2,unit:'раз',display:'2'},{label:'концентрацию кислорода увеличили в',value:3,unit:'раз',display:'3'}],
+     find:'v₂/v₁ = ?',
+     answer:12, tolerance:0.1,
+     explanation:'<div style="font-family:Consolas,monospace;line-height:2;margin:8px 0;">v₂ = k · (2·[SO₂])² · (3·[O₂])<br><div style="border-top:2px solid #888;display:inline-block;padding-top:2px;">v₁ = k · [SO₂]² · [O₂]</div></div>k и концентрации сокращаются → v₂/v₁ = <b>2</b>² × <b>3</b> = 4 × 3 = <b>12</b> раз'},
+    {type:'masslaw_change', title:'Как изменится скорость?',
+     reaction:{parts:[{type:'sub',val:'CO'},{type:'text',val:' + '},{type:'coef',val:'2'},{type:'sub',val:'H₂'},{type:'text',val:' → '},{type:'sub',val:'CH₃OH'}]},
+     given:[{label:'концентрацию водорода увеличили в',value:4,unit:'раз',display:'4'}],
+     find:'v₂/v₁ = ?',
+     answer:16, tolerance:0.1,
+     explanation:'<div style="font-family:Consolas,monospace;line-height:2;margin:8px 0;">v₂ = k · [CO] · (4·[H₂])²<br><div style="border-top:2px solid #888;display:inline-block;padding-top:2px;">v₁ = k · [CO] · [H₂]²</div></div>[CO] не менялась — сокращается. v₂/v₁ = <b>4</b>² = <b>16</b> раз'},
+    {type:'vanthoff', title:'Во сколько раз вырастет скорость?',
+     reaction:{parts:[{type:'text',val:'Нагревание'}]},
+     given:[{label:'начальная температура',value:30,unit:'°C',display:'30'},{label:'конечная температура',value:70,unit:'°C',display:'70'},{label:'температурный коэффициент γ',value:2,unit:'',display:'2'}],
+     find:'v₂/v₁ = γ<sup>(t₂−t₁)/10</sup> = ?', answer:16, tolerance:0.1,
+     explanation:'v₂/v₁ = <b>2</b><sup>(70−30)/10</sup> = 2⁴ = <b>16</b> раз'},
+];
+
+const calcNoFormula = [
+    // === Закон действующих масс БЕЗ формулы ===
+    {type:'masslaw', title:'Вычислите скорость реакции',
+     reaction:{parts:[{type:'sub',val:'H₂'},{type:'text',val:' + '},{type:'sub',val:'I₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'HI'}]},
+     given:[{label:'константа скорости',value:0.6,unit:'',display:'0.6'},{label:'концентрация водорода',value:0.2,unit:'моль/л',display:'0.2'},{label:'концентрация йода',value:0.5,unit:'моль/л',display:'0.5'}],
+     find:'Найти скорость реакции v = ?', answer:0.06, tolerance:0.005,
+     explanation:'Водород — H₂ (коэф. 1), йод — I₂ (коэф. 1).<br>v = k · [H₂] · [I₂] = <b>0.6</b> × <b>0.2</b> × <b>0.5</b> = <b>0.06</b>'},
+    {type:'masslaw', title:'Вычислите скорость реакции',
+     reaction:{parts:[{type:'coef',val:'2'},{type:'sub',val:'NO'},{type:'text',val:' + '},{type:'sub',val:'Cl₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'NOCl'}]},
+     given:[{label:'константа скорости',value:2,unit:'',display:'2'},{label:'концентрация оксида азота',value:0.3,unit:'моль/л',display:'0.3'},{label:'концентрация хлора',value:0.1,unit:'моль/л',display:'0.1'}],
+     find:'Найти скорость реакции v = ?', answer:0.018, tolerance:0.001,
+     explanation:'NO (коэф. 2), Cl₂ (коэф. 1).<br>v = k · [NO]² · [Cl₂] = <b>2</b> × <b>0.3</b>² × <b>0.1</b> = 2 × 0.09 × 0.1 = <b>0.018</b>'},
+    {type:'masslaw', title:'Вычислите скорость реакции',
+     reaction:{parts:[{type:'sub',val:'CO'},{type:'text',val:' + '},{type:'sub',val:'Cl₂'},{type:'text',val:' → '},{type:'sub',val:'COCl₂'}]},
+     given:[{label:'константа скорости',value:1.5,unit:'',display:'1.5'},{label:'концентрация угарного газа',value:0.4,unit:'моль/л',display:'0.4'},{label:'концентрация хлора',value:0.3,unit:'моль/л',display:'0.3'}],
+     find:'Найти скорость реакции v = ?', answer:0.18, tolerance:0.01,
+     explanation:'CO (коэф. 1), Cl₂ (коэф. 1).<br>v = k · [CO] · [Cl₂] = <b>1.5</b> × <b>0.4</b> × <b>0.3</b> = <b>0.18</b>'},
+    {type:'masslaw', title:'Вычислите скорость реакции',
+     reaction:{parts:[{type:'coef',val:'4'},{type:'sub',val:'NH₃'},{type:'text',val:' + '},{type:'coef',val:'3'},{type:'sub',val:'O₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'N₂'},{type:'text',val:' + '},{type:'coef',val:'6'},{type:'sub',val:'H₂O'}]},
+     given:[{label:'константа скорости',value:0.1,unit:'',display:'0.1'},{label:'концентрация аммиака',value:0.2,unit:'моль/л',display:'0.2'},{label:'концентрация кислорода',value:0.5,unit:'моль/л',display:'0.5'}],
+     find:'Найти скорость реакции v = ?', answer:0.00002, tolerance:0.000005,
+     explanation:'Аммиак — NH₃ (коэф. 4), кислород — O₂ (коэф. 3).<br>v = k · [NH₃]⁴ · [O₂]³ = <b>0.1</b> × <b>0.2</b>⁴ × <b>0.5</b>³ = 0.1 × 0.0016 × 0.125 = <b>0.00002</b>'},
+    // === Вант-Гофф БЕЗ формулы ===
+    {type:'vanthoff', title:'Найдите новую скорость',
+     reaction:{parts:[{type:'text',val:'Нагревание'}]},
+     given:[{label:'начальная скорость',value:2,unit:'моль/(л·с)',display:'2'},{label:'начальная температура',value:10,unit:'°C',display:'10'},{label:'конечная температура',value:40,unit:'°C',display:'40'},{label:'температурный коэффициент γ',value:2,unit:'',display:'2'}],
+     find:'Найти скорость при новой температуре v₂ = ?', answer:16, tolerance:0.1,
+     explanation:'v₂ = <b>2</b> × <b>2</b><sup>(40−10)/10</sup> = 2 × 2³ = 2 × 8 = <b>16</b>'},
+    {type:'vanthoff', title:'Найдите новую скорость',
+     reaction:{parts:[{type:'text',val:'Нагревание'}]},
+     given:[{label:'начальная скорость',value:1,unit:'моль/(л·с)',display:'1'},{label:'начальная температура',value:20,unit:'°C',display:'20'},{label:'конечная температура',value:60,unit:'°C',display:'60'},{label:'температурный коэффициент γ',value:3,unit:'',display:'3'}],
+     find:'Найти скорость при новой температуре v₂ = ?', answer:81, tolerance:0.5,
+     explanation:'v₂ = <b>1</b> × <b>3</b><sup>(60−20)/10</sup> = 1 × 3⁴ = <b>81</b>'},
+    {type:'vanthoff', title:'Найдите скорость при охлаждении',
+     reaction:{parts:[{type:'text',val:'Охлаждение'}]},
+     given:[{label:'начальная скорость',value:32,unit:'моль/(л·с)',display:'32'},{label:'начальная температура',value:50,unit:'°C',display:'50'},{label:'конечная температура',value:10,unit:'°C',display:'10'},{label:'температурный коэффициент γ',value:2,unit:'',display:'2'}],
+     find:'Найти скорость при новой температуре v₂ = ?', answer:2, tolerance:0.1,
+     explanation:'v₂ = <b>32</b> × <b>2</b><sup>(10−50)/10</sup> = 32 × 2<sup>−4</sup> = 32 / 16 = <b>2</b>'},
+    {type:'vanthoff', title:'Во сколько раз вырастет скорость?',
+     reaction:{parts:[{type:'text',val:'Нагревание'}]},
+     given:[{label:'начальная температура',value:20,unit:'°C',display:'20'},{label:'конечная температура',value:80,unit:'°C',display:'80'},{label:'температурный коэффициент γ',value:2,unit:'',display:'2'}],
+     find:'Во сколько раз? v₂/v₁ = ?', answer:64, tolerance:0.5,
+     explanation:'v₂/v₁ = <b>2</b><sup>(80−20)/10</sup> = 2⁶ = <b>64</b> раза'},
+    {type:'vanthoff', title:'Во сколько раз замедлится реакция?',
+     reaction:{parts:[{type:'text',val:'Охлаждение'}]},
+     given:[{label:'начальная температура',value:70,unit:'°C',display:'70'},{label:'конечная температура',value:40,unit:'°C',display:'40'},{label:'температурный коэффициент γ',value:3,unit:'',display:'3'}],
+     find:'Во сколько раз замедлится? v₁/v₂ = ?', answer:27, tolerance:0.5,
+     explanation:'v₂/v₁ = 3<sup>(40−70)/10</sup> = 3<sup>−3</sup> = 1/27. Замедлится в <b>27</b> раз'},
+    // === Скорость по ΔC/Δt БЕЗ формулы ===
+    {type:'speed', title:'Вычислите среднюю скорость',
+     reaction:{parts:[{type:'text',val:'A → B (продукт образуется)'}]},
+     given:[{label:'начальная концентрация продукта',value:0,unit:'моль/л',display:'0'},{label:'конечная концентрация продукта',value:0.45,unit:'моль/л',display:'0.45'},{label:'время реакции',value:10,unit:'с',display:'10'}],
+     find:'Найти среднюю скорость v = ?', answer:0.045, tolerance:0.001,
+     explanation:'v = (C₂ − C₁) / Δt = (<b>0.45</b> − <b>0</b>) / <b>10</b> = <b>0.045</b> моль/(л·с)'},
+    {type:'speed', title:'Вычислите среднюю скорость',
+     reaction:{parts:[{type:'text',val:'A → B (реагент расходуется)'}]},
+     given:[{label:'начальная концентрация реагента',value:1.0,unit:'моль/л',display:'1.0'},{label:'конечная концентрация реагента',value:0.4,unit:'моль/л',display:'0.4'},{label:'время реакции',value:20,unit:'с',display:'20'}],
+     find:'Найти среднюю скорость v = ?', answer:0.03, tolerance:0.002,
+     explanation:'v = |C₂ − C₁| / Δt = |<b>0.4</b> − <b>1.0</b>| / <b>20</b> = 0.6 / 20 = <b>0.03</b> моль/(л·с)'},
+    {type:'speed', title:'Вычислите среднюю скорость',
+     reaction:{parts:[{type:'text',val:'A → B (реагент расходуется)'}]},
+     given:[{label:'начальная концентрация реагента',value:0.5,unit:'моль/л',display:'0.5'},{label:'конечная концентрация реагента',value:0.1,unit:'моль/л',display:'0.1'},{label:'время реакции',value:8,unit:'с',display:'8'}],
+     find:'Найти среднюю скорость v = ?', answer:0.05, tolerance:0.002,
+     explanation:'v = |C₂ − C₁| / Δt = |<b>0.1</b> − <b>0.5</b>| / <b>8</b> = 0.4 / 8 = <b>0.05</b> моль/(л·с)'},
+    // === Изменение концентрации БЕЗ формулы ===
+    {type:'masslaw_change', title:'Как изменится скорость?',
+     reaction:{parts:[{type:'coef',val:'2'},{type:'sub',val:'NO'},{type:'text',val:' + '},{type:'sub',val:'O₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'NO₂'}]},
+     given:[{label:'концентрацию оксида азота увеличили в',value:3,unit:'раз',display:'3'},{label:'концентрацию кислорода увеличили в',value:2,unit:'раз',display:'2'}],
+     find:'Во сколько раз вырастет скорость?', answer:18, tolerance:0.1,
+     explanation:'<div style="font-family:Consolas,monospace;line-height:2;margin:8px 0;">v₂ = k · (3·[NO])² · (2·[O₂])<br><div style="border-top:2px solid #888;display:inline-block;padding-top:2px;">v₁ = k · [NO]² · [O₂]</div></div>v₂/v₁ = <b>3</b>² × <b>2</b> = 9 × 2 = <b>18</b> раз'},
+    {type:'masslaw_change', title:'Как изменится скорость?',
+     reaction:{parts:[{type:'sub',val:'N₂'},{type:'text',val:' + '},{type:'coef',val:'3'},{type:'sub',val:'H₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'NH₃'}]},
+     given:[{label:'концентрацию водорода увеличили в',value:2,unit:'раз',display:'2'}],
+     find:'Во сколько раз вырастет скорость?', answer:8, tolerance:0.1,
+     explanation:'<div style="font-family:Consolas,monospace;line-height:2;margin:8px 0;">v₂ = k · [N₂] · (2·[H₂])³<br><div style="border-top:2px solid #888;display:inline-block;padding-top:2px;">v₁ = k · [N₂] · [H₂]³</div></div>[N₂] не менялась — сокращается. v₂/v₁ = <b>2</b>³ = <b>8</b> раз'},
+    {type:'masslaw_change', title:'Как изменится скорость?',
+     reaction:{parts:[{type:'sub',val:'CO'},{type:'text',val:' + '},{type:'coef',val:'2'},{type:'sub',val:'H₂'},{type:'text',val:' → '},{type:'sub',val:'CH₃OH'}]},
+     given:[{label:'концентрацию водорода увеличили в',value:4,unit:'раз',display:'4'}],
+     find:'Во сколько раз вырастет скорость?', answer:16, tolerance:0.1,
+     explanation:'<div style="font-family:Consolas,monospace;line-height:2;margin:8px 0;">v₂ = k · [CO] · (4·[H₂])²<br><div style="border-top:2px solid #888;display:inline-block;padding-top:2px;">v₁ = k · [CO] · [H₂]²</div></div>[CO] не менялась — сокращается. v₂/v₁ = <b>4</b>² = <b>16</b> раз'},
+    {type:'masslaw_change', title:'Как изменится скорость?',
+     reaction:{parts:[{type:'coef',val:'2'},{type:'sub',val:'H₂'},{type:'text',val:' + '},{type:'sub',val:'O₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'H₂O'}]},
+     given:[{label:'концентрацию водорода увеличили в',value:3,unit:'раз',display:'3'},{label:'концентрацию кислорода увеличили в',value:2,unit:'раз',display:'2'}],
+     find:'Во сколько раз вырастет скорость?', answer:18, tolerance:0.1,
+     explanation:'<div style="font-family:Consolas,monospace;line-height:2;margin:8px 0;">v₂ = k · (3·[H₂])² · (2·[O₂])<br><div style="border-top:2px solid #888;display:inline-block;padding-top:2px;">v₁ = k · [H₂]² · [O₂]</div></div>v₂/v₁ = <b>3</b>² × <b>2</b> = 9 × 2 = <b>18</b> раз'},
+    // ещё Вант-Гофф
+    {type:'vanthoff', title:'Найдите новую скорость',
+     reaction:{parts:[{type:'text',val:'Нагревание'}]},
+     given:[{label:'начальная скорость',value:0.3,unit:'моль/(л·с)',display:'0.3'},{label:'начальная температура',value:10,unit:'°C',display:'10'},{label:'конечная температура',value:50,unit:'°C',display:'50'},{label:'температурный коэффициент γ',value:2,unit:'',display:'2'}],
+     find:'Найти скорость при новой температуре v₂ = ?', answer:4.8, tolerance:0.1,
+     explanation:'v₂ = <b>0.3</b> × <b>2</b><sup>(50−10)/10</sup> = 0.3 × 2⁴ = 0.3 × 16 = <b>4.8</b>'},
+    {type:'vanthoff', title:'Найдите новую скорость',
+     reaction:{parts:[{type:'text',val:'Нагревание'}]},
+     given:[{label:'начальная скорость',value:4,unit:'моль/(л·с)',display:'4'},{label:'начальная температура',value:30,unit:'°C',display:'30'},{label:'конечная температура',value:50,unit:'°C',display:'50'},{label:'температурный коэффициент γ',value:4,unit:'',display:'4'}],
+     find:'Найти скорость при новой температуре v₂ = ?', answer:64, tolerance:0.5,
+     explanation:'v₂ = <b>4</b> × <b>4</b><sup>(50−30)/10</sup> = 4 × 4² = 4 × 16 = <b>64</b>'},
+    // ещё ΔC/Δt
+    {type:'speed', title:'Вычислите среднюю скорость',
+     reaction:{parts:[{type:'text',val:'A → B (продукт образуется)'}]},
+     given:[{label:'начальная концентрация продукта',value:0.1,unit:'моль/л',display:'0.1'},{label:'конечная концентрация продукта',value:0.7,unit:'моль/л',display:'0.7'},{label:'время реакции',value:15,unit:'с',display:'15'}],
+     find:'Найти среднюю скорость v = ?', answer:0.04, tolerance:0.002,
+     explanation:'v = (C₂ − C₁) / Δt = (<b>0.7</b> − <b>0.1</b>) / <b>15</b> = 0.6 / 15 = <b>0.04</b> моль/(л·с)'},
+    {type:'masslaw_change', title:'Как изменится скорость?',
+     reaction:{parts:[{type:'coef',val:'2'},{type:'sub',val:'SO₂'},{type:'text',val:' + '},{type:'sub',val:'O₂'},{type:'text',val:' → '},{type:'coef',val:'2'},{type:'sub',val:'SO₃'}]},
+     given:[{label:'концентрацию диоксида серы увеличили в',value:2,unit:'раз',display:'2'},{label:'концентрацию кислорода увеличили в',value:3,unit:'раз',display:'3'}],
+     find:'Во сколько раз вырастет скорость?', answer:12, tolerance:0.1,
+     explanation:'<div style="font-family:Consolas,monospace;line-height:2;margin:8px 0;">v₂ = k · (2·[SO₂])² · (3·[O₂])<br><div style="border-top:2px solid #888;display:inline-block;padding-top:2px;">v₁ = k · [SO₂]² · [O₂]</div></div>v₂/v₁ = <b>2</b>² × <b>3</b> = 4 × 3 = <b>12</b> раз'},
+];
+
+/* ═══════════════ CALCULATOR ENGINE ═══════════════ */
+let calcList = [], calcIdx = 0, calcScore = 0, calcTokens = [], calcLocked = false;
+let calcSkipped = []; // tasks that were skipped (not retried successfully)
+let calcRetrying = false; // true during retry round
+
+function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function startCalc() {
+    calcList = shuffle(calcWithFormula).concat(shuffle(calcNoFormula));
+    calcIdx = 0; calcScore = 0; calcTokens = []; calcLocked = false;
+    calcSkipped = []; calcRetrying = false;
+    showScreen('calcScreen');
+    document.getElementById('calcTotal').textContent = calcList.length;
+    loadCalcTask();
+}
+
+function loadCalcTask() {
+    const task = calcList[calcIdx];
+    calcTokens = []; calcLocked = false;
+    if (calcRetrying) {
+        document.getElementById('calcNum').textContent = `⟳ ${calcIdx + 1}`;
+        document.getElementById('calcTotal').textContent = calcList.length;
+    } else {
+        document.getElementById('calcNum').textContent = calcIdx + 1;
+    }
+    document.getElementById('calcCorrect').textContent = calcScore;
+    document.getElementById('calcTaskTitle').textContent = task.title;
+    document.getElementById('calcFeedback').className = 'calc-feedback';
+
+    // Render reaction
+    const rDiv = document.getElementById('calcReaction');
+    let rHtml = '';
+    task.reaction.parts.forEach(p => {
+        if (p.type === 'coef') {
+            rHtml += `<span class="coef" data-val="${p.val}">${p.val}</span>`;
+        } else if (p.type === 'sub') {
+            rHtml += `<span class="substance">${p.val}</span>`;
+        } else {
+            rHtml += `<span>${p.val}</span>`;
+        }
+    });
+    rDiv.innerHTML = rHtml;
+
+    // Attach coef click handlers
+    rDiv.querySelectorAll('.coef').forEach(el => {
+        el.addEventListener('click', () => {
+            if (calcLocked) return;
+            calcTokens.push({type:'coef', value: el.dataset.val, display: el.dataset.val});
+            renderCalcExpr();
+        });
+    });
+
+    // Render given
+    const gDiv = document.getElementById('calcGiven');
+    gDiv.innerHTML = '';
+    task.given.forEach((g, i) => {
+        const item = document.createElement('div');
+        item.className = 'calc-given-item';
+        item.innerHTML = `<span class="gi-label">${g.label}</span><span class="gi-value">${g.display}</span> <span class="gi-unit">${g.unit}</span>`;
+        item.addEventListener('click', () => {
+            if (calcLocked) return;
+            calcTokens.push({type:'val', value: String(g.value), display: g.display});
+            item.classList.add('used');
+            renderCalcExpr();
+        });
+        gDiv.appendChild(item);
+    });
+
+    // Render find
+    document.getElementById('calcFind').innerHTML = '<b>Найти:</b> ' + task.find;
+
+    renderCalcExpr();
+}
+
+function renderCalcExpr(resultStr) {
+    const wrap = document.getElementById('calcExpr');
+    let html = '';
+    calcTokens.forEach(t => {
+        if (t.type === 'val') html += `<span class="tok tok-val">${t.display}</span>`;
+        else if (t.type === 'coef') html += `<span class="tok tok-coef">${t.display}</span>`;
+        else if (t.type === 'num') html += `<span class="tok tok-val">${t.display}</span>`;
+        else if (t.type === 'par') html += `<span class="tok tok-par">${t.display}</span>`;
+        else if (t.type === 'abs-open' || t.type === 'abs-close') html += `<span class="tok tok-op" style="font-weight:700;">|</span>`;
+        else html += `<span class="tok tok-op">${t.display}</span>`;
+    });
+    if (resultStr !== undefined) {
+        html += `<span class="tok tok-op"> = </span><span class="tok tok-val">${resultStr}</span>`;
+    }
+    if (!calcLocked) html += '<span class="cursor-blink"></span>';
+    wrap.innerHTML = html;
+}
+
+
+// Controls
+document.querySelector('#calcScreen .controls').addEventListener('click', e => {
+    const btn = e.target.closest('.ctrl-btn');
+    if (!btn || calcLocked) return;
+    const act = btn.dataset.act;
+    const op = btn.dataset.o;
+    if (op) {
+        if (op === '(' || op === ')') {
+            calcTokens.push({type:'par', value: op, display: op});
+        } else if (op === '.') {
+            // Append to last num
+            const last = calcTokens[calcTokens.length - 1];
+            if (last && last.type === 'num') {
+                last.value += '.';
+                last.display += '.';
+            } else {
+                calcTokens.push({type:'num', value:'0.', display:'0.'});
+            }
+        } else {
+            const displayMap = {'×':'×', '/':'÷', '^':'^'};
+            calcTokens.push({type:'op', value: op === '×' ? '*' : op, display: displayMap[op] || op});
+        }
+    } else if (act === 'n10') {
+        calcTokens.push({type:'num', value:'10', display:'10'});
+    } else if (act === 'abs') {
+        // Toggle: first click opens |, second closes |
+        const hasOpen = calcTokens.some(t => t.type === 'abs-open') && !calcTokens.some(t => t.type === 'abs-close');
+        if (hasOpen) {
+            calcTokens.push({type:'abs-close', value:')', display:'|'});
+        } else {
+            calcTokens.push({type:'abs-open', value:'Math.abs(', display:'|'});
+        }
+    } else if (act === 'del') {
+        const last = calcTokens[calcTokens.length - 1];
+        if (last && last.type === 'num' && last.value.length > 1) {
+            last.value = last.value.slice(0, -1);
+            last.display = last.display.slice(0, -1);
+        } else {
+            calcTokens.pop();
+        }
+    } else if (act === 'clr') {
+        calcTokens = [];
+        document.querySelectorAll('.calc-given-item.used').forEach(el => el.classList.remove('used'));
+    } else if (act === 'eq') {
+        calcEvaluate();
+        return;
+    }
+    renderCalcExpr();
+});
+
+// Keyboard
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('calcScreen').classList.contains('active')) return;
+    if (calcLocked) {
+        if (e.key === 'Enter') calcNext(false);
+        return;
+    }
+    if (e.key >= '0' && e.key <= '9') {
+        const last = calcTokens[calcTokens.length - 1];
+        if (last && last.type === 'num') { last.value += e.key; last.display += e.key; }
+        else calcTokens.push({type:'num', value: e.key, display: e.key});
+        renderCalcExpr();
+    } else if (e.key === '.') {
+        const last = calcTokens[calcTokens.length - 1];
+        if (last && last.type === 'num') { last.value += '.'; last.display += '.'; }
+        else calcTokens.push({type:'num', value:'0.', display:'0.'});
+        renderCalcExpr();
+    } else if (e.key === '+') { calcTokens.push({type:'op', value:'+', display:'+'}); renderCalcExpr(); }
+    else if (e.key === '-') { calcTokens.push({type:'op', value:'-', display:'−'}); renderCalcExpr(); }
+    else if (e.key === '*') { calcTokens.push({type:'op', value:'*', display:'×'}); renderCalcExpr(); }
+    else if (e.key === '/') { calcTokens.push({type:'op', value:'/', display:'÷'}); renderCalcExpr(); }
+    else if (e.key === '^') { calcTokens.push({type:'op', value:'^', display:'^'}); renderCalcExpr(); }
+    else if (e.key === '(') { calcTokens.push({type:'par', value:'(', display:'('}); renderCalcExpr(); }
+    else if (e.key === ')') { calcTokens.push({type:'par', value:')', display:')'}); renderCalcExpr(); }
+    else if (e.key === '|') {
+        const hasOpen = calcTokens.some(t => t.type === 'abs-open') && !calcTokens.some(t => t.type === 'abs-close');
+        if (hasOpen) calcTokens.push({type:'abs-close', value:')', display:'|'});
+        else calcTokens.push({type:'abs-open', value:'Math.abs(', display:'|'});
+        renderCalcExpr();
+    }
+    else if (e.key === 'Backspace') {
+        const last = calcTokens[calcTokens.length - 1];
+        if (last && last.type === 'num' && last.value.length > 1) { last.value = last.value.slice(0,-1); last.display = last.display.slice(0,-1); }
+        else calcTokens.pop();
+        renderCalcExpr();
+    }
+    else if (e.key === 'Escape') { calcTokens = []; renderCalcExpr(); document.querySelectorAll('.calc-given-item.used').forEach(el => el.classList.remove('used')); }
+    else if (e.key === 'Enter' || e.key === '=') calcEvaluate();
+});
+
+function calcEvaluate() {
+    if (calcTokens.length === 0) return;
+    const expr = calcTokens.map(t => t.value).join('').replace(/\^/g, '**').replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
+    let result;
+    try { result = Function('"use strict"; return (' + expr + ')')(); } catch { calcShowWrong(NaN); return; }
+    if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) { calcShowWrong(NaN); return; }
+
+    const task = calcList[calcIdx];
+    const rounded = Math.round(result * 100000) / 100000;
+    if (Math.abs(rounded - task.answer) <= task.tolerance) {
+        calcShowCorrect(rounded);
+    } else {
+        calcShowWrong(rounded);
+    }
+}
+
+function calcShowCorrect(val) {
+    calcLocked = true; calcScore++;
+    document.getElementById('calcCorrect').textContent = calcScore;
+    renderCalcExpr(val);
+    const task = calcList[calcIdx];
+    const fb = document.getElementById('calcFeedback');
+    fb.className = 'calc-feedback correct';
+    const nextLabel = calcIdx < calcList.length - 1 ? 'Следующая задача →' : (calcSkipped.length > 0 && !calcRetrying ? 'Работа над ошибками →' : 'Результаты →');
+    fb.innerHTML = `<div class="fb-title">✓ Верно! Ответ: ${task.answer}</div>
+        <div>${task.explanation}</div>
+        <div style="margin-top:10px;"><button class="btn btn-primary" onclick="calcNext(false)" style="font-size:0.88em; padding:8px 20px;">${nextLabel}</button></div>`;
+}
+
+function calcShowWrong(val) {
+    calcLocked = true;
+    const valStr = isNaN(val) ? 'ошибка в выражении' : val;
+    renderCalcExpr(valStr);
+    const task = calcList[calcIdx];
+    const fb = document.getElementById('calcFeedback');
+    fb.className = 'calc-feedback wrong';
+    const skipLabel = calcIdx < calcList.length - 1 ? 'Пропустить →' : 'Дальше →';
+    fb.innerHTML = `<div class="fb-title">✗ Неверно (${valStr}). Правильный ответ: ${task.answer}</div>
+        <div>${task.explanation}</div>
+        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="calcRetry()" style="font-size:0.88em; padding:8px 20px;">Попробовать снова</button>
+            <button class="btn btn-secondary" onclick="calcNext(true)" style="font-size:0.88em; padding:8px 20px;">${skipLabel}</button>
+        </div>`;
+}
+
+function calcRetry() {
+    calcTokens = []; calcLocked = false;
+    document.getElementById('calcFeedback').className = 'calc-feedback';
+    document.querySelectorAll('.calc-given-item.used').forEach(el => el.classList.remove('used'));
+    renderCalcExpr();
+}
+
+function calcNext(skipped) {
+    // If the task was skipped (not solved correctly), remember it
+    if (skipped) calcSkipped.push(calcList[calcIdx]);
+    calcIdx++;
+    if (calcIdx >= calcList.length) {
+        // If there are skipped tasks and this isn't already the retry round
+        if (calcSkipped.length > 0 && !calcRetrying) {
+            startRetryRound();
+        } else {
+            showCalcResults();
+        }
+        return;
+    }
+    loadCalcTask();
+}
+
+function startRetryRound() {
+    calcRetrying = true;
+    calcList = shuffle(calcSkipped);
+    calcSkipped = [];
+    calcIdx = 0;
+    calcTokens = []; calcLocked = false;
+    loadCalcTask();
+}
+
+function showCalcResults() {
+    const total = calcWithFormula.length + calcNoFormula.length;
+    const pct = Math.round(calcScore / total * 100);
+    let title, text;
+    if (pct === 100) { title = '🎉 Молодец!'; text = `${calcScore}/${total} (100%) — все задачи решены верно!`; }
+    else if (pct >= 90) { title = '🎉 Отлично!'; text = `${calcScore}/${total} (${pct}%) — расчёты даются легко!`; }
+    else if (pct >= 70) { title = '👍 Хорошо!'; text = `${calcScore}/${total} (${pct}%) — ещё немного практики.`; }
+    else { title = '📖 Стоит потренироваться'; text = `${calcScore}/${total} (${pct}%) — перечитай формулы и попробуй снова.`; }
+
+    document.getElementById('calcResultTitle').textContent = title;
+    document.getElementById('calcResultText').textContent = text;
+    showScreen('calcResults');
+}
+
+/* ═══════════════ INIT ═══════════════ */
+document.querySelectorAll('.exit-btn').forEach(b => b.style.display = 'none');
+</script>
+</body>
+</html>

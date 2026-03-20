@@ -34,31 +34,23 @@
         .card-desc { font-size: 0.82em; color: #999; line-height: 1.4; }
         .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7em;
                background: rgba(123,47,247,0.15); color: #b388ff; margin-top: 6px; }
+        .section-title {
+            font-size: 0.78em; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+            color: #a78bfa; margin-top: 28px; margin-bottom: 8px; padding-left: 4px;
+        }
+        .section-title:first-child { margin-top: 0; }
     </style>
 </head>
 <body>
 <div class="page">
     <h1>Квизы и тренажёры</h1>
-    <div class="subtitle">Химия · Английский</div>
+    <div class="subtitle">Химия</div>
     <div class="cards">
-        <a class="card" href="english-unit4-words.html">
-            <div class="card-title">Unit IV — Словарный квиз</div>
-            <div class="card-desc">Слова с листика (10) и из книги (24). Forest Resources Management.</div>
-            <span class="tag">квиз · английский</span>
-        </a>
-        <a class="card" href="english-unit4-text1-trainer.html">
-            <div class="card-title">Unit IV · Text 1 · Forests of the Earth</div>
-            <div class="card-desc">Задания 1–4: вопросы по тексту, эквиваленты, словообразование, пропуски с подсказками. Озвучка.</div>
-            <span class="tag">тренажёр · английский</span>
-        </a>
+
+        <div class="section-title">Строение атома — Темы 1–2</div>
         <a class="card" href="chemistry-quiz-1.html">
             <div class="card-title">Квиз по химии — Темы 1–2</div>
             <div class="card-desc">Основные понятия и строение атома.</div>
-            <span class="tag">тест</span>
-        </a>
-        <a class="card" href="chemistry-quiz-2.html">
-            <div class="card-title">Квиз по химии — Тема 3</div>
-            <div class="card-desc">Химическая связь: периодические свойства, ковалентная связь (σ/π, ДА-механизм), полярность и ионная связь. 40 вопросов.</div>
             <span class="tag">тест</span>
         </a>
         <a class="card" href="orbital-trainer.html">
@@ -66,21 +58,42 @@
             <div class="card-desc">Тренажёр: расставь электроны по правилам Клечковского, Хунда и Паули. Анимация проскока электронов.</div>
             <span class="tag">тренажёр</span>
         </a>
-        <a class="card" href="molar-mass-trainer.html">
-            <div class="card-title">Молярная масса</div>
-            <div class="card-desc">Тренажёр: ищи атомные массы в таблице Менделеева, собирай выражение, вычисляй M<sub>r</sub>. Неорганика + органика.</div>
-            <span class="tag">тренажёр</span>
+        <a class="card" href="orbital-shapes.html">
+            <div class="card-title">Формы орбиталей</div>
+            <div class="card-desc">SVG-анимация: смотри, как выглядят s, p, d орбитали. Плавный морфинг между формами.</div>
+            <span class="tag">визуализация</span>
         </a>
         <a class="card" href="quantum-numbers.html">
             <div class="card-title">Квантовые числа</div>
             <div class="card-desc">Определи 4 квантовых числа электрона: n, l, m<sub>l</sub>, m<sub>s</sub>. Пошаговый тренажёр с объяснениями.</div>
             <span class="tag">тренажёр</span>
         </a>
-        <a class="card" href="orbital-shapes.html">
-            <div class="card-title">Формы орбиталей</div>
-            <div class="card-desc">SVG-анимация: смотри, как выглядят s, p, d орбитали. Плавный морфинг между формами.</div>
-            <span class="tag">визуализация</span>
+        <a class="card" href="molar-mass-trainer.html">
+            <div class="card-title">Молярная масса</div>
+            <div class="card-desc">Тренажёр: ищи атомные массы в таблице Менделеева, собирай выражение, вычисляй M<sub>r</sub>. Неорганика + органика.</div>
+            <span class="tag">тренажёр</span>
         </a>
+
+        <div class="section-title">Химическая связь — Тема 3</div>
+        <a class="card" href="chemistry-quiz-2.html">
+            <div class="card-title">Квиз — Химическая связь</div>
+            <div class="card-desc">Периодические свойства, ковалентная связь (σ/π, ДА-механизм), полярность и ионная связь. 40 вопросов.</div>
+            <span class="tag">тест</span>
+        </a>
+        <a class="card" href="chemistry-hybrid.html">
+            <div class="card-title">Гибридизация орбиталей</div>
+            <div class="card-desc">Теория, анимации, квиз по 3 уровням. sp, sp², sp³ — определи тип гибридизации.</div>
+            <span class="tag">тренажёр</span>
+        </a>
+
+        <div class="section-title">Химические реакции — Темы 4–8</div>
+        <a class="card" href="chemistry-kinetics.html">
+            <div class="card-title">Кинетика — скорость реакций</div>
+            <div class="card-desc">Теория (на пальцах + формулы), квиз «как понял?», тренажёр-калькулятор: закон действующих масс, Вант-Гофф.</div>
+            <span class="tag">теория · квиз · тренажёр</span>
+        </a>
+        <!-- Ле Шателье, ОВР, электролитическая диссоциация — будут здесь -->
+
     </div>
 </div>
 </body>
