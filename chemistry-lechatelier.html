@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Принцип Ле Шателье</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .card h2 { font-size: 1.15em; margin-bottom: 14px; color: #fff; }
+        .card h3 { font-size: 1em; margin: 16px 0 8px; color: #00d2ff; }
+        .card p, .card li { line-height: 1.7; margin-bottom: 8px; color: #ccc; }
+        .card ul { padding-left: 20px; }
+        .card .formula-box {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 1.1em;
+            text-align: center; color: #00d2ff;
+        }
+        .card .formula-box .label { font-size: 0.75em; color: #888; font-family: 'Segoe UI', Arial, sans-serif; display: block; margin-top: 6px; }
+        .card .analogy {
+            background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .analogy b { color: #f59e0b; }
+        .card .warning {
+            background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .warning b { color: #ef4444; }
+        .card table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .card th, .card td { border: 1px solid rgba(255,255,255,0.15); padding: 8px 12px; text-align: center; font-size: 0.9em; }
+        .card th { background: rgba(0,210,255,0.1); color: #00d2ff; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Buttons */
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d2ff, #7b2ff7); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,210,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-wrap { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+
+        /* Progress */
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #7b2ff7); border-radius: 10px; transition: width 0.4s; }
+
+        /* Tags */
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .tag-theory { background: rgba(0,210,255,0.2); color: #00d2ff; }
+        .tag-easy { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-medium { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .tag-hard { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+        /* Quiz options */
+        .quiz-option {
+            display: block; width: 100%; padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+            background: rgba(255,255,255,0.04); color: #e0e0e0;
+            font-size: 0.95em; cursor: pointer; margin-bottom: 8px;
+            text-align: left; transition: all 0.2s;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .quiz-option.correct { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+        .quiz-option.wrong { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+        .quiz-explain {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+            font-size: 0.88em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .quiz-explain b { color: #00d2ff; }
+
+        /* Trainer direction buttons */
+        .dir-buttons {
+            display: flex; gap: 10px; margin: 18px 0; justify-content: center;
+        }
+        .dir-btn {
+            flex: 1; max-width: 180px; padding: 18px 10px; border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 14px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1.1em; cursor: pointer;
+            text-align: center; transition: all 0.2s; font-weight: 700;
+        }
+        .dir-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+        .dir-btn.correct { background: rgba(74,222,128,0.2); border-color: #4ade80; color: #4ade80; }
+        .dir-btn.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #ef4444; }
+        .dir-btn .dir-sub { display: block; font-size: 0.55em; font-weight: 400; margin-top: 4px; color: #888; }
+
+        .train-explain {
+            padding: 14px 18px; border-radius: 10px; margin: 12px 0;
+            font-size: 0.92em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .train-explain.show-correct {
+            display: block; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
+        }
+        .train-explain.show-wrong {
+            display: block; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+        }
+        .train-explain b { color: #00d2ff; }
+
+        .reaction-display {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.25em; color: #00d2ff; text-align: center;
+            background: rgba(0,0,0,0.3); border-radius: 10px;
+            padding: 16px; margin: 12px 0;
+        }
+        .change-display {
+            text-align: center; font-size: 1.1em; color: #f59e0b;
+            margin: 14px 0; font-weight: 600;
+        }
+        .retry-badge {
+            display: inline-block; background: rgba(239,68,68,0.2); color: #ef4444;
+            padding: 2px 10px; border-radius: 10px; font-size: 0.75em; font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        /* Results */
+        .result-score {
+            text-align: center; font-size: 2.5em; font-weight: 800;
+            margin: 20px 0 8px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .result-text { text-align: center; color: #aaa; font-size: 1.1em; margin-bottom: 20px; }
+        .result-emoji { text-align: center; font-size: 2em; margin-bottom: 10px; }
+
+        /* Error list */
+        .error-list { margin-top: 16px; }
+        .error-item {
+            background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+        }
+        .error-item .err-q { color: #e0e0e0; font-weight: 600; margin-bottom: 4px; }
+        .error-item .err-a { color: #4ade80; font-size: 0.88em; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- SCREEN 1: MENU -->
+    <div id="menuScreen" class="screen active">
+        <h1>Принцип Ле Шателье</h1>
+        <p class="subtitle">Химическое равновесие и смещение</p>
+        <div class="card">
+            <button class="topic-btn" onclick="showScreen('theorySimple')">
+                <span class="t-label" style="color:#4ade80">ТЕОРИЯ</span>
+                Теория на пальцах
+                <span class="t-desc">Простые аналогии, без формул</span>
+            </button>
+            <button class="topic-btn" onclick="showScreen('theoryFormal')">
+                <span class="t-label" style="color:#60a5fa">ТЕОРИЯ + КВИЗ</span>
+                Теория по-взрослому
+                <span class="t-desc">Формулировки, примеры, тест</span>
+            </button>
+            <button class="topic-btn" onclick="startTrainer()">
+                <span class="t-label" style="color:#f59e0b">ТРЕНАЖЁР</span>
+                Тренажёр
+                <span class="t-desc">Реакция + воздействие → куда сместится?</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: THEORY SIMPLE -->
+    <div id="theorySimple" class="screen">
+        <h1>На пальцах</h1>
+        <p class="subtitle">Принцип Ле Шателье для людей</p>
+
+        <div class="card">
+            <h2>Главная идея</h2>
+            <p>Если <b style="color:#00d2ff">давишь</b> на систему в равновесии — она <b style="color:#00d2ff">сопротивляется</b> и пытается вернуться.</p>
+            <div class="analogy">
+                <b>Аналогия:</b> Толпа в метро — если давишь слева, люди сдвигаются вправо. Система пытается "уравновеситься".
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Фактор 1: Концентрация</h2>
+            <p>Добавил реагентов (левую часть) → реакция "съедает" их → равновесие смещается <b style="color:#4ade80">вправо →</b></p>
+            <p>Добавил продуктов (правую часть) → реакция идёт обратно → равновесие смещается <b style="color:#ef4444">← влево</b></p>
+            <div class="analogy">
+                <b>Аналогия:</b> На столе появились ингредиенты для бургера → повар начинает готовить (вправо). Появились готовые бургеры — повар разбирает их обратно на ингредиенты (влево).
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Фактор 2: Температура</h2>
+            <p><b style="color:#ef4444">Нагрели</b> → равновесие уходит в сторону реакции, которая <b>ПОГЛОЩАЕТ</b> тепло (эндотермическая, −Q).</p>
+            <p><b style="color:#60a5fa">Охладили</b> → равновесие уходит в сторону реакции, которая <b>ВЫДЕЛЯЕТ</b> тепло (экзотермическая, +Q).</p>
+            <div class="analogy">
+                <b>Аналогия:</b> Стало жарко — организм потеет (забирает тепло, "охлаждает"). Стало холодно — дрожишь (выделяешь тепло, "согреваешь"). Система компенсирует!
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Фактор 3: Давление</h2>
+            <p><b style="color:#ef4444">Повысили давление</b> → равновесие смещается туда, где <b>МЕНЬШЕ</b> молекул газа.</p>
+            <p><b style="color:#60a5fa">Понизили давление</b> → равновесие смещается туда, где <b>БОЛЬШЕ</b> молекул газа.</p>
+            <div class="analogy">
+                <b>Аналогия:</b> В лифт набилось 5 человек справа и 2 слева. Двери сжимаются (давление вверх) → люди перемещаются туда, где свободнее (2 человека = меньше). Двери раздвигаются (давление вниз) → люди расходятся туда, где больше места (5 человек = больше).
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Сводная таблица</h2>
+            <table>
+                <tr><th>Фактор</th><th>Действие</th><th>Куда смещается</th><th>Почему</th></tr>
+                <tr><td rowspan="2">Концентрация</td><td>Добавили реагент</td><td>→ вправо</td><td>Система "съедает" лишнее</td></tr>
+                <tr><td>Добавили продукт</td><td>← влево</td><td>Система "разбирает" лишнее</td></tr>
+                <tr><td rowspan="2">Температура</td><td>Нагрели</td><td>В сторону −Q</td><td>Система поглощает тепло</td></tr>
+                <tr><td>Охладили</td><td>В сторону +Q</td><td>Система выделяет тепло</td></tr>
+                <tr><td rowspan="2">Давление</td><td>Повысили</td><td>Где меньше газов</td><td>Система уменьшает объём</td></tr>
+                <tr><td>Понизили</td><td>Где больше газов</td><td>Система увеличивает объём</td></tr>
+            </table>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="showScreen('theoryFormal')">Теория по-взрослому →</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: THEORY FORMAL + QUIZ -->
+    <div id="theoryFormal" class="screen">
+        <h1>По-взрослому</h1>
+        <p class="subtitle">Формулировки + тест</p>
+
+        <div class="card">
+            <h2>Формулировка принципа</h2>
+            <p>Если на систему, находящуюся в состоянии химического равновесия, оказать внешнее воздействие (изменить концентрацию, температуру или давление), то равновесие сместится в направлении, которое <b style="color:#00d2ff">ослабляет это воздействие</b>.</p>
+            <div class="formula-box">
+                A + B ⇌ C + D
+                <span class="label">⇌ означает обратимую реакцию</span>
+            </div>
+            <div class="warning">
+                <b>Важно!</b> Принцип работает ТОЛЬКО для обратимых реакций (⇌), не для необратимых (→).
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Концентрация</h2>
+            <p>Увеличение концентрации реагентов или уменьшение концентрации продуктов → равновесие смещается <b style="color:#4ade80">вправо (→)</b> — в сторону прямой реакции.</p>
+            <p>Уменьшение концентрации реагентов или увеличение концентрации продуктов → равновесие смещается <b style="color:#ef4444">влево (←)</b> — в сторону обратной реакции.</p>
+            <div class="formula-box">
+                ↑[реагенты] или ↓[продукты] → сдвиг вправо →<br>
+                ↓[реагенты] или ↑[продукты] → сдвиг влево ←
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Температура</h2>
+            <p>Экзотермическая реакция (выделяет тепло):</p>
+            <div class="formula-box">
+                A + B → C + Q
+                <span class="label">Q > 0, тепло выделяется</span>
+            </div>
+            <p>Эндотермическая реакция (поглощает тепло):</p>
+            <div class="formula-box">
+                A + B → C − Q
+                <span class="label">Q < 0, тепло поглощается</span>
+            </div>
+            <p>T ↑ → равновесие смещается в <b>эндотермическом</b> направлении (−Q)</p>
+            <p>T ↓ → равновесие смещается в <b>экзотермическом</b> направлении (+Q)</p>
+            <div class="warning">
+                <b>Запомни:</b> Нагревание ВСЕГДА смещает к эндотермической реакции — система "остужает себя", поглощая тепло.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Давление</h2>
+            <p>Считаем количество молекул <b>газа</b> с каждой стороны уравнения.</p>
+            <p>P ↑ → равновесие смещается в сторону <b>меньшего</b> числа молекул газа.</p>
+            <p>P ↓ → равновесие смещается в сторону <b>большего</b> числа молекул газа.</p>
+            <div class="warning">
+                <b>Важно!</b> Давление НЕ влияет на реакции без газов и когда молекул газа <b>поровну</b> с обеих сторон!
+            </div>
+            <div class="formula-box">
+                N₂ + 3H₂ ⇌ 2NH₃<br>
+                <span class="label">Слева: 1+3 = 4 молекулы газа | Справа: 2 молекулы газа<br>P ↑ → вправо (2 < 4)</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Катализатор</h2>
+            <div class="warning">
+                <b>Катализатор НЕ смещает равновесие!</b> Он ускоряет и прямую, и обратную реакцию одинаково. Равновесие достигается быстрее, но его положение не меняется.
+            </div>
+        </div>
+
+        <div class="card" style="text-align:center">
+            <h2>Проверь себя</h2>
+            <p>12 вопросов: 4 лёгких, 4 средних, 4 сложных</p>
+            <div class="btn-wrap">
+                <button class="btn btn-primary" onclick="startQuiz()">Начать тест</button>
+            </div>
+        </div>
+
+        <!-- Quiz area -->
+        <div id="quizArea" style="display:none">
+            <div class="prog-wrap">
+                <div class="prog-info">
+                    <span id="quizProgress">Вопрос 1 / 12</span>
+                    <span id="quizScore">0 правильных</span>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" id="quizBar" style="width:0%"></div></div>
+            </div>
+            <div class="card" id="quizCard">
+                <div id="quizTag"></div>
+                <p id="quizQuestion" style="font-weight:600;color:#fff;margin-bottom:14px;font-size:1.05em"></p>
+                <div id="quizOptions"></div>
+                <div class="quiz-explain" id="quizExplain"></div>
+                <div class="btn-wrap" id="quizNextWrap" style="display:none">
+                    <button class="btn btn-primary" onclick="nextQuizQuestion()">Дальше →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz results -->
+        <div id="quizResults" style="display:none">
+            <div class="card">
+                <div class="result-score" id="quizResultScore"></div>
+                <div class="result-text" id="quizResultText"></div>
+                <div class="error-list" id="quizErrors"></div>
+                <div class="btn-wrap">
+                    <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+                    <button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-wrap" id="formalNav">
+            <button class="btn btn-secondary" onclick="showScreen('theorySimple')">← На пальцах</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">Меню</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: TRAINER -->
+    <div id="trainScreen" class="screen">
+        <h1>Тренажёр</h1>
+        <p class="subtitle">Реакция + воздействие → куда сместится?</p>
+
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="trainProgress">Задание 1 / 25</span>
+                <span id="trainScore">0 правильных</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="trainBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card" id="trainCard">
+            <div id="trainRetryBadge"></div>
+            <div class="reaction-display" id="trainReaction"></div>
+            <div class="change-display" id="trainChange"></div>
+            <div class="dir-buttons" id="trainButtons">
+                <button class="dir-btn" onclick="answerTrain('left')">←<span class="dir-sub">влево</span></button>
+                <button class="dir-btn" onclick="answerTrain('none')">НЕ ВЛИЯЕТ<span class="dir-sub">без изменений</span></button>
+                <button class="dir-btn" onclick="answerTrain('right')">→<span class="dir-sub">вправо</span></button>
+            </div>
+            <div class="train-explain" id="trainExplain"></div>
+            <div class="btn-wrap" id="trainNextWrap" style="display:none">
+                <button class="btn btn-primary" onclick="nextTrainTask()">Дальше →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 5: RESULTS -->
+    <div id="trainResults" class="screen">
+        <h1>Результаты</h1>
+        <div class="card">
+            <div class="result-score" id="trainResultScore"></div>
+            <div class="result-text" id="trainResultText"></div>
+            <div class="btn-wrap">
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+                <button class="btn btn-primary" onclick="startTrainer()">Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===================== NAVIGATION =====================
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ===================== SHUFFLE =====================
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ===================== QUIZ DATA =====================
+const quizData = {
+    easy: [
+        {
+            q: 'Что произойдёт с равновесием A + B ⇌ C, если добавить вещество A?',
+            opts: ['Сместится вправо', 'Сместится влево', 'Ничего не изменится', 'Зависит от температуры'],
+            ans: 0,
+            explain: 'Добавление реагента (A) смещает равновесие <b>вправо</b> — система "съедает" избыток.'
+        },
+        {
+            q: 'Катализатор смещает равновесие в сторону продуктов?',
+            opts: ['Да', 'Нет', 'Только при нагревании', 'Только при высоком давлении'],
+            ans: 1,
+            explain: '<b>Нет.</b> Катализатор ускоряет обе реакции одинаково и НЕ смещает равновесие.'
+        },
+        {
+            q: 'Если из системы убрать продукт C в реакции A ⇌ C, куда сместится равновесие?',
+            opts: ['Влево', 'Вправо', 'Не изменится', 'Реакция остановится'],
+            ans: 1,
+            explain: 'Уменьшение концентрации продукта смещает равновесие <b>вправо</b> — система стремится восполнить убранное.'
+        },
+        {
+            q: 'Принцип Ле Шателье работает для:',
+            opts: ['Только необратимых реакций', 'Только обратимых реакций', 'Любых реакций', 'Только газовых реакций'],
+            ans: 1,
+            explain: 'Принцип Ле Шателье работает только для <b>обратимых</b> реакций (⇌).'
+        },
+        {
+            q: 'При повышении давления равновесие смещается в сторону...',
+            opts: ['Большего числа молекул газа', 'Меньшего числа молекул газа', 'Всегда вправо', 'Всегда влево'],
+            ans: 1,
+            explain: 'Повышение давления → равновесие идёт туда, где <b>меньше</b> молекул газа (система уменьшает давление).'
+        },
+        {
+            q: 'Что происходит при охлаждении экзотермической реакции (A + B ⇌ C + Q)?',
+            opts: ['Равновесие сместится влево', 'Равновесие сместится вправо', 'Ничего не изменится', 'Реакция остановится'],
+            ans: 1,
+            explain: 'Охлаждение → равновесие в сторону экзотермической реакции (+Q) — <b>вправо</b>, система "согревает себя".'
+        },
+        {
+            q: 'Добавление продуктов реакции смещает равновесие...',
+            opts: ['Вправо', 'Влево', 'Не влияет', 'Зависит от давления'],
+            ans: 1,
+            explain: 'Добавление продуктов → равновесие <b>влево</b>, система "съедает" избыток продуктов.'
+        },
+        {
+            q: 'Если в реакции нет газов, влияет ли давление на равновесие?',
+            opts: ['Да, всегда вправо', 'Да, всегда влево', 'Нет, не влияет', 'Зависит от температуры'],
+            ans: 2,
+            explain: 'Давление влияет только на <b>газообразные</b> вещества. Нет газов — давление не влияет.'
+        }
+    ],
+    medium: [
+        {
+            q: 'N₂ + 3H₂ ⇌ 2NH₃ + Q. При повышении температуры равновесие сместится...',
+            opts: ['Вправо (к NH₃)', 'Влево (к N₂ и H₂)', 'Не изменится', 'Зависит от давления'],
+            ans: 1,
+            explain: 'Реакция экзотермическая (+Q). Нагрев → равновесие в эндотермическом направлении = <b>влево</b>.'
+        },
+        {
+            q: '2SO₂ + O₂ ⇌ 2SO₃. При повышении давления...',
+            opts: ['Вправо (к SO₃)', 'Влево (к SO₂ и O₂)', 'Не изменится', 'Зависит от температуры'],
+            ans: 0,
+            explain: 'Слева 3 молекулы газа (2+1), справа 2. P ↑ → в сторону меньшего числа = <b>вправо</b>.'
+        },
+        {
+            q: 'CaCO₃(тв) ⇌ CaO(тв) + CO₂(г) − Q. При нагревании...',
+            opts: ['Вправо', 'Влево', 'Не изменится', 'Зависит от давления'],
+            ans: 0,
+            explain: 'Реакция эндотермическая (−Q). Нагрев → равновесие в сторону эндотермической = <b>вправо</b>.'
+        },
+        {
+            q: 'N₂O₄ ⇌ 2NO₂ − Q. При понижении давления...',
+            opts: ['Вправо (к NO₂)', 'Влево (к N₂O₄)', 'Не изменится', 'Зависит от температуры'],
+            ans: 0,
+            explain: 'Слева 1 молекула газа, справа 2. P ↓ → в сторону большего числа = <b>вправо</b>.'
+        },
+        {
+            q: 'CO + H₂O ⇌ CO₂ + H₂ + Q. Что произойдёт при добавлении CO₂?',
+            opts: ['Вправо', 'Влево', 'Не изменится', 'Зависит от давления'],
+            ans: 1,
+            explain: 'CO₂ — продукт. Добавление продукта смещает равновесие <b>влево</b>.'
+        },
+        {
+            q: 'PCl₅ ⇌ PCl₃ + Cl₂ − Q. При увеличении давления...',
+            opts: ['Вправо (к PCl₃ и Cl₂)', 'Влево (к PCl₅)', 'Не изменится', 'Зависит от температуры'],
+            ans: 1,
+            explain: 'Слева 1 молекула газа, справа 2. P ↑ → в сторону меньшего числа = <b>влево</b>.'
+        },
+        {
+            q: 'H₂ + I₂ ⇌ 2HI − Q. При нагревании...',
+            opts: ['Вправо (к HI)', 'Влево (к H₂ и I₂)', 'Не изменится', 'Зависит от давления'],
+            ans: 0,
+            explain: 'Реакция эндотермическая (−Q). Нагрев → в эндотермическом направлении = <b>вправо</b>.'
+        },
+        {
+            q: '2SO₂ + O₂ ⇌ 2SO₃ + Q. Добавили катализатор V₂O₅. Равновесие...',
+            opts: ['Сместится вправо', 'Сместится влево', 'Не сместится', 'Сместится, но медленно'],
+            ans: 2,
+            explain: 'Катализатор <b>не смещает</b> равновесие. Он лишь ускоряет достижение равновесия.'
+        }
+    ],
+    hard: [
+        {
+            q: 'H₂ + I₂ ⇌ 2HI. Как влияет изменение давления на это равновесие?',
+            opts: ['Сместится вправо', 'Сместится влево', 'Не влияет', 'Влево только при нагревании'],
+            ans: 2,
+            explain: 'Слева 2 молекулы газа (1+1), справа тоже 2. Число молекул <b>одинаково</b> — давление не влияет.'
+        },
+        {
+            q: 'N₂ + 3H₂ ⇌ 2NH₃ + Q. Что сделать, чтобы получить БОЛЬШЕ аммиака?',
+            opts: ['↑T и ↑P', '↓T и ↑P', '↑T и ↓P', '↓T и ↓P'],
+            ans: 1,
+            explain: '↓T → в экзотермическом направлении = вправо. ↑P → в сторону меньшего числа молекул (2 < 4) = вправо. Оба фактора <b>вправо</b> = больше NH₃.'
+        },
+        {
+            q: 'CO(г) + H₂O(г) ⇌ CO₂(г) + H₂(г) + Q. Как влияет давление?',
+            opts: ['Вправо', 'Влево', 'Не влияет', 'Вправо при высокой T'],
+            ans: 2,
+            explain: 'Слева 2 молекулы газа, справа тоже 2. Молекул поровну — давление <b>не влияет</b>.'
+        },
+        {
+            q: 'N₂O₄ ⇌ 2NO₂ − Q. Что сделать, чтобы сместить равновесие ВЛЕВО?',
+            opts: ['↑T и ↑P', '↓T и ↑P', '↑T и ↓P', '↓T и ↓P'],
+            ans: 1,
+            explain: '↓T → в экзотермическом (обратном) направлении = влево. ↑P → в сторону меньшего числа молекул (1 < 2) = влево. Оба фактора <b>влево</b>.'
+        },
+        {
+            q: 'CaCO₃(тв) ⇌ CaO(тв) + CO₂(г) − Q. Как повысить выход CO₂?',
+            opts: ['↑T и ↑P', '↑T и ↓P', '↓T и ↑P', '↓T и ↓P'],
+            ans: 1,
+            explain: '↑T → в эндотермическом (прямом) направлении = вправо (больше CO₂). ↓P → в сторону большего числа молекул газа (0→1) = вправо. <b>↑T и ↓P</b>.'
+        },
+        {
+            q: 'Добавление инертного газа (при постоянном объёме) к равновесной системе...',
+            opts: ['Сместит вправо', 'Сместит влево', 'Не повлияет на равновесие', 'Зависит от реакции'],
+            ans: 2,
+            explain: 'Инертный газ при постоянном объёме не меняет парциальные давления реагентов и продуктов. Равновесие <b>не смещается</b>.'
+        }
+    ]
+};
+
+// ===================== QUIZ ENGINE =====================
+let quizQuestions = [], quizIndex = 0, quizCorrect = 0, quizAnswered = false;
+let quizErrors = [];
+
+function startQuiz() {
+    const easy = shuffle(quizData.easy).slice(0, 4);
+    const medium = shuffle(quizData.medium).slice(0, 4);
+    const hard = shuffle(quizData.hard).slice(0, 4);
+    easy.forEach(q => q._diff = 'easy');
+    medium.forEach(q => q._diff = 'medium');
+    hard.forEach(q => q._diff = 'hard');
+    quizQuestions = [...easy, ...medium, ...hard];
+    // shuffle within difficulty groups already, keep order easy→medium→hard
+    quizIndex = 0; quizCorrect = 0; quizErrors = [];
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    const q = quizQuestions[quizIndex];
+    quizAnswered = false;
+    const diffNames = {easy: 'Лёгкий', medium: 'Средний', hard: 'Сложный'};
+    const diffTags = {easy: 'tag-easy', medium: 'tag-medium', hard: 'tag-hard'};
+    document.getElementById('quizTag').innerHTML = `<span class="topic-tag ${diffTags[q._diff]}">${diffNames[q._diff]}</span>`;
+    document.getElementById('quizQuestion').textContent = q.q;
+    document.getElementById('quizProgress').textContent = `Вопрос ${quizIndex + 1} / ${quizQuestions.length}`;
+    document.getElementById('quizScore').textContent = `${quizCorrect} правильных`;
+    document.getElementById('quizBar').style.width = ((quizIndex) / quizQuestions.length * 100) + '%';
+    document.getElementById('quizExplain').style.display = 'none';
+    document.getElementById('quizNextWrap').style.display = 'none';
+
+    const optsDiv = document.getElementById('quizOptions');
+    optsDiv.innerHTML = '';
+    // Shuffle option indices
+    const indices = shuffle([0, 1, 2, 3]);
+    // Map original index to new position
+    indices.forEach(i => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = q.opts[i];
+        btn.dataset.idx = i;
+        btn.onclick = () => selectQuizOption(i, btn);
+        optsDiv.appendChild(btn);
+    });
+}
+
+function selectQuizOption(idx, btn) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    const q = quizQuestions[quizIndex];
+    const allBtns = document.querySelectorAll('#quizOptions .quiz-option');
+    allBtns.forEach(b => {
+        b.style.pointerEvents = 'none';
+        if (parseInt(b.dataset.idx) === q.ans) b.classList.add('correct');
+    });
+    if (idx === q.ans) {
+        quizCorrect++;
+        btn.classList.add('correct');
+    } else {
+        btn.classList.add('wrong');
+        quizErrors.push({ q: q.q, correctAns: q.opts[q.ans] });
+    }
+    document.getElementById('quizExplain').innerHTML = q.explain;
+    document.getElementById('quizExplain').style.display = 'block';
+    document.getElementById('quizNextWrap').style.display = 'flex';
+    document.getElementById('quizScore').textContent = `${quizCorrect} правильных`;
+}
+
+function nextQuizQuestion() {
+    quizIndex++;
+    if (quizIndex >= quizQuestions.length) {
+        showQuizResults();
+    } else {
+        renderQuizQuestion();
+    }
+}
+
+function showQuizResults() {
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('quizResults').style.display = 'block';
+    const pct = Math.round(quizCorrect / quizQuestions.length * 100);
+    document.getElementById('quizResultScore').textContent = `${quizCorrect} / ${quizQuestions.length} (${pct}%)`;
+    let text = pct === 100 ? 'Отлично! Всё верно!' : pct >= 75 ? 'Хороший результат!' : pct >= 50 ? 'Неплохо, но стоит повторить.' : 'Нужно ещё раз перечитать теорию.';
+    document.getElementById('quizResultText').textContent = text;
+
+    const errDiv = document.getElementById('quizErrors');
+    errDiv.innerHTML = '';
+    if (quizErrors.length > 0) {
+        errDiv.innerHTML = '<h3 style="color:#ef4444;margin-bottom:10px">Ошибки:</h3>';
+        quizErrors.forEach(e => {
+            errDiv.innerHTML += `<div class="error-item"><div class="err-q">${e.q}</div><div class="err-a">Правильный ответ: ${e.correctAns}</div></div>`;
+        });
+    }
+}
+
+// ===================== TRAINER DATA =====================
+const trainTasks = [
+    // CONCENTRATION
+    { reaction: 'N₂ + 3H₂ ⇌ 2NH₃ + Q', change: 'Добавили N₂ (увеличили концентрацию)', answer: 'right', explanation: 'N₂ — реагент. Добавление реагента смещает равновесие <b>вправо</b>, система расходует избыток.' },
+    { reaction: 'N₂ + 3H₂ ⇌ 2NH₃ + Q', change: 'Удалили NH₃ из системы', answer: 'right', explanation: 'NH₃ — продукт. Уменьшение продукта смещает равновесие <b>вправо</b>, система восполняет убранное.' },
+    { reaction: '2SO₂ + O₂ ⇌ 2SO₃ + Q', change: 'Добавили SO₃ (увеличили концентрацию)', answer: 'left', explanation: 'SO₃ — продукт. Добавление продукта смещает равновесие <b>влево</b>.' },
+    { reaction: 'H₂ + I₂ ⇌ 2HI − Q', change: 'Увеличили концентрацию I₂', answer: 'right', explanation: 'I₂ — реагент. Добавление реагента → равновесие <b>вправо</b>.' },
+    { reaction: 'CO + H₂O ⇌ CO₂ + H₂ + Q', change: 'Удалили CO из системы', answer: 'left', explanation: 'CO — реагент. Удаление реагента смещает равновесие <b>влево</b>, система пытается восполнить CO.' },
+    { reaction: 'PCl₅ ⇌ PCl₃ + Cl₂ − Q', change: 'Добавили Cl₂', answer: 'left', explanation: 'Cl₂ — продукт. Добавление продукта смещает равновесие <b>влево</b>.' },
+    { reaction: 'N₂O₄ ⇌ 2NO₂ − Q', change: 'Удалили NO₂ из системы', answer: 'right', explanation: 'NO₂ — продукт. Удаление продукта смещает равновесие <b>вправо</b>, система восполняет NO₂.' },
+
+    // TEMPERATURE
+    { reaction: 'N₂ + 3H₂ ⇌ 2NH₃ + Q', change: 'Повышаем температуру', answer: 'left', explanation: 'Реакция экзотермическая (+Q). T ↑ → равновесие в эндотермическом направлении = <b>влево</b>. Система "остужает себя".' },
+    { reaction: 'N₂ + 3H₂ ⇌ 2NH₃ + Q', change: 'Понижаем температуру', answer: 'right', explanation: 'Реакция экзотермическая (+Q). T ↓ → равновесие в экзотермическом направлении = <b>вправо</b>. Система "согревает себя".' },
+    { reaction: 'H₂ + I₂ ⇌ 2HI − Q', change: 'Повышаем температуру', answer: 'right', explanation: 'Реакция эндотермическая (−Q). T ↑ → равновесие в эндотермическом направлении = <b>вправо</b>.' },
+    { reaction: 'H₂ + I₂ ⇌ 2HI − Q', change: 'Понижаем температуру', answer: 'left', explanation: 'Реакция эндотермическая (−Q). T ↓ → равновесие в экзотермическом направлении = <b>влево</b>.' },
+    { reaction: 'CaCO₃(тв) ⇌ CaO(тв) + CO₂(г) − Q', change: 'Нагреваем систему', answer: 'right', explanation: 'Реакция эндотермическая (−Q). T ↑ → в эндотермическом направлении = <b>вправо</b>.' },
+    { reaction: '2SO₂ + O₂ ⇌ 2SO₃ + Q', change: 'Охлаждаем систему', answer: 'right', explanation: 'Реакция экзотермическая (+Q). T ↓ → в экзотермическом направлении = <b>вправо</b>.' },
+
+    // PRESSURE
+    { reaction: 'N₂ + 3H₂ ⇌ 2NH₃ + Q', change: 'Повышаем давление', answer: 'right', explanation: 'Слева 4 молекулы газа (1+3), справа 2. P ↑ → в сторону меньшего числа = <b>вправо</b>.' },
+    { reaction: 'N₂ + 3H₂ ⇌ 2NH₃ + Q', change: 'Понижаем давление', answer: 'left', explanation: 'Слева 4 молекулы газа, справа 2. P ↓ → в сторону большего числа = <b>влево</b>.' },
+    { reaction: 'N₂O₄ ⇌ 2NO₂ − Q', change: 'Повышаем давление', answer: 'left', explanation: 'Слева 1 молекула газа, справа 2. P ↑ → в сторону меньшего числа = <b>влево</b>.' },
+    { reaction: 'PCl₅ ⇌ PCl₃ + Cl₂ − Q', change: 'Понижаем давление', answer: 'right', explanation: 'Слева 1 молекула газа, справа 2. P ↓ → в сторону большего числа = <b>вправо</b>.' },
+    { reaction: '2SO₂ + O₂ ⇌ 2SO₃ + Q', change: 'Повышаем давление', answer: 'right', explanation: 'Слева 3 молекулы газа (2+1), справа 2. P ↑ → в сторону меньшего числа = <b>вправо</b>.' },
+    { reaction: 'H₂ + I₂ ⇌ 2HI − Q', change: 'Повышаем давление', answer: 'none', explanation: 'Слева 2 молекулы газа (1+1), справа тоже 2. Молекул поровну — давление <b>не влияет</b>.' },
+    { reaction: 'CO + H₂O ⇌ CO₂ + H₂ + Q', change: 'Понижаем давление', answer: 'none', explanation: 'Слева 2 молекулы газа, справа тоже 2. Молекул поровну — давление <b>не влияет</b>.' },
+
+    // CATALYST
+    { reaction: 'N₂ + 3H₂ ⇌ 2NH₃ + Q', change: 'Добавили катализатор (Fe)', answer: 'none', explanation: 'Катализатор <b>не смещает</b> равновесие. Он ускоряет и прямую, и обратную реакцию одинаково.' },
+    { reaction: '2SO₂ + O₂ ⇌ 2SO₃ + Q', change: 'Добавили катализатор V₂O₅', answer: 'none', explanation: 'Катализатор <b>не смещает</b> равновесие! Равновесие достигается быстрее, но его положение не меняется.' },
+    { reaction: 'H₂ + I₂ ⇌ 2HI − Q', change: 'Убрали катализатор из системы', answer: 'none', explanation: 'Удаление катализатора тоже <b>не смещает</b> равновесие. Реакция просто идёт медленнее.' },
+
+    // TRICKY / COMBINED
+    { reaction: 'N₂ + 3H₂ ⇌ 2NH₃ + Q', change: 'Добавили инертный газ (Ar) при постоянном объёме', answer: 'none', explanation: 'Инертный газ при постоянном объёме не меняет парциальные давления реагентов. Равновесие <b>не смещается</b>.' },
+    { reaction: 'CaCO₃(тв) ⇌ CaO(тв) + CO₂(г) − Q', change: 'Повышаем давление', answer: 'left', explanation: 'Газ только справа (CO₂ — 1 молекула), слева газов нет (0). P ↑ → в сторону меньшего числа газов = <b>влево</b> (0 < 1).' },
+    { reaction: 'PCl₅ ⇌ PCl₃ + Cl₂ − Q', change: 'Нагреваем систему', answer: 'right', explanation: 'Реакция эндотермическая (−Q). T ↑ → в эндотермическом направлении = <b>вправо</b>.' },
+    { reaction: 'CO + H₂O ⇌ CO₂ + H₂ + Q', change: 'Добавили H₂O (пар)', answer: 'right', explanation: 'H₂O — реагент. Добавление реагента смещает равновесие <b>вправо</b>.' },
+    { reaction: 'N₂O₄ ⇌ 2NO₂ − Q', change: 'Охлаждаем систему', answer: 'left', explanation: 'Реакция эндотермическая (−Q). T ↓ → в экзотермическом (обратном) направлении = <b>влево</b>.' },
+];
+
+// ===================== TRAINER ENGINE =====================
+let trainList = [], trainIndex = 0, trainCorrectCount = 0, trainAnswered = false;
+let trainErrorIndices = [], trainRetryMode = false, trainTotalTasks = 0;
+
+function startTrainer() {
+    trainList = shuffle(trainTasks);
+    trainIndex = 0;
+    trainCorrectCount = 0;
+    trainAnswered = false;
+    trainErrorIndices = [];
+    trainRetryMode = false;
+    trainTotalTasks = trainList.length;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+function renderTrainTask() {
+    if (trainIndex >= trainList.length) {
+        if (trainErrorIndices.length > 0 && !trainRetryMode) {
+            // Start retry round
+            trainRetryMode = true;
+            const errorTasks = trainErrorIndices.map(i => trainList[i]);
+            trainList = shuffle(errorTasks);
+            trainErrorIndices = [];
+            trainIndex = 0;
+            renderTrainTask();
+            return;
+        }
+        // All done
+        showTrainResults();
+        return;
+    }
+
+    trainAnswered = false;
+    const task = trainList[trainIndex];
+
+    document.getElementById('trainRetryBadge').innerHTML = trainRetryMode ? '<span class="retry-badge">⟳ Повтор ошибок</span>' : '';
+    document.getElementById('trainReaction').textContent = task.reaction;
+    document.getElementById('trainChange').textContent = task.change;
+
+    const label = trainRetryMode ? `Повтор ${trainIndex + 1} / ${trainList.length}` : `Задание ${trainIndex + 1} / ${trainList.length}`;
+    document.getElementById('trainProgress').textContent = label;
+    document.getElementById('trainScore').textContent = `${trainCorrectCount} правильных`;
+
+    const pct = trainRetryMode
+        ? ((trainIndex) / trainList.length * 100)
+        : ((trainIndex) / trainList.length * 100);
+    document.getElementById('trainBar').style.width = pct + '%';
+
+    // Reset buttons
+    const btns = document.querySelectorAll('.dir-btn');
+    btns.forEach(b => { b.classList.remove('correct', 'wrong'); b.style.pointerEvents = 'auto'; });
+
+    document.getElementById('trainExplain').className = 'train-explain';
+    document.getElementById('trainExplain').style.display = 'none';
+    document.getElementById('trainNextWrap').style.display = 'none';
+}
+
+function answerTrain(choice) {
+    if (trainAnswered) return;
+    trainAnswered = true;
+
+    const task = trainList[trainIndex];
+    const isCorrect = choice === task.answer;
+
+    const btns = document.querySelectorAll('.dir-btn');
+    btns.forEach(b => b.style.pointerEvents = 'none');
+
+    // Highlight buttons
+    const dirMap = ['left', 'none', 'right'];
+    btns.forEach((b, i) => {
+        if (dirMap[i] === task.answer) b.classList.add('correct');
+        if (dirMap[i] === choice && !isCorrect) b.classList.add('wrong');
+    });
+
+    if (isCorrect) {
+        trainCorrectCount++;
+    } else {
+        trainErrorIndices.push(trainIndex);
+    }
+
+    const el = document.getElementById('trainExplain');
+    el.innerHTML = (isCorrect ? '✓ Верно! ' : '✗ Неверно. ') + task.explanation;
+    el.className = 'train-explain ' + (isCorrect ? 'show-correct' : 'show-wrong');
+    el.style.display = 'block';
+
+    document.getElementById('trainScore').textContent = `${trainCorrectCount} правильных`;
+    document.getElementById('trainNextWrap').style.display = 'flex';
+}
+
+function nextTrainTask() {
+    trainIndex++;
+    renderTrainTask();
+}
+
+function showTrainResults() {
+    showScreen('trainResults');
+    const pct = Math.round(trainCorrectCount / trainTotalTasks * 100);
+    document.getElementById('trainResultScore').textContent = `${trainCorrectCount} / ${trainTotalTasks} (${pct}%)`;
+    let text;
+    if (pct === 100) text = 'Молодец! Всё верно!';
+    else if (pct >= 80) text = 'Отличный результат!';
+    else if (pct >= 60) text = 'Неплохо, но стоит повторить ошибки.';
+    else text = 'Нужно перечитать теорию и попробовать снова.';
+    document.getElementById('trainResultText').textContent = text;
+}
+</script>
+</body>
+</html>
