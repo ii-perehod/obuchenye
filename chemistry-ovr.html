@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — ОВР (Окислительно-восстановительные реакции)</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .card h2 { font-size: 1.15em; margin-bottom: 14px; color: #fff; }
+        .card h3 { font-size: 1em; margin: 16px 0 8px; color: #00d2ff; }
+        .card p, .card li { line-height: 1.7; margin-bottom: 8px; color: #ccc; }
+        .card ul { padding-left: 20px; }
+        .card .formula-box {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 1.1em;
+            text-align: center; color: #00d2ff;
+        }
+        .card .formula-box .label { font-size: 0.75em; color: #888; font-family: 'Segoe UI', Arial, sans-serif; display: block; margin-top: 6px; }
+        .card .analogy {
+            background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .analogy b { color: #f59e0b; }
+        .card .warning {
+            background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .warning b { color: #ef4444; }
+        .card table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .card th, .card td { border: 1px solid rgba(255,255,255,0.15); padding: 8px 12px; text-align: center; font-size: 0.9em; }
+        .card th { background: rgba(0,210,255,0.1); color: #00d2ff; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Buttons */
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d2ff, #7b2ff7); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,210,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-wrap { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+
+        /* Progress */
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #7b2ff7); border-radius: 10px; transition: width 0.4s; }
+
+        /* Tags */
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .tag-theory { background: rgba(0,210,255,0.2); color: #00d2ff; }
+        .tag-easy { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-medium { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .tag-hard { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+        /* Quiz options */
+        .quiz-option {
+            display: block; width: 100%; padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+            background: rgba(255,255,255,0.04); color: #e0e0e0;
+            font-size: 0.95em; cursor: pointer; margin-bottom: 8px;
+            text-align: left; transition: all 0.2s;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .quiz-option.correct { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+        .quiz-option.wrong { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+        .quiz-explain {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+            font-size: 0.88em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .quiz-explain b { color: #00d2ff; }
+
+        /* Trainer answer buttons */
+        .dir-buttons {
+            display: flex; gap: 10px; margin: 18px 0; justify-content: center; flex-wrap: wrap;
+        }
+        .dir-btn {
+            flex: 1; min-width: 120px; max-width: 180px; padding: 18px 10px; border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 14px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: center; transition: all 0.2s; font-weight: 700;
+        }
+        .dir-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+        .dir-btn.correct { background: rgba(74,222,128,0.2); border-color: #4ade80; color: #4ade80; }
+        .dir-btn.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #ef4444; }
+        .dir-btn .dir-sub { display: block; font-size: 0.55em; font-weight: 400; margin-top: 4px; color: #888; }
+
+        .train-explain {
+            padding: 14px 18px; border-radius: 10px; margin: 12px 0;
+            font-size: 0.92em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .train-explain.show-correct {
+            display: block; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
+        }
+        .train-explain.show-wrong {
+            display: block; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+        }
+        .train-explain b { color: #00d2ff; }
+
+        .reaction-display {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.15em; color: #00d2ff; text-align: center;
+            background: rgba(0,0,0,0.3); border-radius: 10px;
+            padding: 16px; margin: 12px 0; line-height: 1.6;
+        }
+        .change-display {
+            text-align: center; font-size: 1.05em; color: #f59e0b;
+            margin: 14px 0; font-weight: 600;
+        }
+        .retry-badge {
+            display: inline-block; background: rgba(239,68,68,0.2); color: #ef4444;
+            padding: 2px 10px; border-radius: 10px; font-size: 0.75em; font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        /* Results */
+        .result-score {
+            text-align: center; font-size: 2.5em; font-weight: 800;
+            margin: 20px 0 8px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .result-text { text-align: center; color: #aaa; font-size: 1.1em; margin-bottom: 20px; }
+
+        /* Error list */
+        .error-list { margin-top: 16px; }
+        .error-item {
+            background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+        }
+        .error-item .err-q { color: #e0e0e0; font-weight: 600; margin-bottom: 4px; }
+        .error-item .err-a { color: #4ade80; font-size: 0.88em; }
+
+        .mnemonic-box {
+            background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            text-align: center; font-size: 1.15em; font-weight: 700; color: #a78bfa;
+        }
+        .mnemonic-box .mnemonic-sub { font-size: 0.7em; font-weight: 400; color: #888; display: block; margin-top: 4px; }
+
+        .step-box {
+            background: rgba(0,210,255,0.05); border-left: 3px solid #00d2ff;
+            border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 8px 0;
+        }
+        .step-box .step-num { color: #00d2ff; font-weight: 700; }
+
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- SCREEN 1: MENU -->
+    <div id="menuScreen" class="screen active">
+        <h1>Окислительно-восстановительные реакции</h1>
+        <p class="subtitle">ОВР: степени окисления, электронный баланс</p>
+        <div class="card">
+            <button class="topic-btn" onclick="showScreen('theorySimple')">
+                <span class="t-label" style="color:#4ade80">ТЕОРИЯ</span>
+                Теория на пальцах
+                <span class="t-desc">Простые аналогии, без зубрёжки</span>
+            </button>
+            <button class="topic-btn" onclick="showScreen('theoryFormal')">
+                <span class="t-label" style="color:#60a5fa">ТЕОРИЯ + КВИЗ</span>
+                Теория по-взрослому
+                <span class="t-desc">Определения, правила, метод баланса, тест</span>
+            </button>
+            <button class="topic-btn" onclick="startTrainer()">
+                <span class="t-label" style="color:#f59e0b">ТРЕНАЖЁР</span>
+                Тренажёр
+                <span class="t-desc">Степени окисления, окислитель/восстановитель, типы ОВР</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: THEORY SIMPLE -->
+    <div id="theorySimple" class="screen">
+        <h1>На пальцах</h1>
+        <p class="subtitle">ОВР без формул и зубрёжки</p>
+
+        <div class="card">
+            <h2>Что такое степень окисления?</h2>
+            <div class="analogy">
+                <b>Аналогия:</b> Степень окисления — это «кредитная история» атома. Сколько он «должен» (плюс) или сколько «ему должны» (минус). В чистом виде (чистый металл, газ O₂, N₂) — баланс ноль, никто никому не должен.
+            </div>
+            <p>Кислород почти всегда <b style="color:#ff5252">−2</b> (ему все должны). Водород почти всегда <b style="color:#4ade80">+1</b> (он всем должен). Металлы — всегда плюс.</p>
+        </div>
+
+        <div class="card">
+            <h2>Окисление и восстановление</h2>
+            <div class="analogy">
+                <b>Аналогия — банковская операция:</b> Электроны — это деньги. <b>Отдал</b> деньги (электроны) — обеднел — заряд стал более положительным — <b>ОКИСЛИЛСЯ</b>. <b>Получил</b> деньги — разбогател — заряд стал более отрицательным — <b>ВОССТАНОВИЛСЯ</b>.
+            </div>
+            <div class="mnemonic-box">
+                Отдал — Окислился (ОО)
+                <span class="mnemonic-sub">Два «О» — легко запомнить!</span>
+            </div>
+            <div class="mnemonic-box">
+                Взял — Восстановился (ВВ)
+                <span class="mnemonic-sub">Два «В» — тоже легко!</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Окислитель и восстановитель</h2>
+            <div class="analogy">
+                <b>Аналогия:</b> <b>Окислитель</b> — «жадина», забирает электроны у других. <b>Восстановитель</b> — «щедрый», раздаёт свои электроны.
+            </div>
+            <div class="warning">
+                <b>Главная ловушка!</b> Окислитель сам ВОССТАНАВЛИВАЕТСЯ (забрал электроны — разбогател). Восстановитель сам ОКИСЛЯЕТСЯ (отдал электроны — обеднел). Путают все!
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Электронный баланс</h2>
+            <div class="analogy">
+                <b>Аналогия — бухгалтерия:</b> Сколько электронов отдали, столько и получили. Дебет = Кредит. Электроны не исчезают и не появляются из ниоткуда. Поэтому метод так и называется — «баланс».
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Как отличить ОВР от не-ОВР?</h2>
+            <p>Если в реакции <b style="color:#00d2ff">меняются степени окисления</b> хотя бы у одного элемента — это ОВР.</p>
+            <div class="analogy">
+                <b>Лайфхак:</b> Если в реакции есть <b>простое вещество</b> (металл, O₂, H₂, Cl₂...) — это <b>точно ОВР</b>. Простое вещество имеет С.О. = 0, а в продуктах она изменится.
+            </div>
+            <p>Реакции ионного обмена (кислота + основание, осаждение) — <b style="color:#888">НЕ ОВР</b>, степени окисления не меняются.</p>
+        </div>
+
+        <div class="card">
+            <h2>Сводная таблица — правила С.О.</h2>
+            <table>
+                <tr><th>Элемент/ситуация</th><th>С.О.</th><th>Пример</th></tr>
+                <tr><td>Простое вещество</td><td><b>0</b></td><td>Fe, O₂, N₂, Cu</td></tr>
+                <tr><td>H (водород)</td><td><b>+1</b></td><td>H₂O, HCl, H₂SO₄</td></tr>
+                <tr><td>H в гидридах</td><td><b>−1</b></td><td>NaH, CaH₂</td></tr>
+                <tr><td>O (кислород)</td><td><b>−2</b></td><td>H₂O, CO₂, Fe₂O₃</td></tr>
+                <tr><td>O в перекисях</td><td><b>−1</b></td><td>H₂O₂, Na₂O₂</td></tr>
+                <tr><td>O в OF₂</td><td><b>+2</b></td><td>OF₂</td></tr>
+                <tr><td>Металлы</td><td><b>+</b> (номер группы)</td><td>Na = +1, Ca = +2, Al = +3</td></tr>
+                <tr><td>F (фтор)</td><td><b>−1</b> (всегда)</td><td>HF, NaF, OF₂</td></tr>
+                <tr><td>Сумма в молекуле</td><td><b>= 0</b></td><td>H₂SO₄: 2(+1) + x + 4(−2) = 0</td></tr>
+                <tr><td>Сумма в ионе</td><td><b>= заряд иона</b></td><td>SO₄²⁻: x + 4(−2) = −2</td></tr>
+            </table>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="showScreen('theoryFormal')">Теория по-взрослому →</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: THEORY FORMAL + QUIZ -->
+    <div id="theoryFormal" class="screen">
+        <h1>По-взрослому</h1>
+        <p class="subtitle">Определения, метод баланса, тест</p>
+
+        <div class="card">
+            <h2>Определения</h2>
+            <p><b style="color:#00d2ff">Степень окисления (С.О.)</b> — условный заряд атома, вычисленный исходя из предположения, что все связи в соединении ионные.</p>
+            <p><b style="color:#4ade80">Окисление</b> — процесс отдачи электронов. С.О. повышается (становится более положительной).</p>
+            <p><b style="color:#ff5252">Восстановление</b> — процесс принятия электронов. С.О. понижается (становится более отрицательной).</p>
+            <p><b style="color:#a78bfa">Окислитель</b> — вещество, которое принимает электроны (сам при этом восстанавливается).</p>
+            <p><b style="color:#f59e0b">Восстановитель</b> — вещество, которое отдаёт электроны (сам при этом окисляется).</p>
+            <div class="warning">
+                <b>Ловушка!</b> Окислитель — восстанавливается. Восстановитель — окисляется. Названия «наоборот»!
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Типы ОВР</h2>
+            <h3>1. Межмолекулярная</h3>
+            <p>Окислитель и восстановитель — <b>разные вещества</b>.</p>
+            <div class="formula-box">
+                Zn + CuSO₄ → ZnSO₄ + Cu
+                <span class="label">Zn — восстановитель (отдаёт e⁻), Cu²⁺ — окислитель (принимает e⁻)</span>
+            </div>
+
+            <h3>2. Внутримолекулярная</h3>
+            <p>Окислитель и восстановитель — <b>разные элементы в одном веществе</b>.</p>
+            <div class="formula-box">
+                2KClO₃ → 2KCl + 3O₂
+                <span class="label">Cl: +5 → −1 (восстановился), O: −2 → 0 (окислился). Оба были в KClO₃</span>
+            </div>
+
+            <h3>3. Диспропорционирование (самоокисление-самовосстановление)</h3>
+            <p><b>Один и тот же элемент</b> и окисляется, и восстанавливается.</p>
+            <div class="formula-box">
+                Cl₂ + 2NaOH → NaCl + NaClO + H₂O
+                <span class="label">Cl: 0 → −1 (восстановился) и 0 → +1 (окислился). Один элемент!</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Метод электронного баланса</h2>
+            <p>Пошаговый алгоритм расстановки коэффициентов:</p>
+
+            <div class="step-box">
+                <span class="step-num">Шаг 1.</span> Расставить степени окисления всех элементов в уравнении.
+            </div>
+            <div class="step-box">
+                <span class="step-num">Шаг 2.</span> Найти элементы, чья С.О. изменилась.
+            </div>
+            <div class="step-box">
+                <span class="step-num">Шаг 3.</span> Записать полуреакции: отдача и принятие электронов.
+            </div>
+            <div class="step-box">
+                <span class="step-num">Шаг 4.</span> Уравнять число электронов (найти НОК).
+            </div>
+            <div class="step-box">
+                <span class="step-num">Шаг 5.</span> Подставить коэффициенты в уравнение.
+            </div>
+
+            <h3>Разбор примера</h3>
+            <div class="formula-box">
+                Fe₂O₃ + CO → Fe + CO₂
+            </div>
+            <p><b>Шаг 1:</b> С.О.: Fe<sup>+3</sup>₂O<sup>−2</sup>₃ + C<sup>+2</sup>O<sup>−2</sup> → Fe<sup>0</sup> + C<sup>+4</sup>O<sup>−2</sup>₂</p>
+            <p><b>Шаг 2:</b> Изменились: Fe (+3 → 0) и C (+2 → +4)</p>
+            <p><b>Шаг 3:</b> Полуреакции:</p>
+            <div class="formula-box">
+                Fe⁺³ + 3e⁻ → Fe⁰ (восстановление, принял 3e⁻)
+                <br>C⁺² − 2e⁻ → C⁺⁴ (окисление, отдал 2e⁻)
+            </div>
+            <p><b>Шаг 4:</b> НОК(3, 2) = 6. Множители: Fe — 2, C — 3</p>
+            <div class="formula-box">
+                Fe⁺³ + 3e⁻ → Fe⁰  | × 2
+                <br>C⁺² − 2e⁻ → C⁺⁴  | × 3
+            </div>
+            <p><b>Шаг 5:</b> Коэффициенты:</p>
+            <div class="formula-box">
+                Fe₂O₃ + 3CO → 2Fe + 3CO₂
+                <span class="label">Готово! Баланс сошёлся.</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>НЕ-ОВР реакции</h2>
+            <p>Реакции <b>без изменения</b> степеней окисления — <b>не являются ОВР</b>:</p>
+            <ul>
+                <li>Реакции ионного обмена: NaOH + HCl → NaCl + H₂O</li>
+                <li>Кислота + основание (нейтрализация)</li>
+                <li>Осаждение: BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl</li>
+            </ul>
+            <div class="warning">
+                <b>Лайфхак:</b> Если в реакции участвует <b>простое вещество</b> (Fe, O₂, H₂, Cl₂...) — это <b>точно ОВР</b>!
+            </div>
+        </div>
+
+        <div class="card" style="text-align:center">
+            <h2>Проверь себя</h2>
+            <p>12 вопросов из 22: лёгкие, средние и сложные</p>
+            <div class="btn-wrap">
+                <button class="btn btn-primary" onclick="startQuiz()">Начать тест</button>
+            </div>
+        </div>
+
+        <!-- Quiz area -->
+        <div id="quizArea" style="display:none">
+            <div class="prog-wrap">
+                <div class="prog-info">
+                    <span id="quizProgress">Вопрос 1 / 12</span>
+                    <span id="quizScore">0 правильных</span>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" id="quizBar" style="width:0%"></div></div>
+            </div>
+            <div class="card" id="quizCard">
+                <div id="quizTag"></div>
+                <p id="quizQuestion" style="font-weight:600;color:#fff;margin-bottom:14px;font-size:1.05em"></p>
+                <div id="quizOptions"></div>
+                <div class="quiz-explain" id="quizExplain"></div>
+                <div class="btn-wrap" id="quizNextWrap" style="display:none">
+                    <button class="btn btn-primary" onclick="nextQuizQuestion()">Дальше →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz results -->
+        <div id="quizResults" style="display:none">
+            <div class="card">
+                <div class="result-score" id="quizResultScore"></div>
+                <div class="result-text" id="quizResultText"></div>
+                <div class="error-list" id="quizErrors"></div>
+                <div class="btn-wrap" id="quizResultBtns"></div>
+            </div>
+        </div>
+
+        <div class="btn-wrap" id="formalNav">
+            <button class="btn btn-secondary" onclick="showScreen('theorySimple')">← На пальцах</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">Меню</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: TRAINER -->
+    <div id="trainScreen" class="screen" style="position:relative;">
+        <button style="position:absolute;top:12px;right:16px;background:none;border:1px solid rgba(255,255,255,0.2);color:#888;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:0.82em;" onclick="showScreen('menuScreen')">✕ Выйти</button>
+        <h1>Тренажёр</h1>
+        <p class="subtitle">Степени окисления, окислители, типы ОВР</p>
+
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="trainProgress">Задание 1 / 25</span>
+                <span id="trainScore">0 правильных</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="trainBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card" id="trainCard">
+            <div id="trainRetryBadge"></div>
+            <div class="reaction-display" id="trainReaction"></div>
+            <div class="change-display" id="trainChange"></div>
+            <div class="dir-buttons" id="trainButtons"></div>
+            <div class="train-explain" id="trainExplain"></div>
+            <div class="btn-wrap" id="trainNextWrap" style="display:none">
+                <button class="btn btn-primary" onclick="nextTrainTask()">Дальше →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 5: RESULTS -->
+    <div id="trainResults" class="screen">
+        <h1>Результаты</h1>
+        <div class="card">
+            <div class="result-score" id="trainResultScore"></div>
+            <div class="result-text" id="trainResultText"></div>
+            <div class="btn-wrap">
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+                <button class="btn btn-primary" onclick="startTrainer()">Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===================== NAVIGATION =====================
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ===================== SHUFFLE =====================
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ===================== QUIZ DATA =====================
+const quizData = {
+    easy: [
+        {
+            q: 'Какова степень окисления любого элемента в простом веществе (например, Fe, O₂, N₂)?',
+            opts: ['0', '+1', '−1', 'Зависит от элемента'],
+            ans: 0,
+            explain: 'В простом веществе степень окисления любого элемента всегда равна <b>0</b>.'
+        },
+        {
+            q: 'Что происходит при окислении?',
+            opts: ['Атом отдаёт электроны, С.О. повышается', 'Атом принимает электроны, С.О. понижается', 'Атом отдаёт электроны, С.О. понижается', 'Ничего не меняется'],
+            ans: 0,
+            explain: 'Окисление — отдача электронов, С.О. повышается. Мнемоника: <b>Отдал — Окислился (ОО)</b>.'
+        },
+        {
+            q: 'Что происходит при восстановлении?',
+            opts: ['Атом отдаёт электроны', 'Атом принимает электроны, С.О. понижается', 'С.О. повышается', 'Атом становится нейтральным'],
+            ans: 1,
+            explain: 'Восстановление — принятие электронов, С.О. понижается. Мнемоника: <b>Взял — Восстановился (ВВ)</b>.'
+        },
+        {
+            q: 'В реакции Zn + CuSO₄ → ZnSO₄ + Cu, что является восстановителем?',
+            opts: ['Zn', 'Cu', 'CuSO₄', 'ZnSO₄'],
+            ans: 0,
+            explain: '<b>Zn</b> отдаёт электроны (С.О. 0 → +2), значит он восстановитель. Восстановитель — тот, кто отдаёт.'
+        },
+        {
+            q: 'Реакция NaOH + HCl → NaCl + H₂O — это ОВР?',
+            opts: ['Да', 'Нет'],
+            ans: 1,
+            explain: '<b>Нет.</b> Это реакция нейтрализации (ионного обмена). Степени окисления ни одного элемента не изменились.'
+        },
+        {
+            q: 'Какова обычная степень окисления кислорода в соединениях?',
+            opts: ['−2', '−1', '+2', '0'],
+            ans: 0,
+            explain: 'Кислород почти всегда имеет С.О. = <b>−2</b> (исключения: перекиси −1, OF₂ +2).'
+        },
+        {
+            q: 'Восстановитель — это вещество, которое...',
+            opts: ['Отдаёт электроны (сам окисляется)', 'Принимает электроны (сам восстанавливается)', 'Не участвует в реакции', 'Катализирует реакцию'],
+            ans: 0,
+            explain: 'Восстановитель <b>отдаёт</b> электроны и при этом <b>сам окисляется</b>.'
+        },
+        {
+            q: 'Если в реакции участвует простое вещество (например, Fe или Cl₂), то это...',
+            opts: ['Точно ОВР', 'Точно не ОВР', 'Зависит от условий', 'Нужно считать С.О.'],
+            ans: 0,
+            explain: 'Если есть простое вещество — это <b>точно ОВР</b>. С.О. в простом веществе = 0, а в продуктах она обязательно изменится.'
+        }
+    ],
+    medium: [
+        {
+            q: 'Fe₂O₃ + 3CO → 2Fe + 3CO₂. Какой элемент окисляется?',
+            opts: ['C (углерод)', 'Fe (железо)', 'O (кислород)', 'Никакой'],
+            ans: 0,
+            explain: '<b>Углерод (C)</b> окисляется: С.О. меняется с +2 (в CO) до +4 (в CO₂). Отдал электроны — окислился.'
+        },
+        {
+            q: 'Fe₂O₃ + 3CO → 2Fe + 3CO₂. Какой элемент восстанавливается?',
+            opts: ['Fe (железо)', 'C (углерод)', 'O (кислород)', 'Никакой'],
+            ans: 0,
+            explain: '<b>Железо (Fe)</b> восстанавливается: С.О. меняется с +3 (в Fe₂O₃) до 0 (чистый Fe). Принял электроны — восстановился.'
+        },
+        {
+            q: '2Mg + O₂ → 2MgO. Что является окислителем?',
+            opts: ['O₂', 'Mg', 'MgO', 'Ни один из них'],
+            ans: 0,
+            explain: '<b>O₂</b> — окислитель. Кислород принимает электроны (С.О. 0 → −2), сам восстанавливается.'
+        },
+        {
+            q: 'Окислитель в ходе реакции...',
+            opts: ['Восстанавливается (принимает электроны)', 'Окисляется (отдаёт электроны)', 'Не меняет С.О.', 'Распадается'],
+            ans: 0,
+            explain: 'Окислитель <b>принимает</b> электроны и <b>сам восстанавливается</b>. Это главная ловушка!'
+        },
+        {
+            q: 'Какова степень окисления S в H₂SO₄?',
+            opts: ['+6', '+4', '−2', '+2'],
+            ans: 0,
+            explain: 'H₂SO₄: 2(+1) + x + 4(−2) = 0 → x = <b>+6</b>.'
+        },
+        {
+            q: 'Какова степень окисления N в NH₃?',
+            opts: ['−3', '+3', '−1', '+5'],
+            ans: 0,
+            explain: 'NH₃: x + 3(+1) = 0 → x = <b>−3</b>.'
+        },
+        {
+            q: 'Реакция 2Na + Cl₂ → 2NaCl. Какой тип ОВР?',
+            opts: ['Межмолекулярная', 'Внутримолекулярная', 'Диспропорционирование', 'Не ОВР'],
+            ans: 0,
+            explain: '<b>Межмолекулярная</b> — окислитель (Cl₂) и восстановитель (Na) — разные вещества.'
+        },
+        {
+            q: 'В методе электронного баланса число отданных электронов должно быть равно...',
+            opts: ['Числу принятых электронов', 'Нулю', 'Числу атомов', 'Заряду иона'],
+            ans: 0,
+            explain: 'Электронный баланс: сколько электронов отдано = столько принято. <b>Дебет = Кредит</b>.'
+        }
+    ],
+    hard: [
+        {
+            q: '2KClO₃ → 2KCl + 3O₂. Какой тип ОВР?',
+            opts: ['Внутримолекулярная', 'Диспропорционирование', 'Межмолекулярная', 'Не ОВР'],
+            ans: 0,
+            explain: '<b>Внутримолекулярная</b>. В одном веществе KClO₃ есть Cl (+5 → −1, восстановился) и O (−2 → 0, окислился) — разные элементы одного вещества.'
+        },
+        {
+            q: 'Cl₂ + 2NaOH → NaCl + NaClO + H₂O. Какой тип ОВР?',
+            opts: ['Диспропорционирование', 'Межмолекулярная', 'Внутримолекулярная', 'Не ОВР'],
+            ans: 0,
+            explain: '<b>Диспропорционирование</b>. Один элемент Cl: 0 → −1 (в NaCl) и 0 → +1 (в NaClO). Один и тот же элемент и окисляется, и восстанавливается.'
+        },
+        {
+            q: 'Какова степень окисления Mn в KMnO₄?',
+            opts: ['+7', '+6', '+4', '+2'],
+            ans: 0,
+            explain: 'KMnO₄: (+1) + x + 4(−2) = 0 → x = <b>+7</b>.'
+        },
+        {
+            q: 'Какова степень окисления Cr в K₂Cr₂O₇?',
+            opts: ['+6', '+7', '+3', '+4'],
+            ans: 0,
+            explain: 'K₂Cr₂O₇: 2(+1) + 2x + 7(−2) = 0 → 2x = 12 → x = <b>+6</b>.'
+        },
+        {
+            q: 'Fe₂O₃ + 3CO → 2Fe + 3CO₂. Что является окислителем?',
+            opts: ['Fe₂O₃', 'CO', 'Fe', 'CO₂'],
+            ans: 0,
+            explain: '<b>Fe₂O₃</b> — окислитель. Железо в нём принимает электроны (Fe: +3 → 0). Окислитель — тот, чей элемент восстанавливается.'
+        },
+        {
+            q: 'В реакции 2H₂O₂ → 2H₂O + O₂, какой тип ОВР?',
+            opts: ['Диспропорционирование', 'Внутримолекулярная', 'Межмолекулярная', 'Не ОВР'],
+            ans: 0,
+            explain: '<b>Диспропорционирование</b>. Кислород из H₂O₂ (С.О. = −1) частично окисляется до 0 (в O₂) и частично восстанавливается до −2 (в H₂O). Один элемент — два процесса.'
+        }
+    ]
+};
+
+// ===================== QUIZ ENGINE =====================
+let quizQuestions = [], quizIndex = 0, quizCorrect = 0, quizAnswered = false;
+let quizErrors = [], quizTotalAsked = 0;
+
+function startQuiz() {
+    const easy = shuffle(quizData.easy).slice(0, 4);
+    const medium = shuffle(quizData.medium).slice(0, 4);
+    const hard = shuffle(quizData.hard).slice(0, 4);
+    easy.forEach(q => q._diff = 'easy');
+    medium.forEach(q => q._diff = 'medium');
+    hard.forEach(q => q._diff = 'hard');
+    quizQuestions = [...easy, ...medium, ...hard];
+    quizIndex = 0; quizCorrect = 0; quizErrors = []; quizTotalAsked = 0;
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    const q = quizQuestions[quizIndex];
+    quizAnswered = false;
+    const diffNames = {easy: 'Лёгкий', medium: 'Средний', hard: 'Сложный'};
+    const diffTags = {easy: 'tag-easy', medium: 'tag-medium', hard: 'tag-hard'};
+    document.getElementById('quizTag').innerHTML = `<span class="topic-tag ${diffTags[q._diff]}">${diffNames[q._diff]}</span>`;
+    document.getElementById('quizQuestion').textContent = q.q;
+    document.getElementById('quizProgress').textContent = `Вопрос ${quizIndex + 1} / ${quizQuestions.length}`;
+    document.getElementById('quizScore').textContent = `${quizCorrect} правильных`;
+    document.getElementById('quizBar').style.width = ((quizIndex) / quizQuestions.length * 100) + '%';
+    document.getElementById('quizExplain').style.display = 'none';
+    document.getElementById('quizNextWrap').style.display = 'none';
+
+    const optsDiv = document.getElementById('quizOptions');
+    optsDiv.innerHTML = '';
+    const indices = shuffle(Array.from({length: q.opts.length}, (_, i) => i));
+    indices.forEach(i => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = q.opts[i];
+        btn.dataset.idx = i;
+        btn.onclick = () => selectQuizOption(i, btn);
+        optsDiv.appendChild(btn);
+    });
+}
+
+function selectQuizOption(idx, btn) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    const q = quizQuestions[quizIndex];
+    const allBtns = document.querySelectorAll('#quizOptions .quiz-option');
+    allBtns.forEach(b => {
+        b.style.pointerEvents = 'none';
+        if (parseInt(b.dataset.idx) === q.ans) b.classList.add('correct');
+    });
+    if (idx === q.ans) {
+        quizCorrect++;
+        btn.classList.add('correct');
+    } else {
+        btn.classList.add('wrong');
+        quizErrors.push({ q: q.q, correctAns: q.opts[q.ans], full: q });
+    }
+    document.getElementById('quizExplain').innerHTML = q.explain;
+    document.getElementById('quizExplain').style.display = 'block';
+    document.getElementById('quizNextWrap').style.display = 'flex';
+    document.getElementById('quizScore').textContent = `${quizCorrect} правильных`;
+}
+
+function nextQuizQuestion() {
+    quizIndex++;
+    if (quizIndex >= quizQuestions.length) {
+        showQuizResults();
+    } else {
+        renderQuizQuestion();
+    }
+}
+
+function showQuizResults() {
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('quizResults').style.display = 'block';
+    if (!quizTotalAsked) quizTotalAsked = quizQuestions.length;
+    const pct = Math.round(quizCorrect / quizTotalAsked * 100);
+    document.getElementById('quizResultScore').textContent = `${quizCorrect} / ${quizTotalAsked} (${pct}%)`;
+    let text = pct === 100 ? 'Молодец! Всё верно!' : pct >= 75 ? 'Хороший результат!' : pct >= 50 ? 'Неплохо, но стоит повторить.' : 'Нужно ещё раз перечитать теорию.';
+    document.getElementById('quizResultText').textContent = text;
+
+    const errDiv = document.getElementById('quizErrors');
+    errDiv.innerHTML = '';
+    const btnsDiv = document.getElementById('quizResultBtns');
+
+    if (quizErrors.length > 0) {
+        errDiv.innerHTML = '<h3 style="color:#ef4444;margin-bottom:10px;">Ошибки:</h3>';
+        quizErrors.forEach(e => {
+            errDiv.innerHTML += `<div class="error-item"><div class="err-q">${e.q}</div><div class="err-a">Правильный ответ: ${e.correctAns}</div></div>`;
+        });
+        btnsDiv.innerHTML = `<button class="btn btn-primary" onclick="retryQuizErrors()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;">Повторить ошибки (${quizErrors.length})</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>`;
+    } else {
+        btnsDiv.innerHTML = `<button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>`;
+    }
+}
+
+function retryQuizErrors() {
+    quizQuestions = shuffle(quizErrors.map(e => e.full));
+    quizIndex = 0;
+    quizErrors = [];
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+// ===================== TRAINER DATA =====================
+const trainTasks = [
+    // TYPE 1: Определи степень окисления
+    { type: 'oxstate', compound: 'H₂SO₄', element: 'S (сера)', answer: '+6', options: ['+4', '+6', '−2', '+2'],
+      explanation: 'H₂SO₄: 2(+1) + x + 4(−2) = 0 → x = <b>+6</b>.' },
+    { type: 'oxstate', compound: 'NH₃', element: 'N (азот)', answer: '−3', options: ['+3', '−3', '−1', '+5'],
+      explanation: 'NH₃: x + 3(+1) = 0 → x = <b>−3</b>.' },
+    { type: 'oxstate', compound: 'KMnO₄', element: 'Mn (марганец)', answer: '+7', options: ['+7', '+6', '+4', '+2'],
+      explanation: 'KMnO₄: (+1) + x + 4(−2) = 0 → x = <b>+7</b>.' },
+    { type: 'oxstate', compound: 'CO₂', element: 'C (углерод)', answer: '+4', options: ['+2', '+4', '−4', '0'],
+      explanation: 'CO₂: x + 2(−2) = 0 → x = <b>+4</b>.' },
+    { type: 'oxstate', compound: 'Fe₂O₃', element: 'Fe (железо)', answer: '+3', options: ['+2', '+3', '+6', '0'],
+      explanation: 'Fe₂O₃: 2x + 3(−2) = 0 → x = <b>+3</b>.' },
+    { type: 'oxstate', compound: 'Na₂SO₃', element: 'S (сера)', answer: '+4', options: ['+6', '+4', '−2', '+2'],
+      explanation: 'Na₂SO₃: 2(+1) + x + 3(−2) = 0 → x = <b>+4</b>.' },
+    { type: 'oxstate', compound: 'HNO₃', element: 'N (азот)', answer: '+5', options: ['+3', '+5', '−3', '+1'],
+      explanation: 'HNO₃: (+1) + x + 3(−2) = 0 → x = <b>+5</b>.' },
+    { type: 'oxstate', compound: 'K₂Cr₂O₇', element: 'Cr (хром)', answer: '+6', options: ['+3', '+6', '+7', '+4'],
+      explanation: 'K₂Cr₂O₇: 2(+1) + 2x + 7(−2) = 0 → 2x = 12 → x = <b>+6</b>.' },
+    { type: 'oxstate', compound: 'SO₃', element: 'S (сера)', answer: '+6', options: ['+4', '+6', '−2', '+2'],
+      explanation: 'SO₃: x + 3(−2) = 0 → x = <b>+6</b>.' },
+
+    // TYPE 2: Это ОВР или нет?
+    { type: 'isredox', reaction: 'NaOH + HCl → NaCl + H₂O', answer: 'Не ОВР', options: ['ОВР', 'Не ОВР'],
+      explanation: 'Реакция нейтрализации. Степени окисления не изменились: Na(+1), O(−2), H(+1), Cl(−1). <b>Не ОВР</b>.' },
+    { type: 'isredox', reaction: 'Zn + 2HCl → ZnCl₂ + H₂↑', answer: 'ОВР', options: ['ОВР', 'Не ОВР'],
+      explanation: '<b>ОВР</b>. Zn: 0 → +2 (окислился), H: +1 → 0 (восстановился). Есть простое вещество — точно ОВР!' },
+    { type: 'isredox', reaction: 'BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl', answer: 'Не ОВР', options: ['ОВР', 'Не ОВР'],
+      explanation: 'Реакция ионного обмена (осаждение). Степени окисления не изменились. <b>Не ОВР</b>.' },
+    { type: 'isredox', reaction: '2Mg + O₂ → 2MgO', answer: 'ОВР', options: ['ОВР', 'Не ОВР'],
+      explanation: '<b>ОВР</b>. Mg: 0 → +2 (окислился), O: 0 → −2 (восстановился). Два простых вещества!' },
+    { type: 'isredox', reaction: 'CaCO₃ → CaO + CO₂', answer: 'Не ОВР', options: ['ОВР', 'Не ОВР'],
+      explanation: '<b>Не ОВР</b>. Все С.О. сохраняются: Ca(+2), C(+4), O(−2).' },
+    { type: 'isredox', reaction: '2Fe + 3Cl₂ → 2FeCl₃', answer: 'ОВР', options: ['ОВР', 'Не ОВР'],
+      explanation: '<b>ОВР</b>. Fe: 0 → +3, Cl: 0 → −1. Простые вещества — точно ОВР.' },
+
+    // TYPE 3: Что окисляется / восстанавливается?
+    { type: 'whatprocess', reaction: '2Mg + O₂ → 2MgO', question: 'Какой элемент окисляется?', answer: 'Mg', options: ['Mg', 'O', 'MgO', 'Оба'],
+      explanation: '<b>Mg</b> окисляется: С.О. 0 → +2. Отдал электроны — окислился (ОО).' },
+    { type: 'whatprocess', reaction: '2Mg + O₂ → 2MgO', question: 'Какой элемент восстанавливается?', answer: 'O', options: ['Mg', 'O', 'MgO', 'Никакой'],
+      explanation: '<b>Кислород (O)</b> восстанавливается: С.О. 0 → −2. Принял электроны — восстановился (ВВ).' },
+    { type: 'whatprocess', reaction: 'CuO + H₂ → Cu + H₂O', question: 'Какой элемент окисляется?', answer: 'H', options: ['Cu', 'H', 'O', 'Никакой'],
+      explanation: '<b>Водород (H)</b> окисляется: С.О. 0 → +1. Отдал электроны.' },
+    { type: 'whatprocess', reaction: 'CuO + H₂ → Cu + H₂O', question: 'Какой элемент восстанавливается?', answer: 'Cu', options: ['Cu', 'H', 'O', 'Никакой'],
+      explanation: '<b>Медь (Cu)</b> восстанавливается: С.О. +2 → 0. Принял электроны.' },
+    { type: 'whatprocess', reaction: 'Fe₂O₃ + 3CO → 2Fe + 3CO₂', question: 'Какой элемент окисляется?', answer: 'C', options: ['Fe', 'C', 'O', 'Никакой'],
+      explanation: '<b>Углерод (C)</b> окисляется: С.О. +2 (в CO) → +4 (в CO₂). Отдал электроны.' },
+
+    // TYPE 4: Кто окислитель / восстановитель?
+    { type: 'who', reaction: 'Zn + CuSO₄ → ZnSO₄ + Cu', question: 'Что является восстановителем?', answer: 'Zn', options: ['Zn', 'CuSO₄', 'Cu', 'ZnSO₄'],
+      explanation: '<b>Zn</b> — восстановитель. Отдаёт электроны (С.О. 0 → +2), сам окисляется.' },
+    { type: 'who', reaction: 'Zn + CuSO₄ → ZnSO₄ + Cu', question: 'Что является окислителем?', answer: 'CuSO₄', options: ['Zn', 'CuSO₄', 'Cu', 'ZnSO₄'],
+      explanation: '<b>CuSO₄</b> — окислитель (Cu²⁺ принимает электроны, С.О. +2 → 0). Окислитель сам восстанавливается!' },
+    { type: 'who', reaction: '2Na + Cl₂ → 2NaCl', question: 'Что является окислителем?', answer: 'Cl₂', options: ['Na', 'Cl₂', 'NaCl', 'Оба'],
+      explanation: '<b>Cl₂</b> — окислитель. Принимает электроны (С.О. 0 → −1), сам восстанавливается.' },
+    { type: 'who', reaction: '2Na + Cl₂ → 2NaCl', question: 'Что является восстановителем?', answer: 'Na', options: ['Na', 'Cl₂', 'NaCl', 'Оба'],
+      explanation: '<b>Na</b> — восстановитель. Отдаёт электроны (С.О. 0 → +1), сам окисляется.' },
+    { type: 'who', reaction: 'Fe₂O₃ + 3CO → 2Fe + 3CO₂', question: 'Что является восстановителем?', answer: 'CO', options: ['Fe₂O₃', 'CO', 'Fe', 'CO₂'],
+      explanation: '<b>CO</b> — восстановитель. Углерод отдаёт электроны (С.О. +2 → +4), сам окисляется.' },
+    { type: 'who', reaction: '2Al + 3CuSO₄ → Al₂(SO₄)₃ + 3Cu', question: 'Что является восстановителем?', answer: 'Al', options: ['Al', 'CuSO₄', 'Cu', 'Al₂(SO₄)₃'],
+      explanation: '<b>Al</b> — восстановитель. Отдаёт электроны (С.О. 0 → +3), сам окисляется.' },
+];
+
+// ===================== TRAINER ENGINE =====================
+let trainList = [], trainIndex = 0, trainCorrectCount = 0, trainAnswered = false;
+let trainErrors = [], trainRetryMode = false, trainTotalTasks = 0;
+
+function startTrainer() {
+    trainList = shuffle(trainTasks);
+    trainIndex = 0;
+    trainCorrectCount = 0;
+    trainAnswered = false;
+    trainErrors = [];
+    trainRetryMode = false;
+    trainTotalTasks = trainList.length;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+function renderTrainTask() {
+    if (trainIndex >= trainList.length) {
+        if (trainErrors.length > 0 && !trainRetryMode) {
+            trainRetryMode = true;
+            trainList = shuffle([...trainErrors]);
+            trainErrors = [];
+            trainIndex = 0;
+            renderTrainTask();
+            return;
+        }
+        showTrainResults();
+        return;
+    }
+
+    trainAnswered = false;
+    const task = trainList[trainIndex];
+
+    document.getElementById('trainRetryBadge').innerHTML = trainRetryMode ? '<span class="retry-badge">⟳ Повтор ошибок</span>' : '';
+
+    // Build display based on task type
+    let reactionHTML = '';
+    let questionHTML = '';
+
+    if (task.type === 'oxstate') {
+        reactionHTML = task.compound;
+        questionHTML = `Определи степень окисления: <b style="color:#00d2ff">${task.element}</b> в ${task.compound}`;
+    } else if (task.type === 'isredox') {
+        reactionHTML = task.reaction;
+        questionHTML = 'Это ОВР или нет?';
+    } else if (task.type === 'whatprocess') {
+        reactionHTML = task.reaction;
+        questionHTML = task.question;
+    } else if (task.type === 'who') {
+        reactionHTML = task.reaction;
+        questionHTML = task.question;
+    }
+
+    document.getElementById('trainReaction').innerHTML = reactionHTML;
+    document.getElementById('trainChange').innerHTML = questionHTML;
+
+    const label = trainRetryMode ? `Повтор ${trainIndex + 1} / ${trainList.length}` : `Задание ${trainIndex + 1} / ${trainList.length}`;
+    document.getElementById('trainProgress').textContent = label;
+    document.getElementById('trainScore').textContent = `${trainCorrectCount} правильных`;
+
+    const pct = (trainIndex) / trainList.length * 100;
+    document.getElementById('trainBar').style.width = pct + '%';
+
+    // Build answer buttons
+    const btnsDiv = document.getElementById('trainButtons');
+    btnsDiv.innerHTML = '';
+    const shuffledOpts = shuffle(task.options);
+    shuffledOpts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'dir-btn';
+        btn.innerHTML = opt;
+        btn.onclick = () => answerTrain(opt, btn);
+        btnsDiv.appendChild(btn);
+    });
+
+    document.getElementById('trainExplain').className = 'train-explain';
+    document.getElementById('trainExplain').style.display = 'none';
+    document.getElementById('trainNextWrap').style.display = 'none';
+}
+
+function answerTrain(choice, clickedBtn) {
+    if (trainAnswered) return;
+    trainAnswered = true;
+
+    const task = trainList[trainIndex];
+    const isCorrect = choice === task.answer;
+
+    const btns = document.querySelectorAll('#trainButtons .dir-btn');
+    btns.forEach(b => {
+        b.style.pointerEvents = 'none';
+        if (b.innerHTML === task.answer) b.classList.add('correct');
+        if (b === clickedBtn && !isCorrect) b.classList.add('wrong');
+    });
+
+    if (isCorrect) {
+        trainCorrectCount++;
+    } else {
+        trainErrors.push(task);
+    }
+
+    const el = document.getElementById('trainExplain');
+    el.innerHTML = (isCorrect ? '✓ Верно! ' : '✗ Неверно. ') + task.explanation;
+    el.className = 'train-explain ' + (isCorrect ? 'show-correct' : 'show-wrong');
+    el.style.display = 'block';
+
+    document.getElementById('trainScore').textContent = `${trainCorrectCount} правильных`;
+    document.getElementById('trainNextWrap').style.display = 'flex';
+}
+
+function nextTrainTask() {
+    trainIndex++;
+    renderTrainTask();
+}
+
+function showTrainResults() {
+    showScreen('trainResults');
+    const pct = Math.round(trainCorrectCount / trainTotalTasks * 100);
+    document.getElementById('trainResultScore').textContent = `${trainCorrectCount} / ${trainTotalTasks} (${pct}%)`;
+    let text;
+    if (pct === 100) text = 'Молодец! Всё верно!';
+    else if (pct >= 80) text = 'Отличный результат!';
+    else if (pct >= 60) text = 'Неплохо, но стоит повторить ошибки.';
+    else text = 'Нужно перечитать теорию и попробовать снова.';
+    document.getElementById('trainResultText').textContent = text;
+}
+</script>
+</body>
+</html>
