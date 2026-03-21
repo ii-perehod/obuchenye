@@ -802,17 +802,21 @@ const trainTasks = [
 
     // TYPE 4: Кто окислитель / восстановитель?
     { type: 'who', reaction: 'Zn + CuSO₄ → ZnSO₄ + Cu', question: 'Что является восстановителем?', answer: 'Zn', options: ['Zn', 'CuSO₄', 'Cu', 'ZnSO₄'],
-      explanation: '<b>Zn</b> — восстановитель. Отдаёт электроны (С.О. 0 → +2), сам окисляется.' },
+      explanation: '<b>Zn</b> — восстановитель. Цинк отдаёт электроны (С.О. 0 → +2), сам окисляется. А значит, вещество Zn целиком — восстановитель.' },
     { type: 'who', reaction: 'Zn + CuSO₄ → ZnSO₄ + Cu', question: 'Что является окислителем?', answer: 'CuSO₄', options: ['Zn', 'CuSO₄', 'Cu', 'ZnSO₄'],
-      explanation: '<b>CuSO₄</b> — окислитель (Cu²⁺ принимает электроны, С.О. +2 → 0). Окислитель сам восстанавливается!' },
+      explanation: 'Медь (Cu) принимает электроны (С.О. +2 → 0), сам восстанавливается. А значит, вещество <b>CuSO₄</b> целиком — окислитель. Окислитель — то вещество, в котором элемент принимает электроны!' },
     { type: 'who', reaction: '2Na + Cl₂ → 2NaCl', question: 'Что является окислителем?', answer: 'Cl₂', options: ['Na', 'Cl₂', 'NaCl', 'Оба'],
-      explanation: '<b>Cl₂</b> — окислитель. Принимает электроны (С.О. 0 → −1), сам восстанавливается.' },
+      explanation: 'Хлор принимает электроны (С.О. 0 → −1), сам восстанавливается. А значит, вещество <b>Cl₂</b> целиком — окислитель.' },
     { type: 'who', reaction: '2Na + Cl₂ → 2NaCl', question: 'Что является восстановителем?', answer: 'Na', options: ['Na', 'Cl₂', 'NaCl', 'Оба'],
-      explanation: '<b>Na</b> — восстановитель. Отдаёт электроны (С.О. 0 → +1), сам окисляется.' },
+      explanation: 'Натрий отдаёт электроны (С.О. 0 → +1), сам окисляется. А значит, вещество <b>Na</b> целиком — восстановитель.' },
     { type: 'who', reaction: 'Fe₂O₃ + 3CO → 2Fe + 3CO₂', question: 'Что является восстановителем?', answer: 'CO', options: ['Fe₂O₃', 'CO', 'Fe', 'CO₂'],
-      explanation: '<b>CO</b> — восстановитель. Углерод отдаёт электроны (С.О. +2 → +4), сам окисляется.' },
+      explanation: 'Углерод (C) отдаёт электроны (С.О. +2 → +4), сам окисляется. А значит, вещество <b>CO</b> целиком — восстановитель.' },
+    { type: 'who', reaction: 'Fe₂O₃ + 3CO → 2Fe + 3CO₂', question: 'Что является окислителем?', answer: 'Fe₂O₃', options: ['Fe₂O₃', 'CO', 'Fe', 'CO₂'],
+      explanation: 'Железо (Fe) принимает электроны (С.О. +3 → 0), сам восстанавливается. А значит, вещество <b>Fe₂O₃</b> целиком — окислитель. Окислитель — то вещество, в котором элемент принимает электроны!' },
     { type: 'who', reaction: '2Al + 3CuSO₄ → Al₂(SO₄)₃ + 3Cu', question: 'Что является восстановителем?', answer: 'Al', options: ['Al', 'CuSO₄', 'Cu', 'Al₂(SO₄)₃'],
-      explanation: '<b>Al</b> — восстановитель. Отдаёт электроны (С.О. 0 → +3), сам окисляется.' },
+      explanation: 'Алюминий отдаёт электроны (С.О. 0 → +3), сам окисляется. А значит, вещество <b>Al</b> целиком — восстановитель.' },
+    { type: 'who', reaction: '2Al + 3CuSO₄ → Al₂(SO₄)₃ + 3Cu', question: 'Что является окислителем?', answer: 'CuSO₄', options: ['Al', 'CuSO₄', 'Cu', 'Al₂(SO₄)₃'],
+      explanation: 'Медь (Cu) принимает электроны (С.О. +2 → 0), сам восстанавливается. А значит, вещество <b>CuSO₄</b> целиком — окислитель.' },
 ];
 
 // ===================== TRAINER ENGINE =====================
@@ -833,7 +837,7 @@ function startTrainer() {
 
 function renderTrainTask() {
     if (trainIndex >= trainList.length) {
-        if (trainErrors.length > 0 && !trainRetryMode) {
+        if (trainErrors.length > 0) {
             trainRetryMode = true;
             trainList = shuffle([...trainErrors]);
             trainErrors = [];
