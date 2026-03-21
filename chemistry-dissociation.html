@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Электролитическая диссоциация</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .card h2 { font-size: 1.15em; margin-bottom: 14px; color: #fff; }
+        .card h3 { font-size: 1em; margin: 16px 0 8px; color: #00d2ff; }
+        .card p, .card li { line-height: 1.7; margin-bottom: 8px; color: #ccc; }
+        .card ul { padding-left: 20px; }
+        .card .formula-box {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 1.1em;
+            text-align: center; color: #00d2ff;
+        }
+        .card .formula-box .label { font-size: 0.75em; color: #888; font-family: 'Segoe UI', Arial, sans-serif; display: block; margin-top: 6px; }
+        .card .analogy {
+            background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .analogy b { color: #f59e0b; }
+        .card .warning {
+            background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .warning b { color: #ef4444; }
+        .card table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .card th, .card td { border: 1px solid rgba(255,255,255,0.15); padding: 8px 12px; text-align: center; font-size: 0.9em; }
+        .card th { background: rgba(0,210,255,0.1); color: #00d2ff; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Buttons */
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d2ff, #7b2ff7); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,210,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-wrap { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+
+        /* Progress */
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #7b2ff7); border-radius: 10px; transition: width 0.4s; }
+
+        /* Tags */
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .tag-theory { background: rgba(0,210,255,0.2); color: #00d2ff; }
+        .tag-easy { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-medium { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .tag-hard { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+        /* Quiz options */
+        .quiz-option {
+            display: block; width: 100%; padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+            background: rgba(255,255,255,0.04); color: #e0e0e0;
+            font-size: 0.95em; cursor: pointer; margin-bottom: 8px;
+            text-align: left; transition: all 0.2s;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .quiz-option.correct { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+        .quiz-option.wrong { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+        .quiz-explain {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+            font-size: 0.88em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .quiz-explain b { color: #00d2ff; }
+
+        /* Trainer answer buttons */
+        .dir-buttons {
+            display: flex; gap: 10px; margin: 18px 0; justify-content: center; flex-wrap: wrap;
+        }
+        .dir-btn {
+            flex: 1; min-width: 120px; max-width: 220px; padding: 18px 10px; border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 14px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: center; transition: all 0.2s; font-weight: 700;
+        }
+        .dir-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+        .dir-btn.correct { background: rgba(74,222,128,0.2); border-color: #4ade80; color: #4ade80; }
+        .dir-btn.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #ef4444; }
+        .dir-btn .dir-sub { display: block; font-size: 0.55em; font-weight: 400; margin-top: 4px; color: #888; }
+
+        .train-explain {
+            padding: 14px 18px; border-radius: 10px; margin: 12px 0;
+            font-size: 0.92em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .train-explain.show-correct {
+            display: block; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
+        }
+        .train-explain.show-wrong {
+            display: block; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+        }
+        .train-explain b { color: #00d2ff; }
+
+        .reaction-display {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.15em; color: #00d2ff; text-align: center;
+            background: rgba(0,0,0,0.3); border-radius: 10px;
+            padding: 16px; margin: 12px 0; line-height: 1.6;
+        }
+        .change-display {
+            text-align: center; font-size: 1.05em; color: #f59e0b;
+            margin: 14px 0; font-weight: 600;
+        }
+        .retry-badge {
+            display: inline-block; background: rgba(239,68,68,0.2); color: #ef4444;
+            padding: 2px 10px; border-radius: 10px; font-size: 0.75em; font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        /* Results */
+        .result-score {
+            text-align: center; font-size: 2.5em; font-weight: 800;
+            margin: 20px 0 8px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .result-text { text-align: center; color: #aaa; font-size: 1.1em; margin-bottom: 20px; }
+
+        /* Error list */
+        .error-list { margin-top: 16px; }
+        .error-item {
+            background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+        }
+        .error-item .err-q { color: #e0e0e0; font-weight: 600; margin-bottom: 4px; }
+        .error-item .err-a { color: #4ade80; font-size: 0.88em; }
+
+        .mnemonic-box {
+            background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            text-align: center; font-size: 1.15em; font-weight: 700; color: #a78bfa;
+        }
+        .mnemonic-box .mnemonic-sub { font-size: 0.7em; font-weight: 400; color: #888; display: block; margin-top: 4px; }
+
+        .step-box {
+            background: rgba(0,210,255,0.05); border-left: 3px solid #00d2ff;
+            border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 8px 0;
+        }
+        .step-box .step-num { color: #00d2ff; font-weight: 700; }
+
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ==================== SCREEN 1: MENU ==================== -->
+    <div id="menuScreen" class="screen active">
+        <h1>Электролитическая диссоциация</h1>
+        <p class="subtitle">Электролиты, ионы, ионные уравнения</p>
+        <div class="card">
+            <button class="topic-btn" onclick="showScreen('theorySimple')">
+                <span class="t-label" style="color:#4ade80">ТЕОРИЯ</span>
+                Теория на пальцах
+                <span class="t-desc">Простые аналогии, без зубрёжки</span>
+            </button>
+            <button class="topic-btn" onclick="showScreen('theoryFormal')">
+                <span class="t-label" style="color:#60a5fa">ТЕОРИЯ + КВИЗ</span>
+                Теория по-взрослому
+                <span class="t-desc">Определения, таблицы, ионные уравнения, тест</span>
+            </button>
+            <button class="topic-btn" onclick="startTrainer()">
+                <span class="t-label" style="color:#f59e0b">ТРЕНАЖЁР</span>
+                Тренажёр
+                <span class="t-desc">Электролиты, диссоциация, ионные уравнения</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 2: THEORY SIMPLE ==================== -->
+    <div id="theorySimple" class="screen">
+        <h1>На пальцах</h1>
+        <p class="subtitle">Диссоциация без формул и зубрёжки</p>
+
+        <div class="card">
+            <h2>Что такое диссоциация?</h2>
+            <div class="analogy">
+                <b>Аналогия — метро:</b> Представь толпу людей в метро. Когда двери открываются (растворитель — вода), плотная группа (кристалл соли) разделяется — каждый идёт своей дорогой (ионы). При закрытии дверей (упаривание) снова сбиваются в кучу. Вот это и есть <b>диссоциация</b> — распад на ионы в воде.
+            </div>
+            <p>Слово страшное, а суть простая: бросил соль в воду — она <b>распалась на заряженные частицы (ионы)</b>. Эти ионы проводят ток. Поэтому солёная вода проводит ток, а сахарная — нет.</p>
+        </div>
+
+        <div class="card">
+            <h2>Электролиты и неэлектролиты</h2>
+            <p><b style="color:#4ade80">Электролиты</b> — вещества, которые в растворе (или расплаве) распадаются на ионы и проводят ток.</p>
+            <p><b style="color:#ff5252">Неэлектролиты</b> — не распадаются, не проводят.</p>
+            <div class="analogy">
+                <b>Как запомнить:</b> «Электро-лит» = «проводит электричество». Если в названии есть «электро» — значит, проводит. Сахар, спирт, глюкоза — растворяются, но на ионы НЕ распадаются. Они как пассажиры в наушниках — сидят тихо, ток не проводят.
+            </div>
+            <table>
+                <tr><th>Электролиты</th><th>Неэлектролиты</th></tr>
+                <tr><td>Кислоты (HCl, H₂SO₄...)</td><td>Сахар C₁₂H₂₂O₁₁</td></tr>
+                <tr><td>Основания (NaOH, KOH...)</td><td>Спирт C₂H₅OH</td></tr>
+                <tr><td>Соли (NaCl, KNO₃...)</td><td>Глюкоза C₆H₁₂O₆</td></tr>
+                <tr><td>Амфотерные гидроксиды</td><td>Большинство органики</td></tr>
+                <tr><td></td><td>Оксиды (CO₂, SO₃...)</td></tr>
+                <tr><td></td><td>Простые вещества (O₂, Fe...)</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Сильные и слабые электролиты</h2>
+            <div class="analogy">
+                <b>Аналогия — компания друзей:</b> <b>Сильный электролит</b> — как компания друзей, которые сразу разбегаются по своим делам, стоит открыть дверь. Распадаются <b>полностью</b>. <b>Слабый электролит</b> — как влюблённая пара, которая расходится неохотно и при первой возможности снова вместе. Распадаются <b>частично</b>.
+            </div>
+            <table>
+                <tr><th>Сильные (распад полный →)</th><th>Слабые (распад частичный ⇌)</th></tr>
+                <tr><td>HCl, HBr, HI, H₂SO₄, HNO₃, HClO₄</td><td>H₂CO₃, H₂SO₃, HF, H₂S, CH₃COOH</td></tr>
+                <tr><td>NaOH, KOH, Ca(OH)₂, Ba(OH)₂</td><td>NH₃·H₂O, Fe(OH)₂, Cu(OH)₂, Al(OH)₃</td></tr>
+                <tr><td>Все растворимые соли</td><td>H₂O (очень слабый!)</td></tr>
+            </table>
+            <div class="warning">
+                <b>Ловушка!</b> HF (плавиковая кислота) — <b>слабая</b>, хотя все остальные галогеноводороды (HCl, HBr, HI) — сильные. H₂SO₄ — <b>сильная</b>, а H₂SO₃ — <b>слабая</b>. Не путай!
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Кислоты и основания — кто что отдаёт</h2>
+            <div class="analogy">
+                <b>Кислота</b> — «донор протонов» (H⁺). Всегда отдаёт водород. HCl → H⁺ + Cl⁻.<br>
+                <b>Основание</b> — «коллекционер OH⁻». Всегда приносит гидроксид. NaOH → Na⁺ + OH⁻.
+            </div>
+            <div class="mnemonic-box">
+                Кислота = H⁺ + остаток
+                <span class="mnemonic-sub">Основание = металл⁺ + OH⁻</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Ионные уравнения</h2>
+            <div class="analogy">
+                <b>Аналогия — вечеринка:</b> Представь дружескую вечеринку. <b>Полное ионное уравнение</b> — список всех гостей поимённо. <b>Сокращённое ионное</b> — только те, кто реально что-то делал (встретились, подружились, создали осадок). «Зрители» (одинаковые ионы слева и справа) вычёркиваются.
+            </div>
+            <p>Что <b>НЕ разбиваем</b> на ионы:</p>
+            <ul>
+                <li>Осадки (↓) — они выпали, в растворе их нет</li>
+                <li>Газы (↑) — улетели</li>
+                <li>Вода H₂O — слабый электролит</li>
+                <li>Слабые электролиты — почти не распадаются</li>
+                <li>Оксиды — не электролиты</li>
+            </ul>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="showScreen('theoryFormal')">Теория по-взрослому →</button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 3: THEORY FORMAL + QUIZ ==================== -->
+    <div id="theoryFormal" class="screen">
+        <h1>По-взрослому</h1>
+        <p class="subtitle">Определения, таблицы, ионные уравнения, тест</p>
+
+        <div class="card">
+            <h2>Теория электролитической диссоциации (Аррениус, 1887)</h2>
+            <p><b style="color:#00d2ff">Электролитическая диссоциация</b> — процесс распада электролита на ионы при растворении в воде (или расплавлении).</p>
+            <p><b>Причина:</b> полярные молекулы воды взаимодействуют с ионами кристаллической решётки и «растаскивают» их.</p>
+            <p>Процесс <b>обратимый</b>: ионы могут снова объединиться — это <b>ассоциация</b> (обратный процесс).</p>
+            <div class="formula-box">
+                NaCl ⇌ Na⁺ + Cl⁻
+                <span class="label">Диссоциация ⇌ Ассоциация</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Электролиты и неэлектролиты</h2>
+            <p><b style="color:#4ade80">Электролиты</b> — вещества, растворы или расплавы которых проводят электрический ток (распадаются на ионы).</p>
+            <p>4 класса электролитов: <b>кислоты, основания, соли, амфотерные гидроксиды</b>.</p>
+            <p><b style="color:#ff5252">Неэлектролиты</b> — не проводят ток: сахар, спирт, глюкоза, большинство органических соединений.</p>
+            <div class="warning">
+                <b>НЕ диссоциируют:</b> оксиды, простые вещества, большинство органических соединений. Оксид — не электролит!
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Степень диссоциации α</h2>
+            <div class="formula-box">
+                α = N(распавшихся) / N(общее число растворённых)
+                <span class="label">Показывает, какая доля молекул распалась на ионы</span>
+            </div>
+            <table>
+                <tr><th>Значение α</th><th>Тип электролита</th></tr>
+                <tr><td>α > 30% (≈ 1)</td><td><b style="color:#4ade80">Сильный</b> — полная диссоциация</td></tr>
+                <tr><td>α < 3%</td><td><b style="color:#ff5252">Слабый</b> — частичная диссоциация</td></tr>
+            </table>
+            <p>Зависит от: <b>концентрации</b> раствора (разбавление повышает α), <b>температуры</b> (нагрев повышает α), <b>природы электролита</b>.</p>
+        </div>
+
+        <div class="card">
+            <h2>Сильные и слабые электролиты</h2>
+            <h3>Сильные электролиты (→, α ≈ 1)</h3>
+            <table>
+                <tr><th>Группа</th><th>Примеры</th></tr>
+                <tr><td>Сильные кислоты</td><td>HCl, HBr, HI, H₂SO₄, HNO₃, HClO₄</td></tr>
+                <tr><td>Сильные основания (щёлочи)</td><td>NaOH, KOH, LiOH, Ca(OH)₂, Ba(OH)₂</td></tr>
+                <tr><td>Все растворимые соли</td><td>NaCl, KNO₃, CuSO₄, Na₂CO₃...</td></tr>
+            </table>
+            <h3>Слабые электролиты (⇌, α &lt; 1)</h3>
+            <table>
+                <tr><th>Группа</th><th>Примеры</th></tr>
+                <tr><td>Слабые кислоты</td><td>H₂CO₃, H₂SO₃, HF, H₂S, CH₃COOH, H₂SiO₃, HNO₂</td></tr>
+                <tr><td>Слабые основания</td><td>NH₃·H₂O, Fe(OH)₂, Cu(OH)₂, Al(OH)₃</td></tr>
+                <tr><td>Вода</td><td>H₂O (очень слабый электролит)</td></tr>
+            </table>
+            <div class="warning">
+                <b>Запомни исключения!</b><br>
+                HF — <b>слабая</b> кислота (единственная из галогеноводородов).<br>
+                H₂SO₄ — <b>сильная</b>, но H₂SO₃ — <b>слабая</b>.<br>
+                Ca(OH)₂ — <b>сильное</b> основание (малорастворимо, но то, что растворилось — полностью диссоциирует).
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Диссоциация кислот, оснований и солей</h2>
+            <h3>Кислоты → H⁺ + кислотный остаток</h3>
+            <div class="formula-box">
+                HCl → H⁺ + Cl⁻<br>
+                HNO₃ → H⁺ + NO₃⁻<br>
+                H₂SO₄ → 2H⁺ + SO₄²⁻
+                <span class="label">Кислота всегда отдаёт катионы водорода H⁺</span>
+            </div>
+
+            <h3>Основания → металл⁺ + OH⁻</h3>
+            <div class="formula-box">
+                NaOH → Na⁺ + OH⁻<br>
+                Ca(OH)₂ → Ca²⁺ + 2OH⁻<br>
+                Ba(OH)₂ → Ba²⁺ + 2OH⁻
+                <span class="label">Основание всегда отдаёт гидроксид-ионы OH⁻</span>
+            </div>
+
+            <h3>Соли → металл⁺ + кислотный остаток⁻</h3>
+            <div class="formula-box">
+                NaCl → Na⁺ + Cl⁻<br>
+                CuSO₄ → Cu²⁺ + SO₄²⁻<br>
+                Al₂(SO₄)₃ → 2Al³⁺ + 3SO₄²⁻
+                <span class="label">Соль распадается на катион металла и анион кислотного остатка</span>
+            </div>
+
+            <h3>Ступенчатая диссоциация многоосновных кислот</h3>
+            <div class="formula-box">
+                H₂SO₄ → H⁺ + HSO₄⁻ (1-я ступень)<br>
+                HSO₄⁻ → H⁺ + SO₄²⁻ (2-я ступень)<br>
+                <span class="label">Суммарно: H₂SO₄ → 2H⁺ + SO₄²⁻</span>
+            </div>
+            <div class="formula-box">
+                H₃PO₄ ⇌ H⁺ + H₂PO₄⁻ (1-я ступень)<br>
+                H₂PO₄⁻ ⇌ H⁺ + HPO₄²⁻ (2-я ступень)<br>
+                HPO₄²⁻ ⇌ H⁺ + PO₄³⁻ (3-я ступень)
+                <span class="label">Каждая следующая ступень идёт хуже предыдущей</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Таблица кислот и их солей</h2>
+            <table>
+                <tr><th>Формула кислоты</th><th>Название кислоты</th><th>Кислотный остаток</th><th>Название солей</th></tr>
+                <tr><td>HCl</td><td>Соляная</td><td>Cl⁻</td><td>Хлориды</td></tr>
+                <tr><td>H₂SO₄</td><td>Серная</td><td>SO₄²⁻</td><td>Сульфаты</td></tr>
+                <tr><td>HNO₃</td><td>Азотная</td><td>NO₃⁻</td><td>Нитраты</td></tr>
+                <tr><td>HBr</td><td>Бромоводородная</td><td>Br⁻</td><td>Бромиды</td></tr>
+                <tr><td>HI</td><td>Иодоводородная</td><td>I⁻</td><td>Иодиды</td></tr>
+                <tr><td>H₃PO₄</td><td>Фосфорная</td><td>PO₄³⁻</td><td>Фосфаты</td></tr>
+                <tr><td>H₂CO₃</td><td>Угольная</td><td>CO₃²⁻</td><td>Карбонаты</td></tr>
+                <tr><td>H₂SiO₃</td><td>Кремниевая</td><td>SiO₃²⁻</td><td>Силикаты</td></tr>
+                <tr><td>H₂CrO₄</td><td>Хромовая</td><td>CrO₄²⁻</td><td>Хроматы</td></tr>
+                <tr><td>H₂Cr₂O₇</td><td>Дихромовая</td><td>Cr₂O₇²⁻</td><td>Бихроматы</td></tr>
+                <tr><td>HMnO₄</td><td>Марганцевая</td><td>MnO₄⁻</td><td>Перманганаты</td></tr>
+                <tr><td>H₂S</td><td>Сероводородная</td><td>S²⁻</td><td>Сульфиды</td></tr>
+                <tr><td>H₂SO₃</td><td>Сернистая</td><td>SO₃²⁻</td><td>Сульфиты</td></tr>
+                <tr><td>CH₃COOH</td><td>Уксусная</td><td>CH₃COO⁻</td><td>Ацетаты</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Ионные уравнения реакций</h2>
+            <p>Реакции в растворах записывают в 3 формах:</p>
+
+            <div class="step-box">
+                <span class="step-num">Шаг 1.</span> <b>Молекулярное уравнение</b> — обычная запись реакции.
+            </div>
+            <div class="step-box">
+                <span class="step-num">Шаг 2.</span> <b>Полное ионное</b> — все сильные электролиты записываем в виде ионов.
+            </div>
+            <div class="step-box">
+                <span class="step-num">Шаг 3.</span> <b>Сокращённое ионное</b> — убираем одинаковые ионы слева и справа (ионы-зрители).
+            </div>
+
+            <div class="warning">
+                <b>НЕ разбиваем на ионы:</b><br>
+                1) Осадки ↓ &nbsp; 2) Газы ↑ &nbsp; 3) Воду H₂O &nbsp; 4) Слабые электролиты &nbsp; 5) Оксиды
+            </div>
+
+            <h3>Пример: NaOH + HCl → NaCl + H₂O</h3>
+            <div class="formula-box">
+                <b>Молекулярное:</b><br>
+                NaOH + HCl → NaCl + H₂O
+            </div>
+            <div class="formula-box">
+                <b>Полное ионное:</b><br>
+                Na⁺ + OH⁻ + H⁺ + Cl⁻ → Na⁺ + Cl⁻ + H₂O
+                <span class="label">Все сильные электролиты — в виде ионов. H₂O НЕ разбиваем!</span>
+            </div>
+            <div class="formula-box">
+                <b>Сокращённое ионное:</b><br>
+                OH⁻ + H⁺ → H₂O
+                <span class="label">Убрали Na⁺ и Cl⁻ — они одинаковые слева и справа</span>
+            </div>
+
+            <h3>Пример: BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl</h3>
+            <div class="formula-box">
+                <b>Полное ионное:</b><br>
+                Ba²⁺ + 2Cl⁻ + 2Na⁺ + SO₄²⁻ → BaSO₄↓ + 2Na⁺ + 2Cl⁻
+                <span class="label">BaSO₄ — осадок, на ионы НЕ разбиваем!</span>
+            </div>
+            <div class="formula-box">
+                <b>Сокращённое ионное:</b><br>
+                Ba²⁺ + SO₄²⁻ → BaSO₄↓
+                <span class="label">Убрали Na⁺ и Cl⁻</span>
+            </div>
+
+            <h3>Пример: Na₂CO₃ + 2HCl → 2NaCl + H₂O + CO₂↑</h3>
+            <div class="formula-box">
+                <b>Полное ионное:</b><br>
+                2Na⁺ + CO₃²⁻ + 2H⁺ + 2Cl⁻ → 2Na⁺ + 2Cl⁻ + H₂O + CO₂↑
+                <span class="label">H₂O и CO₂ — не разбиваем (вода = слабый электролит, газ улетает)</span>
+            </div>
+            <div class="formula-box">
+                <b>Сокращённое ионное:</b><br>
+                CO₃²⁻ + 2H⁺ → H₂O + CO₂↑
+            </div>
+        </div>
+
+        <div class="card" style="text-align:center">
+            <h2>Проверь себя</h2>
+            <p>14 вопросов из 26: лёгкие, средние и сложные</p>
+            <div class="btn-wrap">
+                <button class="btn btn-primary" onclick="startQuiz()">Начать тест</button>
+            </div>
+        </div>
+
+        <!-- Quiz area -->
+        <div id="quizArea" style="display:none">
+            <div class="prog-wrap">
+                <div class="prog-info">
+                    <span id="quizProgress">Вопрос 1 / 14</span>
+                    <span id="quizScore">0 правильных</span>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" id="quizBar" style="width:0%"></div></div>
+            </div>
+            <div class="card" id="quizCard">
+                <div id="quizTag"></div>
+                <p id="quizQuestion" style="font-weight:600;color:#fff;margin-bottom:14px;font-size:1.05em"></p>
+                <div id="quizOptions"></div>
+                <div class="quiz-explain" id="quizExplain"></div>
+                <div class="btn-wrap" id="quizNextWrap" style="display:none">
+                    <button class="btn btn-primary" onclick="nextQuizQuestion()">Дальше →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz results -->
+        <div id="quizResults" style="display:none">
+            <div class="card">
+                <div class="result-score" id="quizResultScore"></div>
+                <div class="result-text" id="quizResultText"></div>
+                <div class="error-list" id="quizErrors"></div>
+                <div class="btn-wrap" id="quizResultBtns"></div>
+            </div>
+        </div>
+
+        <div class="btn-wrap" id="formalNav">
+            <button class="btn btn-secondary" onclick="showScreen('theorySimple')">← На пальцах</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">Меню</button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 4: TRAINER ==================== -->
+    <div id="trainScreen" class="screen" style="position:relative;">
+        <button style="position:absolute;top:12px;right:16px;background:none;border:1px solid rgba(255,255,255,0.2);color:#888;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:0.82em;" onclick="showScreen('menuScreen')">✕ Выйти</button>
+        <h1>Тренажёр</h1>
+        <p class="subtitle">Электролиты, ионы, диссоциация</p>
+
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="trainProgress">Задание 1 / 30</span>
+                <span id="trainScore">0 правильных</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="trainBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card" id="trainCard">
+            <div id="trainRetryBadge"></div>
+            <div class="reaction-display" id="trainReaction"></div>
+            <div class="change-display" id="trainChange"></div>
+            <div class="dir-buttons" id="trainButtons"></div>
+            <div class="train-explain" id="trainExplain"></div>
+            <div class="btn-wrap" id="trainNextWrap" style="display:none">
+                <button class="btn btn-primary" onclick="nextTrainTask()">Дальше →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 5: RESULTS ==================== -->
+    <div id="trainResults" class="screen">
+        <h1>Результаты</h1>
+        <div class="card">
+            <div class="result-score" id="trainResultScore"></div>
+            <div class="result-text" id="trainResultText"></div>
+            <div class="btn-wrap">
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+                <button class="btn btn-primary" onclick="startTrainer()">Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===================== NAVIGATION =====================
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ===================== SHUFFLE =====================
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ===================== QUIZ DATA =====================
+const quizData = {
+    easy: [
+        {
+            q: 'Что такое электролит?',
+            opts: ['Вещество, раствор которого проводит ток', 'Вещество, которое не растворяется в воде', 'Любое вещество в растворе', 'Вещество, которое проводит ток в твёрдом виде'],
+            ans: 0,
+            explain: 'Электролит — вещество, раствор или расплав которого <b>проводит электрический ток</b> (распадается на ионы).'
+        },
+        {
+            q: 'Какое из веществ — неэлектролит?',
+            opts: ['Сахар C₁₂H₂₂O₁₁', 'NaCl', 'HCl', 'KOH'],
+            ans: 0,
+            explain: '<b>Сахар</b> — неэлектролит. Он растворяется в воде, но на ионы не распадается и ток не проводит.'
+        },
+        {
+            q: 'Что образуется при диссоциации кислоты?',
+            opts: ['H⁺ и кислотный остаток', 'Металл⁺ и OH⁻', 'Только молекулы', 'Оксид и вода'],
+            ans: 0,
+            explain: 'Кислота при диссоциации образует катионы <b>водорода H⁺</b> и анионы кислотного остатка.'
+        },
+        {
+            q: 'Что образуется при диссоциации основания?',
+            opts: ['Катион металла и OH⁻', 'H⁺ и кислотный остаток', 'Только молекулы', 'Оксид и вода'],
+            ans: 0,
+            explain: 'Основание при диссоциации образует <b>катион металла</b> и <b>гидроксид-ионы OH⁻</b>.'
+        },
+        {
+            q: 'Какое из веществ — электролит?',
+            opts: ['KNO₃', 'CO₂', 'C₂H₅OH (спирт)', 'O₂'],
+            ans: 0,
+            explain: '<b>KNO₃</b> (нитрат калия) — соль, а все растворимые соли — электролиты.'
+        },
+        {
+            q: 'Что такое диссоциация?',
+            opts: ['Распад электролита на ионы в растворе', 'Растворение вещества в воде', 'Испарение раствора', 'Образование осадка'],
+            ans: 0,
+            explain: '<b>Диссоциация</b> — процесс распада электролита на ионы при растворении в воде или расплавлении.'
+        },
+        {
+            q: 'Оксид CO₂ — это электролит?',
+            opts: ['Нет', 'Да', 'Только в расплаве', 'Только при нагревании'],
+            ans: 0,
+            explain: '<b>Оксиды</b> — не электролиты. Они не распадаются на ионы.'
+        },
+        {
+            q: 'Какой процесс обратен диссоциации?',
+            opts: ['Ассоциация', 'Окисление', 'Восстановление', 'Нейтрализация'],
+            ans: 0,
+            explain: '<b>Ассоциация</b> — обратный процесс, при котором ионы снова объединяются в молекулы.'
+        },
+        {
+            q: 'Глюкоза C₆H₁₂O₆ — электролит или нет?',
+            opts: ['Неэлектролит', 'Сильный электролит', 'Слабый электролит', 'Зависит от концентрации'],
+            ans: 0,
+            explain: '<b>Глюкоза</b> — органическое вещество, неэлектролит. Растворяется, но на ионы не распадается.'
+        },
+        {
+            q: 'При диссоциации NaCl образуются:',
+            opts: ['Na⁺ и Cl⁻', 'Na и Cl₂', 'Na⁺ и Cl₂', 'NaOH и HCl'],
+            ans: 0,
+            explain: 'NaCl → <b>Na⁺ + Cl⁻</b>. Соль распадается на катион металла и анион кислотного остатка.'
+        }
+    ],
+    medium: [
+        {
+            q: 'HF (плавиковая кислота) — сильный или слабый электролит?',
+            opts: ['Слабый', 'Сильный', 'Не электролит', 'Средний'],
+            ans: 0,
+            explain: '<b>HF — слабый</b> электролит! Единственная из галогеноводородных кислот, которая слабая. HCl, HBr, HI — сильные.'
+        },
+        {
+            q: 'H₂SO₄ — сильный или слабый электролит?',
+            opts: ['Сильный', 'Слабый', 'Не электролит', 'Зависит от концентрации'],
+            ans: 0,
+            explain: '<b>H₂SO₄ — сильный</b> электролит (серная кислота). Не путать с H₂SO₃ (сернистая) — та слабая!'
+        },
+        {
+            q: 'H₂SO₃ — сильный или слабый электролит?',
+            opts: ['Слабый', 'Сильный', 'Не электролит', 'Зависит от температуры'],
+            ans: 0,
+            explain: '<b>H₂SO₃ — слабый</b> электролит (сернистая кислота). Не путать с H₂SO₄ (серная) — та сильная!'
+        },
+        {
+            q: 'Что НЕ разбивается на ионы в ионном уравнении?',
+            opts: ['Осадок, газ, вода, слабые электролиты, оксиды', 'Только осадок', 'Все вещества разбиваются', 'Только газы'],
+            ans: 0,
+            explain: 'На ионы НЕ разбиваем: <b>осадки ↓, газы ↑, воду H₂O, слабые электролиты, оксиды</b>.'
+        },
+        {
+            q: 'На какие ионы диссоциирует Ca(OH)₂?',
+            opts: ['Ca²⁺ + 2OH⁻', 'Ca⁺ + 2OH⁻', 'Ca²⁺ + OH²⁻', 'CaO + H₂O'],
+            ans: 0,
+            explain: 'Ca(OH)₂ → <b>Ca²⁺ + 2OH⁻</b>. Кальций имеет заряд 2+, две гидроксид-группы дают два OH⁻.'
+        },
+        {
+            q: 'На какие ионы диссоциирует H₂SO₄ (суммарно)?',
+            opts: ['2H⁺ + SO₄²⁻', 'H⁺ + HSO₄⁻', 'H₂⁺ + SO₄²⁻', '2H⁺ + S²⁻ + 4O²⁻'],
+            ans: 0,
+            explain: 'H₂SO₄ → <b>2H⁺ + SO₄²⁻</b>. Серная кислота — двухосновная, отдаёт 2 протона.'
+        },
+        {
+            q: 'Степень диссоциации α > 30% означает, что электролит:',
+            opts: ['Сильный', 'Слабый', 'Средний', 'Не электролит'],
+            ans: 0,
+            explain: 'α > 30% — <b>сильный</b> электролит. α < 3% — слабый.'
+        },
+        {
+            q: 'NH₃·H₂O — сильный или слабый электролит?',
+            opts: ['Слабый', 'Сильный', 'Не электролит', 'Зависит от температуры'],
+            ans: 0,
+            explain: '<b>NH₃·H₂O — слабый</b> электролит (гидрат аммиака, слабое основание).'
+        },
+        {
+            q: 'Соли SO₄²⁻ называются:',
+            opts: ['Сульфаты', 'Сульфиды', 'Сульфиты', 'Тиосульфаты'],
+            ans: 0,
+            explain: '<b>Сульфаты</b> — соли серной кислоты H₂SO₄, содержат остаток SO₄²⁻.'
+        },
+        {
+            q: 'Ион MnO₄⁻ — это остаток какой кислоты?',
+            opts: ['HMnO₄ (марганцевая)', 'H₂MnO₄ (марганцовистая)', 'MnO₂ (не кислота)', 'H₂CrO₄ (хромовая)'],
+            ans: 0,
+            explain: 'MnO₄⁻ — остаток <b>марганцевой кислоты HMnO₄</b>. Соли — перманганаты (например, KMnO₄).'
+        }
+    ],
+    hard: [
+        {
+            q: 'В реакции BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl, что остаётся в молекулярном виде в полном ионном уравнении?',
+            opts: ['BaSO₄ (осадок)', 'NaCl', 'BaCl₂', 'Na₂SO₄'],
+            ans: 0,
+            explain: '<b>BaSO₄</b> — нерастворимый осадок (↓), он НЕ разбивается на ионы в ионном уравнении.'
+        },
+        {
+            q: 'Сокращённое ионное уравнение: OH⁻ + H⁺ → H₂O. Какой реакции оно соответствует?',
+            opts: ['Нейтрализация (щёлочь + сильная кислота)', 'Осаждение', 'Разложение', 'Замещение'],
+            ans: 0,
+            explain: 'Это сокращённое ионное уравнение <b>реакции нейтрализации</b>: щёлочь + сильная кислота → соль + вода.'
+        },
+        {
+            q: 'Ca(OH)₂ — сильный или слабый электролит?',
+            opts: ['Сильный', 'Слабый', 'Не электролит', 'Средний'],
+            ans: 0,
+            explain: '<b>Ca(OH)₂ — сильный</b> электролит. Хоть он малорастворим, то, что растворилось, диссоциирует полностью.'
+        },
+        {
+            q: 'В реакции Na₂CO₃ + 2HCl → 2NaCl + H₂O + CO₂↑, сокращённое ионное:',
+            opts: ['CO₃²⁻ + 2H⁺ → H₂O + CO₂↑', 'Na⁺ + Cl⁻ → NaCl', '2Na⁺ + CO₃²⁻ → Na₂CO₃', 'H⁺ + Cl⁻ → HCl'],
+            ans: 0,
+            explain: 'Убираем ионы-зрители (Na⁺, Cl⁻), H₂O и CO₂ не разбиваем → <b>CO₃²⁻ + 2H⁺ → H₂O + CO₂↑</b>.'
+        },
+        {
+            q: 'На какие ионы диссоциирует Al₂(SO₄)₃?',
+            opts: ['2Al³⁺ + 3SO₄²⁻', '2Al³⁺ + 3S²⁻ + 12O²⁻', 'Al₂³⁺ + SO₄³⁻', '2Al²⁺ + 3SO₄³⁻'],
+            ans: 0,
+            explain: 'Al₂(SO₄)₃ → <b>2Al³⁺ + 3SO₄²⁻</b>. Алюминий 3+, сульфат-ион не дробится.'
+        },
+        {
+            q: 'Ион CrO₄²⁻ — это остаток какой кислоты?',
+            opts: ['H₂CrO₄ (хромовая)', 'H₂Cr₂O₇ (дихромовая)', 'HCl (соляная)', 'HNO₃ (азотная)'],
+            ans: 0,
+            explain: 'CrO₄²⁻ — остаток <b>хромовой кислоты H₂CrO₄</b>. Соли — хроматы (например, K₂CrO₄).'
+        }
+    ]
+};
+
+// ===================== QUIZ ENGINE =====================
+let quizQuestions = [], quizIndex = 0, quizCorrect = 0, quizAnswered = false;
+let quizErrors = [], quizTotalAsked = 0;
+
+function startQuiz() {
+    const easy = shuffle(quizData.easy).slice(0, 5);
+    const medium = shuffle(quizData.medium).slice(0, 5);
+    const hard = shuffle(quizData.hard).slice(0, 4);
+    easy.forEach(q => q._diff = 'easy');
+    medium.forEach(q => q._diff = 'medium');
+    hard.forEach(q => q._diff = 'hard');
+    quizQuestions = [...easy, ...medium, ...hard];
+    quizIndex = 0; quizCorrect = 0; quizErrors = []; quizTotalAsked = 0;
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    const q = quizQuestions[quizIndex];
+    quizAnswered = false;
+    const diffNames = {easy: 'Лёгкий', medium: 'Средний', hard: 'Сложный'};
+    const diffTags = {easy: 'tag-easy', medium: 'tag-medium', hard: 'tag-hard'};
+    document.getElementById('quizTag').innerHTML = `<span class="topic-tag ${diffTags[q._diff]}">${diffNames[q._diff]}</span>`;
+    document.getElementById('quizQuestion').textContent = q.q;
+    document.getElementById('quizProgress').textContent = `Вопрос ${quizIndex + 1} / ${quizQuestions.length}`;
+    document.getElementById('quizScore').textContent = `${quizCorrect} правильных`;
+    document.getElementById('quizBar').style.width = ((quizIndex) / quizQuestions.length * 100) + '%';
+    document.getElementById('quizExplain').style.display = 'none';
+    document.getElementById('quizNextWrap').style.display = 'none';
+
+    const optsDiv = document.getElementById('quizOptions');
+    optsDiv.innerHTML = '';
+    const indices = shuffle(Array.from({length: q.opts.length}, (_, i) => i));
+    indices.forEach(i => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = q.opts[i];
+        btn.dataset.idx = i;
+        btn.onclick = () => selectQuizOption(i, btn);
+        optsDiv.appendChild(btn);
+    });
+}
+
+function selectQuizOption(idx, btn) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    const q = quizQuestions[quizIndex];
+    const allBtns = document.querySelectorAll('#quizOptions .quiz-option');
+    allBtns.forEach(b => {
+        b.style.pointerEvents = 'none';
+        if (parseInt(b.dataset.idx) === q.ans) b.classList.add('correct');
+    });
+    if (idx === q.ans) {
+        quizCorrect++;
+        btn.classList.add('correct');
+    } else {
+        btn.classList.add('wrong');
+        quizErrors.push({ q: q.q, correctAns: q.opts[q.ans], full: q });
+    }
+    document.getElementById('quizExplain').innerHTML = q.explain;
+    document.getElementById('quizExplain').style.display = 'block';
+    document.getElementById('quizNextWrap').style.display = 'flex';
+    document.getElementById('quizScore').textContent = `${quizCorrect} правильных`;
+}
+
+function nextQuizQuestion() {
+    quizIndex++;
+    if (quizIndex >= quizQuestions.length) {
+        showQuizResults();
+    } else {
+        renderQuizQuestion();
+    }
+}
+
+function showQuizResults() {
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('quizResults').style.display = 'block';
+    if (!quizTotalAsked) quizTotalAsked = quizQuestions.length;
+    const pct = Math.round(quizCorrect / quizTotalAsked * 100);
+    document.getElementById('quizResultScore').textContent = `${quizCorrect} / ${quizTotalAsked} (${pct}%)`;
+    let text = pct === 100 ? 'Молодец! Всё верно!' : pct >= 75 ? 'Хороший результат!' : pct >= 50 ? 'Неплохо, но стоит повторить.' : 'Нужно ещё раз перечитать теорию.';
+    document.getElementById('quizResultText').textContent = text;
+
+    const errDiv = document.getElementById('quizErrors');
+    errDiv.innerHTML = '';
+    const btnsDiv = document.getElementById('quizResultBtns');
+
+    if (quizErrors.length > 0) {
+        errDiv.innerHTML = '<h3 style="color:#ef4444;margin-bottom:10px;">Ошибки:</h3>';
+        quizErrors.forEach(e => {
+            errDiv.innerHTML += `<div class="error-item"><div class="err-q">${e.q}</div><div class="err-a">Правильный ответ: ${e.correctAns}</div></div>`;
+        });
+        btnsDiv.innerHTML = `<button class="btn btn-primary" onclick="retryQuizErrors()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;">Повторить ошибки (${quizErrors.length})</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>`;
+    } else {
+        btnsDiv.innerHTML = `<button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>`;
+    }
+}
+
+function retryQuizErrors() {
+    quizQuestions = shuffle(quizErrors.map(e => e.full));
+    quizIndex = 0;
+    quizErrors = [];
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+// ===================== TRAINER DATA =====================
+const trainTasks = [
+    // TYPE 1: Электролит или неэлектролит?
+    { type: 'electrolyte', substance: 'NaCl (хлорид натрия)', answer: 'Электролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>NaCl — электролит</b>. Это соль, все растворимые соли — электролиты. NaCl → Na⁺ + Cl⁻.' },
+    { type: 'electrolyte', substance: 'C₆H₁₂O₆ (глюкоза)', answer: 'Неэлектролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>Глюкоза — неэлектролит</b>. Органическое вещество, растворяется, но на ионы не распадается.' },
+    { type: 'electrolyte', substance: 'H₂SO₄ (серная кислота)', answer: 'Электролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>H₂SO₄ — электролит</b> (и притом сильный). Кислота диссоциирует на ионы.' },
+    { type: 'electrolyte', substance: 'CO₂ (углекислый газ)', answer: 'Неэлектролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>CO₂ — неэлектролит</b>. Оксиды не диссоциируют на ионы.' },
+    { type: 'electrolyte', substance: 'CuSO₄ (сульфат меди)', answer: 'Электролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>CuSO₄ — электролит</b>. Это растворимая соль, распадается на Cu²⁺ и SO₄²⁻.' },
+    { type: 'electrolyte', substance: 'C₂H₅OH (этиловый спирт)', answer: 'Неэлектролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>Спирт — неэлектролит</b>. Органическое вещество, не распадается на ионы.' },
+    { type: 'electrolyte', substance: 'KOH (гидроксид калия)', answer: 'Электролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>KOH — электролит</b>. Это щёлочь (сильное основание), диссоциирует на K⁺ и OH⁻.' },
+    { type: 'electrolyte', substance: 'O₂ (кислород)', answer: 'Неэлектролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>O₂ — неэлектролит</b>. Простые вещества не диссоциируют.' },
+    { type: 'electrolyte', substance: 'C₁₂H₂₂O₁₁ (сахароза)', answer: 'Неэлектролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>Сахар — неэлектролит</b>. Растворяется в воде, но на ионы не распадается.' },
+    { type: 'electrolyte', substance: 'Ba(OH)₂ (гидроксид бария)', answer: 'Электролит', options: ['Электролит', 'Неэлектролит'],
+      explanation: '<b>Ba(OH)₂ — электролит</b>. Щёлочь, сильное основание. Ba(OH)₂ → Ba²⁺ + 2OH⁻.' },
+
+    // TYPE 2: Сильный или слабый электролит?
+    { type: 'strength', substance: 'HCl (соляная кислота)', answer: 'Сильный', options: ['Сильный', 'Слабый'],
+      explanation: '<b>HCl — сильный</b> электролит. Все галогеноводородные кислоты сильные, кроме HF.' },
+    { type: 'strength', substance: 'CH₃COOH (уксусная кислота)', answer: 'Слабый', options: ['Сильный', 'Слабый'],
+      explanation: '<b>CH₃COOH — слабый</b> электролит. Органическая кислота, диссоциирует частично.' },
+    { type: 'strength', substance: 'NaOH (гидроксид натрия)', answer: 'Сильный', options: ['Сильный', 'Слабый'],
+      explanation: '<b>NaOH — сильный</b> электролит. Щёлочь, растворимое основание — всегда сильный.' },
+    { type: 'strength', substance: 'H₂CO₃ (угольная кислота)', answer: 'Слабый', options: ['Сильный', 'Слабый'],
+      explanation: '<b>H₂CO₃ — слабый</b> электролит. Угольная кислота неустойчива и слабо диссоциирует.' },
+    { type: 'strength', substance: 'KNO₃ (нитрат калия)', answer: 'Сильный', options: ['Сильный', 'Слабый'],
+      explanation: '<b>KNO₃ — сильный</b> электролит. Все растворимые соли — сильные электролиты.' },
+    { type: 'strength', substance: 'NH₃·H₂O (гидрат аммиака)', answer: 'Слабый', options: ['Сильный', 'Слабый'],
+      explanation: '<b>NH₃·H₂O — слабый</b> электролит. Слабое основание, диссоциирует частично.' },
+    { type: 'strength', substance: 'HF (плавиковая кислота)', answer: 'Слабый', options: ['Сильный', 'Слабый'],
+      explanation: '<b>HF — слабый</b> электролит! Единственная слабая из галогеноводородных кислот.' },
+    { type: 'strength', substance: 'H₂SO₄ (серная кислота)', answer: 'Сильный', options: ['Сильный', 'Слабый'],
+      explanation: '<b>H₂SO₄ — сильный</b> электролит. Не путай с H₂SO₃ (сернистая — слабая)!' },
+    { type: 'strength', substance: 'H₂SO₃ (сернистая кислота)', answer: 'Слабый', options: ['Сильный', 'Слабый'],
+      explanation: '<b>H₂SO₃ — слабый</b> электролит. Не путай с H₂SO₄ (серная — сильная)!' },
+    { type: 'strength', substance: 'Ca(OH)₂ (гидроксид кальция)', answer: 'Сильный', options: ['Сильный', 'Слабый'],
+      explanation: '<b>Ca(OH)₂ — сильный</b> электролит. Хоть малорастворим, но что растворилось — диссоциирует полностью.' },
+    { type: 'strength', substance: 'Cu(OH)₂ (гидроксид меди(II))', answer: 'Слабый', options: ['Сильный', 'Слабый'],
+      explanation: '<b>Cu(OH)₂ — слабый</b> электролит. Нерастворимое основание, слабый электролит.' },
+    { type: 'strength', substance: 'HNO₃ (азотная кислота)', answer: 'Сильный', options: ['Сильный', 'Слабый'],
+      explanation: '<b>HNO₃ — сильный</b> электролит. Одна из главных сильных кислот.' },
+
+    // TYPE 3: На какие ионы диссоциирует?
+    { type: 'ions', substance: 'NaCl', answer: 'Na⁺ + Cl⁻', options: ['Na⁺ + Cl⁻', 'Na²⁺ + Cl²⁻', 'Na + Cl', 'Na⁺ + Cl₂⁻'],
+      explanation: 'NaCl → <b>Na⁺ + Cl⁻</b>. Натрий 1+, хлор 1−.' },
+    { type: 'ions', substance: 'H₂SO₄', answer: '2H⁺ + SO₄²⁻', options: ['2H⁺ + SO₄²⁻', 'H₂⁺ + SO₄²⁻', '2H⁺ + S²⁻ + 4O²⁻', 'H⁺ + HSO₄⁻'],
+      explanation: 'H₂SO₄ → <b>2H⁺ + SO₄²⁻</b> (суммарно). Сульфат-ион SO₄²⁻ не дробится!' },
+    { type: 'ions', substance: 'Ca(OH)₂', answer: 'Ca²⁺ + 2OH⁻', options: ['Ca²⁺ + 2OH⁻', 'Ca⁺ + OH²⁻', 'Ca²⁺ + O²⁻ + H₂', 'CaO + H₂O'],
+      explanation: 'Ca(OH)₂ → <b>Ca²⁺ + 2OH⁻</b>. Кальций 2+, два гидроксида.' },
+    { type: 'ions', substance: 'KNO₃', answer: 'K⁺ + NO₃⁻', options: ['K⁺ + NO₃⁻', 'K²⁺ + NO₃²⁻', 'K⁺ + N³⁻ + 3O²⁻', 'K + NO₃'],
+      explanation: 'KNO₃ → <b>K⁺ + NO₃⁻</b>. Нитрат-ион NO₃⁻ не дробится!' },
+    { type: 'ions', substance: 'Al₂(SO₄)₃', answer: '2Al³⁺ + 3SO₄²⁻', options: ['2Al³⁺ + 3SO₄²⁻', 'Al₂³⁺ + 3SO₄²⁻', '2Al²⁺ + 3SO₄³⁻', '2Al³⁺ + 3S²⁻ + 12O²⁻'],
+      explanation: 'Al₂(SO₄)₃ → <b>2Al³⁺ + 3SO₄²⁻</b>. Алюминий 3+, три сульфат-иона.' },
+    { type: 'ions', substance: 'Ba(OH)₂', answer: 'Ba²⁺ + 2OH⁻', options: ['Ba²⁺ + 2OH⁻', 'Ba⁺ + 2OH⁻', 'Ba²⁺ + O²⁻ + H₂', 'BaO + H₂O'],
+      explanation: 'Ba(OH)₂ → <b>Ba²⁺ + 2OH⁻</b>. Барий 2+, два гидроксида.' },
+    { type: 'ions', substance: 'Na₃PO₄', answer: '3Na⁺ + PO₄³⁻', options: ['3Na⁺ + PO₄³⁻', 'Na₃⁺ + PO₄³⁻', '3Na⁺ + P³⁻ + 4O²⁻', 'Na⁺ + Na₂PO₄⁻'],
+      explanation: 'Na₃PO₄ → <b>3Na⁺ + PO₄³⁻</b>. Фосфат-ион PO₄³⁻ не дробится!' },
+    { type: 'ions', substance: 'FeCl₃', answer: 'Fe³⁺ + 3Cl⁻', options: ['Fe³⁺ + 3Cl⁻', 'Fe²⁺ + 3Cl⁻', 'Fe³⁺ + Cl₃⁻', 'Fe + 3Cl'],
+      explanation: 'FeCl₃ → <b>Fe³⁺ + 3Cl⁻</b>. Железо 3+, три хлорид-иона.' },
+
+    // TYPE 4: Что НЕ разбивается на ионы?
+    { type: 'molecular', reaction: 'BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl', question: 'Что остаётся в молекулярном виде?', answer: 'BaSO₄ (осадок)', options: ['BaSO₄ (осадок)', 'BaCl₂', 'NaCl', 'Na₂SO₄'],
+      explanation: '<b>BaSO₄</b> — нерастворимый осадок (↓). Осадки НЕ разбиваем на ионы в ионном уравнении.' },
+    { type: 'molecular', reaction: 'NaOH + HCl → NaCl + H₂O', question: 'Что остаётся в молекулярном виде?', answer: 'H₂O (вода)', options: ['H₂O (вода)', 'NaCl', 'NaOH', 'HCl'],
+      explanation: '<b>H₂O</b> — слабый электролит, на ионы НЕ разбиваем.' },
+    { type: 'molecular', reaction: 'Na₂CO₃ + 2HCl → 2NaCl + H₂O + CO₂↑', question: 'Что из продуктов остаётся в молекулярном виде?', answer: 'H₂O и CO₂', options: ['H₂O и CO₂', 'Только NaCl', 'Только CO₂', 'Все продукты в ионах'],
+      explanation: '<b>H₂O</b> (слабый электролит) и <b>CO₂</b> (газ, улетает) — НЕ разбиваются на ионы.' },
+    { type: 'molecular', reaction: 'AgNO₃ + NaCl → AgCl↓ + NaNO₃', question: 'Что остаётся в молекулярном виде?', answer: 'AgCl (осадок)', options: ['AgCl (осадок)', 'NaNO₃', 'AgNO₃', 'NaCl'],
+      explanation: '<b>AgCl</b> — нерастворимый осадок (↓), на ионы НЕ разбиваем.' },
+    { type: 'molecular', reaction: 'NaOH + CH₃COOH → CH₃COONa + H₂O', question: 'Что из исходных веществ НЕ разбивается на ионы?', answer: 'CH₃COOH (слабый электролит)', options: ['CH₃COOH (слабый электролит)', 'NaOH', 'CH₃COONa', 'Всё разбивается'],
+      explanation: '<b>CH₃COOH</b> — слабый электролит (уксусная кислота). Слабые электролиты пишем в молекулярном виде.' },
+
+    // TYPE 5: Какой кислоте принадлежит остаток?
+    { type: 'acid_rest', ion: 'SO₄²⁻', answer: 'H₂SO₄ (серная)', options: ['H₂SO₄ (серная)', 'H₂SO₃ (сернистая)', 'H₂S (сероводородная)', 'H₂SiO₃ (кремниевая)'],
+      explanation: 'SO₄²⁻ — сульфат-ион, остаток <b>серной кислоты H₂SO₄</b>.' },
+    { type: 'acid_rest', ion: 'Cl⁻', answer: 'HCl (соляная)', options: ['HCl (соляная)', 'HClO₄ (хлорная)', 'Cl₂ (хлор)', 'HF (плавиковая)'],
+      explanation: 'Cl⁻ — хлорид-ион, остаток <b>соляной кислоты HCl</b>.' },
+    { type: 'acid_rest', ion: 'NO₃⁻', answer: 'HNO₃ (азотная)', options: ['HNO₃ (азотная)', 'HNO₂ (азотистая)', 'NH₃ (аммиак)', 'N₂O₅ (оксид)'],
+      explanation: 'NO₃⁻ — нитрат-ион, остаток <b>азотной кислоты HNO₃</b>.' },
+    { type: 'acid_rest', ion: 'PO₄³⁻', answer: 'H₃PO₄ (фосфорная)', options: ['H₃PO₄ (фосфорная)', 'H₂SO₄ (серная)', 'HNO₃ (азотная)', 'H₂CO₃ (угольная)'],
+      explanation: 'PO₄³⁻ — фосфат-ион, остаток <b>фосфорной кислоты H₃PO₄</b>.' },
+    { type: 'acid_rest', ion: 'CO₃²⁻', answer: 'H₂CO₃ (угольная)', options: ['H₂CO₃ (угольная)', 'H₂SO₃ (сернистая)', 'CO₂ (не кислота)', 'CH₃COOH (уксусная)'],
+      explanation: 'CO₃²⁻ — карбонат-ион, остаток <b>угольной кислоты H₂CO₃</b>.' },
+    { type: 'acid_rest', ion: 'CrO₄²⁻', answer: 'H₂CrO₄ (хромовая)', options: ['H₂CrO₄ (хромовая)', 'H₂Cr₂O₇ (дихромовая)', 'HMnO₄ (марганцевая)', 'H₂SO₄ (серная)'],
+      explanation: 'CrO₄²⁻ — хромат-ион, остаток <b>хромовой кислоты H₂CrO₄</b>. Соли — хроматы.' },
+    { type: 'acid_rest', ion: 'MnO₄⁻', answer: 'HMnO₄ (марганцевая)', options: ['HMnO₄ (марганцевая)', 'H₂CrO₄ (хромовая)', 'HNO₃ (азотная)', 'H₂MnO₄ (не существует)'],
+      explanation: 'MnO₄⁻ — перманганат-ион, остаток <b>марганцевой кислоты HMnO₄</b>. Соли — перманганаты (KMnO₄).' },
+    { type: 'acid_rest', ion: 'SiO₃²⁻', answer: 'H₂SiO₃ (кремниевая)', options: ['H₂SiO₃ (кремниевая)', 'H₂CO₃ (угольная)', 'H₂SO₃ (сернистая)', 'SiO₂ (не кислота)'],
+      explanation: 'SiO₃²⁻ — силикат-ион, остаток <b>кремниевой кислоты H₂SiO₃</b>. Соли — силикаты.' },
+    { type: 'acid_rest', ion: 'Cr₂O₇²⁻', answer: 'H₂Cr₂O₇ (дихромовая)', options: ['H₂Cr₂O₇ (дихромовая)', 'H₂CrO₄ (хромовая)', 'HMnO₄ (марганцевая)', 'K₂Cr₂O₇ (не кислота)'],
+      explanation: 'Cr₂O₇²⁻ — бихромат-ион, остаток <b>дихромовой кислоты H₂Cr₂O₇</b>. Соли — бихроматы.' },
+];
+
+// ===================== TRAINER ENGINE =====================
+let trainList = [], trainIndex = 0, trainCorrectCount = 0, trainAnswered = false;
+let trainErrors = [], trainRetryMode = false, trainTotalTasks = 0;
+
+function startTrainer() {
+    trainList = shuffle(trainTasks);
+    trainIndex = 0;
+    trainCorrectCount = 0;
+    trainAnswered = false;
+    trainErrors = [];
+    trainRetryMode = false;
+    trainTotalTasks = trainList.length;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+function renderTrainTask() {
+    if (trainIndex >= trainList.length) {
+        if (trainErrors.length > 0) {
+            trainRetryMode = true;
+            trainList = shuffle([...trainErrors]);
+            trainErrors = [];
+            trainIndex = 0;
+            renderTrainTask();
+            return;
+        }
+        showTrainResults();
+        return;
+    }
+
+    trainAnswered = false;
+    const task = trainList[trainIndex];
+
+    document.getElementById('trainRetryBadge').innerHTML = trainRetryMode ? '<span class="retry-badge">⟳ Повтор ошибок</span>' : '';
+
+    let reactionHTML = '';
+    let questionHTML = '';
+
+    if (task.type === 'electrolyte') {
+        reactionHTML = task.substance;
+        questionHTML = 'Электролит или неэлектролит?';
+    } else if (task.type === 'strength') {
+        reactionHTML = task.substance;
+        questionHTML = 'Сильный или слабый электролит?';
+    } else if (task.type === 'ions') {
+        reactionHTML = task.substance;
+        questionHTML = 'На какие ионы диссоциирует?';
+    } else if (task.type === 'molecular') {
+        reactionHTML = task.reaction;
+        questionHTML = task.question;
+    } else if (task.type === 'acid_rest') {
+        reactionHTML = task.ion;
+        questionHTML = 'Какой кислоте принадлежит этот остаток?';
+    }
+
+    document.getElementById('trainReaction').innerHTML = reactionHTML;
+    document.getElementById('trainChange').innerHTML = questionHTML;
+
+    const label = trainRetryMode ? `⟳ Повтор ${trainIndex + 1} / ${trainList.length}` : `Задание ${trainIndex + 1} / ${trainList.length}`;
+    document.getElementById('trainProgress').textContent = label;
+    document.getElementById('trainScore').textContent = `${trainCorrectCount} правильных`;
+
+    const pct = (trainIndex) / trainList.length * 100;
+    document.getElementById('trainBar').style.width = pct + '%';
+
+    const btnsDiv = document.getElementById('trainButtons');
+    btnsDiv.innerHTML = '';
+    const shuffledOpts = shuffle(task.options);
+    shuffledOpts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'dir-btn';
+        btn.innerHTML = opt;
+        btn.onclick = () => answerTrain(opt, btn);
+        btnsDiv.appendChild(btn);
+    });
+
+    document.getElementById('trainExplain').className = 'train-explain';
+    document.getElementById('trainExplain').style.display = 'none';
+    document.getElementById('trainNextWrap').style.display = 'none';
+}
+
+function answerTrain(choice, clickedBtn) {
+    if (trainAnswered) return;
+    trainAnswered = true;
+
+    const task = trainList[trainIndex];
+    const isCorrect = choice === task.answer;
+
+    const btns = document.querySelectorAll('#trainButtons .dir-btn');
+    btns.forEach(b => {
+        b.style.pointerEvents = 'none';
+        if (b.innerHTML === task.answer) b.classList.add('correct');
+        if (b === clickedBtn && !isCorrect) b.classList.add('wrong');
+    });
+
+    if (isCorrect) {
+        trainCorrectCount++;
+    } else {
+        trainErrors.push(task);
+    }
+
+    const el = document.getElementById('trainExplain');
+    el.innerHTML = (isCorrect ? '✓ Верно! ' : '✗ Неверно. ') + task.explanation;
+    el.className = 'train-explain ' + (isCorrect ? 'show-correct' : 'show-wrong');
+    el.style.display = 'block';
+
+    document.getElementById('trainScore').textContent = `${trainCorrectCount} правильных`;
+    document.getElementById('trainNextWrap').style.display = 'flex';
+}
+
+function nextTrainTask() {
+    trainIndex++;
+    renderTrainTask();
+}
+
+function showTrainResults() {
+    showScreen('trainResults');
+    const pct = Math.round(trainCorrectCount / trainTotalTasks * 100);
+    document.getElementById('trainResultScore').textContent = `${trainCorrectCount} / ${trainTotalTasks} (${pct}%)`;
+    let text;
+    if (pct === 100) text = 'Молодец! Всё верно!';
+    else if (pct >= 80) text = 'Отличный результат!';
+    else if (pct >= 60) text = 'Неплохо, но стоит повторить ошибки.';
+    else text = 'Нужно перечитать теорию и попробовать снова.';
+    document.getElementById('trainResultText').textContent = text;
+}
+</script>
+</body>
+</html>
