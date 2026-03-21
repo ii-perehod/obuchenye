@@ -457,6 +457,59 @@
             </div>
         </div>
 
+        <!-- КАРТОЧКА: Типы реакций по составу и связь с ОВР -->
+        <div class="card">
+            <h2>4 типа реакций по составу — какие из них ОВР?</h2>
+            <p>Все химические реакции делятся на 4 типа. Некоторые из них <b>всегда</b> ОВР, некоторые — <b>никогда</b>.</p>
+
+            <div style="overflow-x:auto;margin:16px 0;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.95em;">
+                    <tr style="border-bottom:2px solid rgba(255,255,255,0.2);">
+                        <th style="padding:10px;text-align:left;color:#00d2ff;">Тип реакции</th>
+                        <th style="padding:10px;text-align:left;color:#00d2ff;">Схема</th>
+                        <th style="padding:10px;text-align:left;color:#00d2ff;">Пример</th>
+                        <th style="padding:10px;text-align:left;color:#00d2ff;">ОВР?</th>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <td style="padding:10px;"><b>Соединение</b></td>
+                        <td style="padding:10px;">A + B → AB</td>
+                        <td style="padding:10px;">2Na + Cl₂ → 2NaCl<br><span style="color:#888;font-size:0.85em;">K₂O + SO₃ → K₂SO₃</span></td>
+                        <td style="padding:10px;"><b style="color:#f59e0b;">Иногда</b></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <td style="padding:10px;"><b>Разложение</b></td>
+                        <td style="padding:10px;">AB → A + B</td>
+                        <td style="padding:10px;">2KClO₃ → 2KCl + 3O₂<br><span style="color:#888;font-size:0.85em;">H₂CO₃ → CO₂ + H₂O</span></td>
+                        <td style="padding:10px;"><b style="color:#f59e0b;">Иногда</b></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <td style="padding:10px;"><b>Замещение</b></td>
+                        <td style="padding:10px;">A + BC → AC + B</td>
+                        <td style="padding:10px;">Fe + 2HCl → FeCl₂ + H₂↑</td>
+                        <td style="padding:10px;"><b style="color:#4ade80;font-size:1.1em;">ВСЕГДА</b></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;"><b>Обмена</b></td>
+                        <td style="padding:10px;">AB + CD → AD + CB</td>
+                        <td style="padding:10px;">NaOH + HCl → NaCl + H₂O</td>
+                        <td style="padding:10px;"><b style="color:#ff5252;font-size:1.1em;">НИКОГДА</b></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="analogy">
+                <b>Почему замещение — всегда ОВР?</b><br>
+                В реакции замещения одно простое вещество «выбивает» другое из соединения. Простое вещество имеет С.О. = 0, а в продуктах оно войдёт в состав соединения и С.О. изменится. Раз С.О. меняется — это ОВР.
+            </div>
+            <div class="analogy" style="margin-top:12px;">
+                <b>Почему обмен — никогда не ОВР?</b><br>
+                В реакции обмена вещества просто «меняются партнёрами». Никто не отдаёт и не принимает электроны — все С.О. остаются прежними.
+            </div>
+            <div class="warning" style="margin-top:12px;">
+                <b>Лайфхак:</b> Видишь в реакции <b>простое вещество</b> (металл, O₂, H₂, Cl₂...) — это <b>точно ОВР</b>. Нет простого вещества — проверяй С.О. каждого элемента.
+            </div>
+        </div>
+
         <div class="card">
             <h2>Метод электронного баланса</h2>
             <p>Пошаговый алгоритм расстановки коэффициентов:</p>
@@ -666,6 +719,18 @@ const quizData = {
             opts: ['Точно ОВР', 'Точно не ОВР', 'Зависит от условий', 'Нужно считать С.О.'],
             ans: 0,
             explain: 'Если есть простое вещество — это <b>точно ОВР</b>. С.О. в простом веществе = 0, а в продуктах она обязательно изменится.'
+        },
+        {
+            q: 'Реакция замещения — это ОВР?',
+            opts: ['Всегда ОВР', 'Никогда не ОВР', 'Иногда ОВР', 'Зависит от температуры'],
+            ans: 0,
+            explain: 'Реакция замещения — <b>всегда ОВР</b>. В ней простое вещество вытесняет другое из соединения, а простое вещество имеет С.О. = 0 — она обязательно изменится.'
+        },
+        {
+            q: 'Реакция обмена — это ОВР?',
+            opts: ['Никогда не ОВР', 'Всегда ОВР', 'Иногда ОВР', 'Только при нагревании'],
+            ans: 0,
+            explain: 'Реакция обмена — <b>никогда не ОВР</b>. Вещества просто меняются партнёрами, никто не отдаёт и не принимает электроны.'
         }
     ],
     medium: [
@@ -716,6 +781,18 @@ const quizData = {
             opts: ['Числу принятых электронов', 'Нулю', 'Числу атомов', 'Заряду иона'],
             ans: 0,
             explain: 'Электронный баланс: сколько электронов отдано = столько принято. <b>Дебет = Кредит</b>.'
+        },
+        {
+            q: 'Fe + 2HCl → FeCl₂ + H₂↑. Какой это тип реакции по составу?',
+            opts: ['Замещение', 'Обмена', 'Соединение', 'Разложение'],
+            ans: 0,
+            explain: '<b>Замещение</b>: простое вещество Fe вытесняет H₂ из соединения HCl. Схема A + BC → AC + B.'
+        },
+        {
+            q: 'NaOH + HCl → NaCl + H₂O. Какой это тип реакции по составу?',
+            opts: ['Обмена', 'Замещение', 'Разложение', 'Соединение'],
+            ans: 0,
+            explain: '<b>Обмена</b>: два сложных вещества обменялись составными частями. Схема AB + CD → AD + CB. Это не ОВР!'
         }
     ],
     hard: [
@@ -763,8 +840,8 @@ let quizQuestions = [], quizIndex = 0, quizCorrect = 0, quizAnswered = false;
 let quizErrors = [], quizTotalAsked = 0;
 
 function startQuiz() {
-    const easy = shuffle(quizData.easy).slice(0, 4);
-    const medium = shuffle(quizData.medium).slice(0, 4);
+    const easy = shuffle(quizData.easy).slice(0, 5);
+    const medium = shuffle(quizData.medium).slice(0, 5);
     const hard = shuffle(quizData.hard).slice(0, 4);
     easy.forEach(q => q._diff = 'easy');
     medium.forEach(q => q._diff = 'medium');
@@ -905,6 +982,18 @@ const trainTasks = [
       explanation: '<b>Не ОВР</b>. Все С.О. сохраняются: Ca(+2), C(+4), O(−2).' },
     { type: 'isredox', reaction: '2Fe + 3Cl₂ → 2FeCl₃', answer: 'ОВР', options: ['ОВР', 'Не ОВР'],
       explanation: '<b>ОВР</b>. Fe: 0 → +3, Cl: 0 → −1. Простые вещества — точно ОВР.' },
+
+    // TYPE 2b: Определи тип реакции по составу
+    { type: 'who', reaction: 'Fe + 2HCl → FeCl₂ + H₂↑', question: 'Какой тип реакции по составу?', answer: 'Замещение', options: ['Замещение', 'Обмена', 'Соединение', 'Разложение'],
+      explanation: '<b>Замещение</b>: простое вещество Fe вытесняет H₂ из HCl. Схема: A + BC → AC + B. Замещение — <b>всегда ОВР</b>.' },
+    { type: 'who', reaction: 'NaOH + HCl → NaCl + H₂O', question: 'Какой тип реакции по составу?', answer: 'Обмена', options: ['Обмена', 'Замещение', 'Разложение', 'Соединение'],
+      explanation: '<b>Обмена</b>: два сложных вещества обменялись частями. Схема: AB + CD → AD + CB. Обмен — <b>никогда не ОВР</b>.' },
+    { type: 'who', reaction: '2Na + Cl₂ → 2NaCl', question: 'Какой тип реакции по составу?', answer: 'Соединение', options: ['Соединение', 'Замещение', 'Обмена', 'Разложение'],
+      explanation: '<b>Соединение</b>: из двух веществ образуется одно. Схема: A + B → AB. Эта реакция — ОВР (есть простые вещества).' },
+    { type: 'who', reaction: 'H₂CO₃ → CO₂ + H₂O', question: 'Какой тип реакции по составу?', answer: 'Разложение', options: ['Разложение', 'Обмена', 'Замещение', 'Соединение'],
+      explanation: '<b>Разложение</b>: одно вещество распадается на несколько. Схема: AB → A + B. Эта реакция — не ОВР (все С.О. сохранились).' },
+    { type: 'who', reaction: 'Cu + 2AgNO₃ → Cu(NO₃)₂ + 2Ag', question: 'Какой тип реакции по составу?', answer: 'Замещение', options: ['Замещение', 'Обмена', 'Соединение', 'Разложение'],
+      explanation: '<b>Замещение</b>: медь вытесняет серебро из раствора. Схема: A + BC → AC + B. Замещение — <b>всегда ОВР</b>.' },
 
     // TYPE 3: Что окисляется / восстанавливается?
     { type: 'whatprocess', reaction: '2Mg + O₂ → 2MgO', question: 'Какой элемент окисляется?', answer: 'Mg', options: ['Mg', 'O', 'MgO', 'Оба'],
