@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Тема 1: Основные понятия</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 700px; margin: 0 auto; }
+
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; letter-spacing: 0.04em; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #7b2ff7); border-radius: 10px; transition: width 0.4s; }
+
+        .round-badge {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+            background: rgba(245,158,11,0.2); color: #f59e0b;
+        }
+
+        .question-text { font-size: 1.1em; line-height: 1.6; margin-bottom: 20px; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            padding: 13px 16px; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 11px; cursor: pointer; transition: all 0.22s;
+            font-size: 0.95em; line-height: 1.45; background: rgba(255,255,255,0.03);
+        }
+        .option:hover:not(.disabled) { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.3); }
+        .option.correct { border-color: #4ade80; background: rgba(74,222,128,0.13); color: #4ade80; }
+        .option.wrong   { border-color: #ff5252; background: rgba(255,82,82,0.13);  color: #ff5252; }
+        .option.disabled { pointer-events: none; }
+
+        .explanation {
+            margin-top: 14px; padding: 14px 16px; border-radius: 10px;
+            background: rgba(255,255,255,0.05); border-left: 3px solid #7b2ff7;
+            font-size: 0.88em; line-height: 1.6; display: none;
+        }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d2ff, #7b2ff7); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,210,255,0.3); }
+        .btn-outline {
+            background: transparent; border: 1px solid rgba(255,255,255,0.3);
+            color: #ccc; padding: 10px 22px;
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.08); }
+        .btn-repeat {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.5); }
+            50%       { box-shadow: 0 0 0 10px rgba(245,158,11,0); }
+        }
+        .btn-row { text-align: center; margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+        /* ═══ THEORY ═══ */
+        .theory-title { font-size: 1.25em; font-weight: 700; margin-bottom: 18px; color: #7b2ff7; text-align: center; }
+        .theory-content { font-size: 0.93em; line-height: 1.7; }
+        .theory-content p { margin-bottom: 14px; }
+
+        .th-section {
+            font-size: 1.05em; font-weight: 700; margin: 28px 0 14px;
+            padding-bottom: 8px; border-bottom: 2px solid rgba(123,47,247,0.3);
+        }
+        .th-section:first-child { margin-top: 0; }
+        .th-section .th-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+            color: #fff; font-size: 0.75em; font-weight: 800;
+            margin-right: 10px; vertical-align: middle;
+        }
+
+        .key { color: #00d2ff; font-weight: 700; }
+        .key-green { color: #4ade80; font-weight: 700; }
+        .key-orange { color: #fb923c; font-weight: 700; }
+        .key-pink { color: #f472b6; font-weight: 700; }
+        .key-yellow { color: #fbbf24; font-weight: 700; }
+
+        .frac {
+            display: inline-flex; flex-direction: column; align-items: center;
+            vertical-align: middle; margin: 0 4px; line-height: 1.2;
+        }
+        .frac-top { padding: 2px 10px 4px; border-bottom: 2px solid #00d2ff; }
+        .frac-bot { padding: 4px 10px 2px; }
+
+        .formula-box {
+            background: rgba(123,47,247,0.12);
+            border: 1px solid rgba(123,47,247,0.35);
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 1.15em;
+            line-height: 2;
+        }
+
+        .law-card {
+            background: rgba(0,210,255,0.06);
+            border-left: 4px solid #00d2ff;
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin: 14px 0;
+        }
+        .law-card.law-green { border-left-color: #4ade80; background: rgba(74,222,128,0.06); }
+        .law-card.law-orange { border-left-color: #fb923c; background: rgba(251,146,60,0.06); }
+        .law-card.law-pink { border-left-color: #f472b6; background: rgba(244,114,182,0.06); }
+        .law-card.law-yellow { border-left-color: #fbbf24; background: rgba(251,191,36,0.06); }
+
+        .law-card .law-name { font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+        .law-card .law-year {
+            display: inline-block; padding: 2px 10px; border-radius: 10px;
+            font-size: 0.72em; font-weight: 700; margin-left: 8px;
+            background: rgba(255,255,255,0.1); color: #aaa;
+        }
+        .law-card .law-text { font-size: 0.9em; color: #ccc; line-height: 1.65; }
+
+        .note-box {
+            background: rgba(251,191,36,0.08);
+            border: 1px solid rgba(251,191,36,0.25);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 14px 0;
+            font-size: 0.88em; line-height: 1.65;
+        }
+        .note-box .note-icon { font-size: 1.1em; margin-right: 6px; }
+
+        .trainer-link {
+            display: inline-block; margin-top: 8px;
+            padding: 5px 14px; border-radius: 20px;
+            background: rgba(123,47,247,0.2); border: 1px solid rgba(123,47,247,0.4);
+            color: #b57bff; font-size: 0.78em; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .trainer-link:hover { background: rgba(123,47,247,0.35); }
+
+        .theory-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 20px; padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .page-dots { display: flex; gap: 8px; justify-content: center; flex: 1; }
+        .page-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); transition: all 0.3s;
+        }
+        .page-dot.active { background: #7b2ff7; transform: scale(1.2); }
+
+        .theory-img {
+            max-width: 100%; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin: 10px 0;
+        }
+
+        .results-head { text-align: center; margin-bottom: 20px; }
+        .score-circle {
+            width: 120px; height: 120px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 20px auto; font-size: 2.2em; font-weight: 700;
+        }
+        .score-great { background: rgba(0,230,118,0.15); border: 3px solid #00e676; color: #00e676; }
+        .score-ok    { background: rgba(255,193,7,0.15); border: 3px solid #ffc107; color: #ffc107; }
+        .score-bad   { background: rgba(255,82,82,0.15); border: 3px solid #ff5252; color: #ff5252; }
+
+        .emoji-burst {
+            position: fixed; font-size: 2.5em; z-index: 1000;
+            animation: burst 0.9s ease-out forwards; pointer-events: none;
+        }
+        @keyframes burst {
+            0%   { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
+        }
+
+        .back-link { display: inline-block; margin-bottom: 8px; color: #00d2ff; text-decoration: none; font-size: 0.82em; opacity: 0.7; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 1; }
+
+        @media (max-width: 500px) {
+            .formula-box { font-size: 1em; padding: 14px 16px; }
+        }
+        sub { font-size: 0.75em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; Все предметы</a>
+    <h1>Основные понятия химии</h1>
+    <div class="subtitle">Тема 1 &middot; Вещества, массы, моль, стехиометрические законы, эквиваленты</div>
+
+    <!-- ── MENU ── -->
+    <div class="screen active" id="screenSetup">
+        <div class="card">
+            <div style="font-size:1.05em; font-weight:700; margin-bottom:18px; color:#7b2ff7;">Выбери:</div>
+            <button class="topic-btn" onclick="startTheory()">
+                <span class="t-label" style="color:#00d2ff">ТЕОРИЯ НА ПАЛЬЦАХ</span>
+                Вся тема — красиво и по шагам
+                <span class="t-desc">Атом, молекула, моль, массы, 5 законов, эквиваленты</span>
+            </button>
+            <button class="topic-btn" onclick="startQuiz()">
+                <span class="t-label" style="color:#7b2ff7">КВИЗ — 17 вопросов</span>
+                Проверь, что запомнил(а)
+                <span class="t-desc">Основные понятия + эквиваленты, с объяснениями</span>
+            </button>
+            <button class="topic-btn" onclick="location.href='molar-mass-trainer.html'">
+                <span class="t-label" style="color:#4ade80">ТРЕНАЖЁР</span>
+                Молярная масса и эквиваленты
+                <span class="t-desc">Считай массы, моли, концентрации</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ── THEORY ── -->
+    <div class="screen" id="screenTheory">
+        <div style="text-align:right; margin-bottom:10px">
+            <button class="btn btn-outline" onclick="goSetup()" style="padding:7px 16px;font-size:0.82em">&larr; Меню</button>
+        </div>
+        <div class="card">
+            <div class="theory-title" id="theoryTitle"></div>
+            <div class="theory-content" id="theoryContent"></div>
+            <div class="theory-nav">
+                <button class="btn btn-outline" id="thPrev" onclick="theoryPrev()" style="padding:8px 18px;font-size:0.88em">&larr; Назад</button>
+                <div class="page-dots" id="pageDots"></div>
+                <button class="btn btn-primary" id="thNext" onclick="theoryNext()" style="padding:8px 18px;font-size:0.88em">Далее &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── QUIZ ── -->
+    <div class="screen" id="screenQuiz">
+        <div style="text-align:right; margin-bottom:8px">
+            <button class="btn btn-outline" onclick="goSetup()" style="padding:7px 16px;font-size:0.82em">&larr; Меню</button>
+        </div>
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="progLabel">Вопрос 1 из 17</span>
+                <span id="progScore">&check; 0 &middot; &cross; 0</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        </div>
+        <div class="card">
+            <span class="round-badge" id="roundBadge" style="display:none"></span>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsDiv"></div>
+            <div class="explanation" id="explanation"></div>
+            <div class="btn-row" id="nextBtnWrap" style="display:none">
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Следующий &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── RESULTS ── -->
+    <div class="screen" id="screenResults">
+        <div class="card">
+            <div class="results-head">
+                <div style="font-size:1.35em; font-weight:700;" id="resultsGrade"></div>
+                <div class="score-circle" id="scoreCircle"></div>
+                <div style="color:#888; font-size:0.88em;" id="resultsSub"></div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-outline" onclick="goSetup()">&larr; Меню</button>
+                <button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>
+                <button class="btn btn-repeat" id="btnRepeat" style="display:none" onclick="startRepeat()">Повторить ошибки (<span id="wrongCount">0</span>)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// THEORY — PAGINATED
+// ═══════════════════════════════════════════════════════════════════
+const THEORY_PAGES = [
+  // ─── PAGE 1: Из чего состоит вещество ───
+  { title: 'Из чего состоит вещество?',
+    html: `<div class="th-section"><span class="th-num">1</span>Атом, молекула, вещество</div>
+    <p><span class="key">Атом</span> — мельчайшая частица <em>химического элемента</em>. Атомы — это «кирпичики», из которых построено всё вокруг.</p>
+    <p><span class="key">Молекула</span> — группа из двух или более атомов, прочно связанных друг с другом. Молекула — это уже <em>вещество</em>, которое сохраняет его химические свойства.</p>
+    <p style="text-align:center"><img src="atom-molecule.png" alt="Атом vs Молекула" class="theory-img"></p>
+
+    <p><span class="key-green">Простое вещество</span> — состоит из атомов <b>одного</b> элемента.<br>
+    Примеры: O<sub>2</sub> (кислород), Fe (железо), N<sub>2</sub> (азот).</p>
+    <p><span class="key-pink">Сложное вещество</span> — состоит из атомов <b>разных</b> элементов.<br>
+    Примеры: H<sub>2</sub>O (вода), NaCl (соль), CO<sub>2</sub> (углекислый газ).</p>
+    <p style="text-align:center"><img src="element-compound.png" alt="Простое vs Сложное вещество" class="theory-img"></p>
+
+    <p><span class="key-orange">Аллотропия</span> — когда из атомов <b>одного и того же</b> элемента можно собрать <b>разные</b> вещества. Углерод &rarr; алмаз (твёрдый) и графит (мягкий). Кислород &rarr; O<sub>2</sub> и озон O<sub>3</sub>.</p>
+    <p style="text-align:center"><img src="allotropy.png" alt="Аллотропия: графит и алмаз" class="theory-img"></p>` },
+
+  // ─── PAGE 2: Массы, моль, Авогадро ───
+  { title: 'Массы, моль, число Авогадро',
+    html: `<div class="th-section"><span class="th-num">2</span>Атомная и молекулярная масса</div>
+    <p><span class="key">Атомная масса A<sub>r</sub></span> — масса одного атома в <em>атомных единицах массы</em> (а.е.м.). Берётся из таблицы Менделеева. Это <b>относительная</b> масса — относительно 1/12 массы атома углерода.</p>
+
+    <div class="formula-box">
+      A<sub>r</sub>(O) = 16 а.е.м. &nbsp;&nbsp;&nbsp; A<sub>r</sub>(Fe) = 56 а.е.м. &nbsp;&nbsp;&nbsp; A<sub>r</sub>(H) = 1 а.е.м.
+    </div>
+
+    <p><span class="key">Молекулярная масса M<sub>r</sub></span> — сумма атомных масс всех атомов в молекуле:</p>
+
+    <div class="formula-box">
+      M<sub>r</sub>(H<sub>2</sub>O) = 2 &middot; A<sub>r</sub>(H) + A<sub>r</sub>(O) = 2&middot;1 + 16 = <span class="key">18 а.е.м.</span>
+    </div>
+
+    <div class="th-section"><span class="th-num">3</span>Моль и число Авогадро</div>
+    <p><span class="key-green">Моль</span> — порция вещества. Как «дюжина» = 12 штук, так «моль» = 6,02 &middot; 10&sup2;&sup3; штук.</p>
+    <p><span class="key-green">Число Авогадро N<sub>A</sub> = 6,02 &middot; 10&sup2;&sup3;</span> — столько частиц в одном моле <b>любого</b> вещества. Число огромное, потому что атомы крошечные.</p>
+    <p style="text-align:center"><img src="avogadro-number.png" alt="Число Авогадро" class="theory-img"></p>
+
+    <div class="formula-box">
+      N = n &middot; N<sub>A</sub><br>
+      <span style="font-size:0.8em;color:#aaa;">N — число молекул, &nbsp; n — количество моль, &nbsp; N<sub>A</sub> = 6,02&middot;10&sup2;&sup3;</span>
+    </div>` },
+
+  // ─── PAGE 3: Молярная масса — магия ───
+  { title: 'Молярная масса — магия таблицы',
+    html: `<div class="th-section"><span class="th-num">4</span>Молярная масса M</div>
+    <p><span class="key">Молярная масса M</span> — масса <b>одного моля</b> вещества в граммах (г/моль).</p>
+    <p style="text-align:center"><img src="Молярная масса.png" alt="Молярная масса" class="theory-img"></p>
+
+    <div class="note-box">
+      <span class="note-icon">&#x2728;</span> <b>Главный секрет:</b> число в таблице Менделеева — это <span class="key">одновременно</span> и масса одного атома (в а.е.м.), и масса целого моля (в граммах)!
+    </div>
+
+    <p>Число в таблице (например, <b>16</b> у Кислорода) отвечает на <b>два вопроса</b> сразу:</p>
+
+    <div class="law-card">
+      <div class="law-name" style="color:#00d2ff">Для 1 штуки (атома):</div>
+      <div class="law-text">Один атом кислорода весит <b>16 а.е.м.</b> — настолько крошечно, что на весах не увидеть.</div>
+    </div>
+    <div class="law-card law-green">
+      <div class="law-name" style="color:#4ade80">Для 1 моля (целой «коробки» из 6,02&middot;10&sup2;&sup3; штук):</div>
+      <div class="law-text">Моль атомов кислорода весит ровно <b>16 граммов</b>. Это уже можно взвесить!</div>
+    </div>
+
+    <p><b>Почему числа совпадают?</b> Учёные <em>специально</em> подобрали количество штук в моле (6,02&middot;10&sup2;&sup3;) так, чтобы масса моля <b>в граммах</b> была равна числу из таблицы.</p>
+
+    <div class="note-box">
+      <span class="note-icon">&#x2696;&#xFE0F;</span> <b>Представь два одинаковых прозрачных контейнера.</b><br>
+      В первом лежат <span class="key-green">горошины</span> (атомы Водорода). Контейнер лёгкий — <b>1 грамм</b>.<br>
+      Во втором лежат <span class="key-orange">арбузы</span> (атомы Золота). Штук <em>столько же</em>, но контейнер весит <b>197 граммов</b>.<br><br>
+      <p style="text-align:center"><img src="goroh-arbuzy.png" alt="Горошины vs Арбузы" class="theory-img"></p>
+      <span class="key">Главный вывод:</span> число в таблице — это «индивидуальный вес» одной стандартной порции (моля) каждого элемента. Порции одинаковые по количеству штук, но разные по массе!
+    </div>
+
+    <p><span class="key-orange">Молярный объём газа V<sub>m</sub> = 22,4 л/моль</span> — любой газ при нормальных условиях: 1 моль = 22,4 литра.</p>
+
+    <div class="formula-box">
+      n = <span class="frac"><span class="frac-top">m</span><span class="frac-bot">M</span></span>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      n = <span class="frac"><span class="frac-top">V</span><span class="frac-bot">V<sub>m</sub></span></span>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      n = <span class="frac"><span class="frac-top">N</span><span class="frac-bot">N<sub>A</sub></span></span>
+      <br><br>
+      <span style="font-size:0.78em;color:#aaa;">n — моль, &nbsp; m — масса (г), &nbsp; M — молярная масса (г/моль)<br>
+      V — объём газа (л), &nbsp; V<sub>m</sub> = 22,4 л/моль, &nbsp; N — число частиц</span>
+    </div>
+
+    <a href="molar-mass-trainer.html" class="trainer-link">&#x1F52C; Тренажёр молярной массы &rarr;</a>` },
+
+  // ─── PAGE 4: 5 стехиометрических законов ───
+  { title: '5 стехиометрических законов',
+    html: `<div class="th-section"><span class="th-num">5</span>Стехиометрия — «измерение элементов»</div>
+    <p>Слово <span class="key">«стехиометрия»</span> — от греч. <em>stoicheion</em> (элемент) + <em>metron</em> (мера). Буквально: <b>«измерение элементов»</b>. Это законы о том, <em>в каких количествах</em> вещества вступают в реакции.</p>
+
+    <div class="law-card">
+      <div class="law-name" style="color:#00d2ff">Закон №1 — Сохранение масс <span class="law-year">Ломоносов, 1748</span></div>
+      <div class="law-text">
+        Масса веществ, <b>вступивших</b> в реакцию, <span class="key">равна</span> массе веществ, <b>образовавшихся</b> в результате реакции.<br>
+        <em>Основной закон химии. Атомы не исчезают и не появляются — они пересоединяются.</em>
+      </div>
+    </div>
+
+    <div class="law-card law-green">
+      <div class="law-name" style="color:#4ade80">Закон №2 — Сохранение энергии</div>
+      <div class="law-text">
+        Энергия не возникает из ничего и не исчезает бесследно — она <span class="key-green">переходит из одной формы в другую</span>.
+      </div>
+    </div>
+
+    <div class="law-card law-orange">
+      <div class="law-name" style="color:#fb923c">Закон №3 — Постоянство состава <span class="law-year">Пруст, 1799</span></div>
+      <div class="law-text">
+        Каждое химическое соединение имеет <span class="key-orange">постоянный</span> качественный и количественный состав <b>независимо</b> от способов его получения.<br>
+        <em>Вода всегда H<sub>2</sub>O — откуда бы её ни получили.</em><br>
+        <span style="color:#888;font-size:0.88em;">Исключение: бертоллиды — вещества переменного состава.</span>
+      </div>
+    </div>
+
+    <div class="law-card law-pink">
+      <div class="law-name" style="color:#f472b6">Закон №4 — Авогадро <span class="law-year">1811</span></div>
+      <div class="law-text">
+        В <b>равных объёмах</b> любых газов при одинаковых условиях (T и P) содержится <span class="key-pink">одинаковое число молекул</span>.<br>
+        <em>Следствие: 1 моль любого газа при н.у. = 22,4 л.</em>
+      </div>
+    </div>
+
+    <div class="law-card law-yellow">
+      <div class="law-name" style="color:#fbbf24">Закон №5 — Эквивалентов <span class="law-year">Рихтер, 1792</span></div>
+      <div class="law-text">
+        Вещества реагируют друг с другом в количествах, <span class="key-yellow">пропорциональных их эквивалентам</span>.<br>
+        <em>Подробнее — на следующих страницах.</em>
+      </div>
+    </div>` },
+
+  // ─── PAGE 5: Эквиваленты — что это ───
+  { title: 'Эквиваленты — «обменная монета»',
+    html: `<div class="th-section"><span class="th-num">6</span>Что такое эквивалент?</div>
+    <p><span class="key">Эквивалент</span> — это «обменная монета» в химии. Показывает, какая порция вещества может <b>присоединить</b> или <b>заместить</b> 1 моль атомов водорода.</p>
+
+    <div class="note-box">
+      <span class="note-icon">&#x1F4A1;</span> Зачем это нужно? Чтобы быстро понять, <em>сколько</em> одного вещества нужно для реакции с другим — без расстановки коэффициентов.
+    </div>
+
+    <p><span class="key-green">Молярная масса эквивалента M<sub>э</sub></span> — масса одного эквивалента в граммах. Считается по формулам, которые зависят от <b>типа вещества</b>.</p>
+
+    <p><b>Закон эквивалентов:</b></p>
+    <div class="formula-box">
+      <span class="frac"><span class="frac-top">m<sub>1</sub></span><span class="frac-bot">M<sub>э1</sub></span></span>
+      &nbsp;=&nbsp;
+      <span class="frac"><span class="frac-top">m<sub>2</sub></span><span class="frac-bot">M<sub>э2</sub></span></span>
+      <br><br>
+      <span style="font-size:0.82em;color:#aaa;">Вещества реагируют в количествах, пропорциональных их эквивалентам</span>
+    </div>` },
+
+  // ─── PAGE 6: 4 формулы эквивалентов ───
+  { title: '4 формулы эквивалентов',
+    html: `<div class="th-section"><span class="th-num">7</span>Для каждого типа вещества — своя формула</div>
+
+    <div class="law-card">
+      <div class="law-name" style="color:#00d2ff">&#x2460; Простые вещества</div>
+      <div class="law-text">
+        <div class="formula-box" style="text-align:center">
+          M<sub>э</sub> = <span class="frac"><span class="frac-top">M</span><span class="frac-bot">валентность</span></span>
+        </div>
+        <b>Пример:</b> Fe (валентность III):<br>
+        M<sub>э</sub>(Fe) = <span class="frac"><span class="frac-top">56</span><span class="frac-bot">3</span></span> = 18,67 г/моль
+      </div>
+    </div>
+
+    <div class="law-card law-green">
+      <div class="law-name" style="color:#4ade80">&#x2461; Кислоты</div>
+      <div class="law-text">
+        <div class="formula-box" style="text-align:center">
+          M<sub>э</sub> = <span class="frac"><span class="frac-top">M<sub>кислоты</sub></span><span class="frac-bot">основность (число H&#x207A;)</span></span>
+        </div>
+        <b>Примеры:</b><br>
+        HCl: один H&#x207A; &rarr; M<sub>э</sub> = <span class="frac"><span class="frac-top">36,5</span><span class="frac-bot">1</span></span> = 36,5 г/моль<br><br>
+        H<sub>2</sub>SO<sub>4</sub>: два H&#x207A; &rarr; M<sub>э</sub> = <span class="frac"><span class="frac-top">98</span><span class="frac-bot">2</span></span> = 49 г/моль
+      </div>
+    </div>
+
+    <div class="law-card law-orange">
+      <div class="law-name" style="color:#fb923c">&#x2462; Основания</div>
+      <div class="law-text">
+        <div class="formula-box" style="text-align:center">
+          M<sub>э</sub> = <span class="frac"><span class="frac-top">M<sub>основания</sub></span><span class="frac-bot">кислотность (число OH&#x207B;)</span></span>
+        </div>
+        <b>Примеры:</b><br>
+        NaOH: одна OH&#x207B; &rarr; M<sub>э</sub> = <span class="frac"><span class="frac-top">40</span><span class="frac-bot">1</span></span> = 40 г/моль<br><br>
+        Ca(OH)<sub>2</sub>: две OH&#x207B; &rarr; M<sub>э</sub> = <span class="frac"><span class="frac-top">74</span><span class="frac-bot">2</span></span> = 37 г/моль
+      </div>
+    </div>
+
+    <div class="law-card law-pink">
+      <div class="law-name" style="color:#f472b6">&#x2463; Соли</div>
+      <div class="law-text">
+        <div class="formula-box" style="text-align:center">
+          M<sub>э</sub> = <span class="frac"><span class="frac-top">M<sub>соли</sub></span><span class="frac-bot">заряд металла &times; число атомов металла</span></span>
+        </div>
+        <b>Примеры:</b><br>
+        NaCl: Na&#x207A;&#xB9;, 1 атом &rarr; M<sub>э</sub> = <span class="frac"><span class="frac-top">58,5</span><span class="frac-bot">1</span></span> = 58,5 г/моль<br><br>
+        Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub>: Al&#xB3;&#x207A;, 2 атома &rarr; M<sub>э</sub> = <span class="frac"><span class="frac-top">342</span><span class="frac-bot">3 &times; 2</span></span> = 57 г/моль
+      </div>
+    </div>
+
+    <a href="molar-mass-trainer.html" class="trainer-link">&#x1F52C; Тренажёр: молярная масса и эквиваленты &rarr;</a>` }
+];
+
+let theoryPageIdx = 0;
+
+function startTheory() {
+    theoryPageIdx = 0;
+    showScreen('screenTheory');
+    renderTheoryPage();
+}
+
+function renderTheoryPage() {
+    const p = THEORY_PAGES[theoryPageIdx];
+    document.getElementById('theoryTitle').textContent = p.title;
+    document.getElementById('theoryContent').innerHTML = p.html;
+
+    const dots = document.getElementById('pageDots');
+    dots.innerHTML = THEORY_PAGES.map((_, i) =>
+        `<div class="page-dot ${i === theoryPageIdx ? 'active' : ''}"></div>`
+    ).join('');
+
+    const prev = document.getElementById('thPrev');
+    const next = document.getElementById('thNext');
+    prev.style.visibility = theoryPageIdx === 0 ? 'hidden' : 'visible';
+
+    if (theoryPageIdx === THEORY_PAGES.length - 1) {
+        next.textContent = 'К квизу \u2192';
+        next.onclick = function() { startQuiz(); };
+    } else {
+        next.textContent = 'Далее \u2192';
+        next.onclick = function() { theoryNext(); };
+    }
+    window.scrollTo(0, 0);
+}
+
+function theoryPrev() { if (theoryPageIdx > 0) { theoryPageIdx--; renderTheoryPage(); } }
+function theoryNext() { if (theoryPageIdx < THEORY_PAGES.length - 1) { theoryPageIdx++; renderTheoryPage(); } }
+
+
+// ═══════════════════════════════════════════════════════════════════
+// QUIZ DATA
+// ═══════════════════════════════════════════════════════════════════
+const ALL_Q = [
+  { q:'Что изучает химия?',
+    o:['Движение и взаимодействие тел','Состав, строение, свойства и превращения веществ','Строение и развитие Земли','Наследственность и изменчивость организмов'],
+    c:1, e:'Химия — наука о составе, строении, свойствах и превращениях веществ.' },
+
+  { q:'Чем простое вещество отличается от сложного?',
+    o:['Простое имеет меньшую молярную массу','Простое состоит из атомов одного элемента, сложное — из разных','Простое всегда газообразное','Простое не вступает в реакции'],
+    c:1, e:'Простое вещество — атомы <b>одного</b> элемента (O\u2082, Fe). Сложное — атомы <b>разных</b> элементов (H\u2082O, NaCl).' },
+
+  { q:'Что такое аллотропия?',
+    o:['Способность атомов образовывать ионы','Существование элемента в виде нескольких простых веществ','Изменение агрегатного состояния','Способность растворяться в воде'],
+    c:1, e:'Аллотропия — существование элемента в виде нескольких простых веществ. Углерод: алмаз и графит. Кислород: O\u2082 и O\u2083 (озон).' },
+
+  { q:'Чему равна молекулярная масса M\u1D63(H\u2082O)?',
+    o:['16 а.е.м.','18 а.е.м.','20 а.е.м.','17 а.е.м.'],
+    c:1, e:'M\u1D63(H\u2082O) = 2\u00B7A\u1D63(H) + A\u1D63(O) = 2\u00B71 + 16 = <b>18 а.е.м.</b>' },
+
+  { q:'Что такое моль?',
+    o:['Масса одной молекулы','Единица количества вещества, содержащая 6,02\u00B710\u00B2\u00B3 частиц','Объём газа при н.у.','Число электронов в атоме'],
+    c:1, e:'Моль — порция вещества, содержащая 6,02\u00B710\u00B2\u00B3 частиц (число Авогадро).' },
+
+  { q:'Почему молярная масса железа = 56 г/моль, если в таблице стоит 56?',
+    o:['Это совпадение','Число Авогадро специально подобрано так, чтобы масса моля в граммах равнялась числу из таблицы','Один атом железа весит 56 граммов','Это округление'],
+    c:1, e:'Учёные специально подобрали число Авогадро так, чтобы масса моля <b>в граммах</b> численно совпадала с относительной атомной массой.' },
+
+  { q:'Что гласит закон сохранения масс?',
+    o:['Масса ядра равна сумме масс протонов и нейтронов','Масса реагентов равна массе продуктов реакции','Масса газа пропорциональна объёму','Масса молекулы равна сумме масс атомов'],
+    c:1, e:'Закон сохранения масс (Ломоносов, 1748): масса реагентов = масса продуктов. Основной закон химии.' },
+
+  { q:'Какой объём занимает 1 моль любого газа при н.у.?',
+    o:['11,2 л','44,8 л','22,4 л','33,6 л'],
+    c:2, e:'По закону Авогадро, 1 моль любого газа при нормальных условиях занимает <b>22,4 л</b>.' },
+
+  { q:'Что означает слово «стехиометрия»?',
+    o:['Превращение элементов','Измерение элементов — законы о количественных соотношениях','Изучение структуры атома','Разделение веществ'],
+    c:1, e:'Стехиометрия (греч. stoicheion — элемент, metron — мера) — наука о количественных соотношениях веществ в реакциях.' },
+
+  { q:'Что такое эквивалент вещества?',
+    o:['Масса одного моля','Порция вещества, способная присоединить или заместить 1 моль атомов водорода','Количество вещества в 1 литре','Число молекул в единице объёма'],
+    c:1, e:'Эквивалент — порция вещества, которая присоединяет или замещает 1 моль атомов водорода.' },
+
+  { q:'Как вычислить эквивалент кислоты?',
+    o:['M / число атомов кислорода','M / основность (число H\u207A)','M / заряд металла','M / валентность'],
+    c:1, e:'Эквивалент кислоты = M / основность. Основность = число H\u207A. H\u2082SO\u2084: 98/2 = 49 г/моль.' },
+
+  { q:'Как вычислить эквивалент основания?',
+    o:['M / число атомов металла','M / кислотность (число OH\u207B)','M / число атомов кислорода','M / основность'],
+    c:1, e:'Эквивалент основания = M / кислотность. Кислотность = число групп OH\u207B. Ca(OH)\u2082: 74/2 = 37 г/моль.' },
+
+  { q:'Как вычислить эквивалент соли?',
+    o:['M / число анионов','M / (заряд металла \u00D7 число атомов металла)','M / число атомов кислорода','M / молярный объём'],
+    c:1, e:'Эквивалент соли = M / (заряд металла \u00D7 число атомов металла). Al\u2082(SO\u2084)\u2083: 342/(3\u00D72) = 57 г/моль.' },
+
+  { q:'Как вычислить эквивалент простого вещества?',
+    o:['M / число атомов в молекуле','M / валентность элемента','M / число электронов','M / порядковый номер'],
+    c:1, e:'Эквивалент простого вещества = M / валентность. Fe(III): 56/3 = 18,67 г/моль.' },
+
+  { q:'Чему равен эквивалент H\u2082SO\u2084?',
+    o:['98 г/моль','49 г/моль','32,67 г/моль','196 г/моль'],
+    c:1, e:'H\u2082SO\u2084: основность = 2. M = 98 г/моль. Эквивалент = 98/2 = <b>49 г/моль</b>.' },
+
+  { q:'Чему равен эквивалент Al(OH)\u2083?',
+    o:['78 г/моль','39 г/моль','26 г/моль','13 г/моль'],
+    c:2, e:'Al(OH)\u2083: кислотность = 3. M = 78 г/моль. Эквивалент = 78/3 = <b>26 г/моль</b>.' },
+
+  { q:'Чему равен эквивалент CaCl\u2082?',
+    o:['111 г/моль','55,5 г/моль','37 г/моль','74 г/моль'],
+    c:1, e:'CaCl\u2082: Ca\u00B2\u207A, 1 атом. Заряд \u00D7 число = 2\u00D71 = 2. Эквивалент = 111/2 = <b>55,5 г/моль</b>.' }
+];
+
+
+// ═══════════════════════════════════════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════════════════════════════════════
+let questions = [], qIdx = 0, score = 0, wrong = 0, wrongList = [], isRepeat = false;
+
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function startQuiz() {
+    questions = shuffle(ALL_Q);
+    qIdx = 0; score = 0; wrong = 0; wrongList = []; isRepeat = false;
+    document.getElementById('roundBadge').style.display = 'none';
+    showScreen('screenQuiz');
+    renderQ();
+}
+
+function startRepeat() {
+    questions = shuffle(wrongList);
+    qIdx = 0; score = 0; wrong = 0; wrongList = []; isRepeat = true;
+    document.getElementById('roundBadge').style.display = '';
+    document.getElementById('roundBadge').textContent = 'Работа над ошибками';
+    showScreen('screenQuiz');
+    renderQ();
+}
+
+function renderQ() {
+    const total = questions.length;
+    document.getElementById('progLabel').textContent = `Вопрос ${qIdx + 1} из ${total}`;
+    document.getElementById('progScore').innerHTML = `\u2713 ${score} \u00B7 \u2717 ${wrong}`;
+    document.getElementById('progFill').style.width = ((qIdx / total) * 100) + '%';
+
+    const q = questions[qIdx];
+    document.getElementById('questionText').innerHTML = q.q;
+
+    const optDiv = document.getElementById('optionsDiv');
+    optDiv.innerHTML = '';
+    q.o.forEach((text, i) => {
+        const d = document.createElement('div');
+        d.className = 'option';
+        d.innerHTML = text;
+        d.onclick = () => pickAnswer(i);
+        optDiv.appendChild(d);
+    });
+
+    document.getElementById('explanation').style.display = 'none';
+    document.getElementById('explanation').innerHTML = '';
+    document.getElementById('nextBtnWrap').style.display = 'none';
+}
+
+function pickAnswer(i) {
+    const q = questions[qIdx];
+    const opts = document.querySelectorAll('.option');
+    opts.forEach(o => o.classList.add('disabled'));
+    opts[q.c].classList.add('correct');
+
+    if (i === q.c) {
+        score++;
+        emojiBurst('\u2705');
+    } else {
+        wrong++;
+        opts[i].classList.add('wrong');
+        wrongList.push(q);
+    }
+
+    const expl = document.getElementById('explanation');
+    expl.innerHTML = q.e;
+    expl.style.display = 'block';
+    document.getElementById('nextBtnWrap').style.display = '';
+    document.getElementById('progScore').innerHTML = `\u2713 ${score} \u00B7 \u2717 ${wrong}`;
+}
+
+function nextQuestion() {
+    qIdx++;
+    if (qIdx >= questions.length) showResults();
+    else renderQ();
+}
+
+function showResults() {
+    const total = questions.length;
+    const pct = Math.round((score / total) * 100);
+
+    let cls;
+    if (pct >= 80) cls = 'score-great';
+    else if (pct >= 50) cls = 'score-ok';
+    else cls = 'score-bad';
+
+    document.getElementById('resultsGrade').textContent =
+        pct >= 80 ? 'Отлично!' : pct >= 50 ? 'Неплохо!' : 'Нужно повторить';
+    document.getElementById('scoreCircle').className = 'score-circle ' + cls;
+    document.getElementById('scoreCircle').textContent = pct + '%';
+    document.getElementById('resultsSub').textContent = `${score} из ${total} правильных`;
+
+    const btn = document.getElementById('btnRepeat');
+    if (wrongList.length > 0) {
+        btn.style.display = '';
+        document.getElementById('wrongCount').textContent = wrongList.length;
+    } else {
+        btn.style.display = 'none';
+    }
+
+    showScreen('screenResults');
+    if (pct >= 80) emojiBurst('\uD83C\uDF89');
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+function goSetup() { showScreen('screenSetup'); }
+
+function emojiBurst(emoji) {
+    for (let i = 0; i < 6; i++) {
+        const el = document.createElement('div');
+        el.className = 'emoji-burst';
+        el.textContent = emoji;
+        el.style.left = (20 + Math.random() * 60) + 'vw';
+        el.style.top = (30 + Math.random() * 40) + 'vh';
+        el.style.animationDelay = (Math.random() * 0.3) + 's';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1200);
+    }
+}
+</script>
+</body>
+</html>

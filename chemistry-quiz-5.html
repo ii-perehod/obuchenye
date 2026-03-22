@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Химия — Тема 4</title>
+    <title>Химия — Тема 5</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -17,17 +17,10 @@
 
         h1 {
             text-align: center; font-size: 1.7em; margin-bottom: 6px;
-            background: linear-gradient(90deg, #60a5fa, #f472b6);
+            background: linear-gradient(90deg, #4ade80, #fbbf24);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
-
-        .section-label {
-            font-size: 0.78em; font-weight: 700; letter-spacing: 0.06em;
-            color: #666; margin: 28px 0 12px; padding-left: 4px;
-            text-transform: uppercase;
-        }
-        .section-label:first-of-type { margin-top: 0; }
 
         .topic-btn {
             display: block; width: 100%;
@@ -76,7 +69,6 @@
         .badge-theory { background: rgba(96,165,250,0.2); color: #60a5fa; }
         .badge-quiz { background: rgba(167,139,250,0.2); color: #a78bfa; }
         .badge-trainer { background: rgba(74,222,128,0.2); color: #4ade80; }
-        .badge-calc { background: rgba(251,146,60,0.2); color: #fb923c; }
 
         .home-link {
             display: block;
@@ -89,17 +81,10 @@
         }
         .home-link:hover { color: #aaa; }
 
-        /* Color accents per topic */
-        .btn-kinetics { border-left: 4px solid #60a5fa; }
-        .btn-lechatelier { border-left: 4px solid #a78bfa; }
-        .btn-ovr { border-left: 4px solid #f472b6; }
         .btn-dissociation { border-left: 4px solid #4ade80; }
         .btn-hydrolysis { border-left: 4px solid #fb923c; }
         .btn-ph { border-left: 4px solid #fbbf24; }
 
-        .btn-kinetics .t-name { color: #60a5fa; }
-        .btn-lechatelier .t-name { color: #a78bfa; }
-        .btn-ovr .t-name { color: #f472b6; }
         .btn-dissociation .t-name { color: #4ade80; }
         .btn-hydrolysis .t-name { color: #fb923c; }
         .btn-ph .t-name { color: #fbbf24; }
@@ -112,44 +97,40 @@
 </head>
 <body>
 <div class="container">
-    <h1>Химические реакции</h1>
-    <div class="subtitle">Тема 4 &nbsp;&middot;&nbsp; теория на пальцах &rarr; квиз &rarr; тренажёр</div>
+    <h1>Растворы и электролиты</h1>
+    <div class="subtitle">Тема 5 &nbsp;&middot;&nbsp; теория на пальцах &rarr; квиз &rarr; тренажёр</div>
 
-    <div class="section-label">Скорость и равновесие</div>
-
-    <a href="chemistry-kinetics.html" class="topic-btn btn-kinetics">
-        <span class="t-name">Кинетика</span>
-        <span class="t-desc">Скорость реакций, закон действующих масс, правило Вант-Гоффа, катализатор</span>
-        <div class="t-contents">
-            <span class="t-badge badge-theory">Теория</span>
-            <span class="t-badge badge-quiz">Квиз 22 вопроса</span>
-            <span class="t-badge badge-calc">Калькулятор</span>
-        </div>
-    </a>
-
-    <a href="chemistry-lechatelier.html" class="topic-btn btn-lechatelier">
-        <span class="t-name">Ле Шателье</span>
-        <span class="t-desc">Химическое равновесие: влияние концентрации, температуры, давления</span>
-        <div class="t-contents">
-            <span class="t-badge badge-theory">Теория</span>
-            <span class="t-badge badge-quiz">Квиз 22 вопроса</span>
-            <span class="t-badge badge-trainer">Тренажёр 43 задачи</span>
-        </div>
-    </a>
-
-    <div class="section-label">Окислительно-восстановительные реакции</div>
-
-    <a href="chemistry-ovr.html" class="topic-btn btn-ovr">
-        <span class="t-name">ОВР</span>
-        <span class="t-desc">Степени окисления, окислитель и восстановитель, электронный баланс, типы реакций</span>
+    <a href="chemistry-dissociation.html" class="topic-btn btn-dissociation">
+        <span class="t-name">Диссоциация</span>
+        <span class="t-desc">Электролиты и неэлектролиты, сильные и слабые, ионные уравнения</span>
         <div class="t-contents">
             <span class="t-badge badge-theory">Теория</span>
             <span class="t-badge badge-quiz">Квиз 26 вопросов</span>
-            <span class="t-badge badge-trainer">Тренажёр 27 задач</span>
+            <span class="t-badge badge-trainer">Тренажёр 33 задачи</span>
         </div>
     </a>
 
-    <a href="index.html" class="home-link">← Все предметы</a>
+    <a href="chemistry-hydrolysis.html" class="topic-btn btn-hydrolysis">
+        <span class="t-name">Гидролиз</span>
+        <span class="t-desc">Среда раствора, гидролиз по катиону и аниону, полный гидролиз</span>
+        <div class="t-contents">
+            <span class="t-badge badge-theory">Теория</span>
+            <span class="t-badge badge-quiz">Квиз 12 вопросов</span>
+            <span class="t-badge badge-trainer">Тренажёр 33 задачи</span>
+        </div>
+    </a>
+
+    <a href="chemistry-ph.html" class="topic-btn btn-ph">
+        <span class="t-name">pH</span>
+        <span class="t-desc">Водородный показатель, ионное произведение воды, индикаторы</span>
+        <div class="t-contents">
+            <span class="t-badge badge-theory">Теория</span>
+            <span class="t-badge badge-quiz">Квиз 12 вопросов</span>
+            <span class="t-badge badge-trainer">Тренажёр 36 задач</span>
+        </div>
+    </a>
+
+    <a href="index.html" class="home-link">&larr; Все предметы</a>
 </div>
 </body>
 </html>

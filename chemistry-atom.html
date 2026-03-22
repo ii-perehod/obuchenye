@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Тема 2: Строение атома</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 700px; margin: 0 auto; }
+
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #ff9800, #e040fb);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Menu buttons */
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; letter-spacing: 0.04em; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        /* Progress */
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #ff9800, #e040fb); border-radius: 10px; transition: width 0.4s; }
+
+        /* Tags */
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .round-badge {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px; margin-left: 8px;
+            background: rgba(245,158,11,0.2); color: #f59e0b;
+        }
+
+        /* Questions */
+        .question-text { font-size: 1.1em; line-height: 1.6; margin-bottom: 20px; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            padding: 13px 16px; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 11px; cursor: pointer; transition: all 0.22s;
+            font-size: 0.95em; line-height: 1.45; background: rgba(255,255,255,0.03);
+        }
+        .option:hover:not(.disabled) { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.3); }
+        .option.correct { border-color: #4ade80; background: rgba(74,222,128,0.13); color: #4ade80; }
+        .option.wrong   { border-color: #ff5252; background: rgba(255,82,82,0.13);  color: #ff5252; }
+        .option.disabled { pointer-events: none; }
+
+        .explanation {
+            margin-top: 14px; padding: 14px 16px; border-radius: 10px;
+            background: rgba(255,255,255,0.05); border-left: 3px solid #e040fb;
+            font-size: 0.88em; line-height: 1.6; display: none;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #ff9800, #e040fb); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(224,64,251,0.3); }
+        .btn-outline {
+            background: transparent; border: 1px solid rgba(255,255,255,0.3);
+            color: #ccc; padding: 10px 22px;
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.08); }
+        .btn-repeat {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.5); }
+            50%       { box-shadow: 0 0 0 10px rgba(245,158,11,0); }
+        }
+        .btn-row { text-align: center; margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+        /* ═══ THEORY STYLES ═══ */
+        .theory-title { font-size: 1.25em; font-weight: 700; margin-bottom: 18px; color: #e040fb; text-align: center; }
+        .theory-content { font-size: 0.93em; line-height: 1.7; }
+        .theory-content p { margin-bottom: 14px; }
+
+        .th-section {
+            font-size: 1.05em; font-weight: 700; margin: 28px 0 14px;
+            padding-bottom: 8px; border-bottom: 2px solid rgba(224,64,251,0.3);
+        }
+        .th-section:first-child { margin-top: 0; }
+        .th-section .th-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, #ff9800, #e040fb);
+            color: #fff; font-size: 0.75em; font-weight: 800;
+            margin-right: 10px; vertical-align: middle;
+        }
+
+        .key { color: #ff9800; font-weight: 700; }
+        .key-blue { color: #00d2ff; font-weight: 700; }
+        .key-purple { color: #e040fb; font-weight: 700; }
+        .key-green { color: #76ff03; font-weight: 700; }
+        .key-pink { color: #f472b6; font-weight: 700; }
+        .key-yellow { color: #fbbf24; font-weight: 700; }
+
+        .formula-box {
+            background: rgba(224,64,251,0.12);
+            border: 1px solid rgba(224,64,251,0.35);
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 1.15em;
+            line-height: 2;
+        }
+
+        .law-card {
+            background: rgba(255,152,0,0.06);
+            border-left: 4px solid #ff9800;
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin: 14px 0;
+        }
+        .law-card.law-blue { border-left-color: #00d2ff; background: rgba(0,210,255,0.06); }
+        .law-card.law-purple { border-left-color: #e040fb; background: rgba(224,64,251,0.06); }
+        .law-card.law-green { border-left-color: #76ff03; background: rgba(118,255,3,0.06); }
+        .law-card.law-pink { border-left-color: #f472b6; background: rgba(244,114,182,0.06); }
+        .law-card.law-yellow { border-left-color: #fbbf24; background: rgba(251,191,36,0.06); }
+        .law-card.law-red { border-left-color: #ff5252; background: rgba(255,82,82,0.06); }
+
+        .law-card .law-name { font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+        .law-card .law-text { font-size: 0.9em; color: #ccc; line-height: 1.65; }
+
+        .note-box {
+            background: rgba(251,191,36,0.08);
+            border: 1px solid rgba(251,191,36,0.25);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 14px 0;
+            font-size: 0.88em; line-height: 1.65;
+        }
+        .note-box .note-icon { font-size: 1.1em; margin-right: 6px; }
+
+        .trainer-link {
+            display: inline-block; margin-top: 8px;
+            padding: 5px 14px; border-radius: 20px;
+            background: rgba(224,64,251,0.2); border: 1px solid rgba(224,64,251,0.4);
+            color: #d094ff; font-size: 0.78em; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .trainer-link:hover { background: rgba(224,64,251,0.35); }
+
+        /* Theory navigation */
+        .theory-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 20px; padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .page-dots { display: flex; gap: 8px; justify-content: center; flex: 1; }
+        .page-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); transition: all 0.3s;
+        }
+        .page-dot.active { background: #e040fb; transform: scale(1.2); }
+
+        /* Orbital table */
+        .orb-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            margin: 14px 0; border-radius: 12px; overflow: hidden;
+        }
+        .orb-table th {
+            background: rgba(224,64,251,0.15);
+            color: #e040fb; padding: 10px 14px;
+            text-align: center; font-size: 0.82em; font-weight: 700;
+        }
+        .orb-table td {
+            padding: 10px 14px; border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.88em; line-height: 1.6; text-align: center;
+        }
+        .orb-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+        /* SVG orbital shapes inside theory */
+        .orb-shapes-row {
+            display: flex; justify-content: center; gap: 24px; margin: 18px 0; flex-wrap: wrap;
+        }
+        .orb-shape-item { text-align: center; }
+        .orb-shape-item svg { display: block; margin: 0 auto 6px; }
+        .orb-shape-label { font-size: 0.82em; font-weight: 700; }
+
+        /* Energy diagram */
+        .energy-diagram {
+            background: rgba(0,0,0,0.25); border-radius: 14px;
+            padding: 16px; margin: 16px 0; text-align: center;
+        }
+        .energy-row {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 6px;
+        }
+        .energy-label {
+            width: 36px; font-size: 0.78em; font-weight: 700; text-align: right;
+        }
+        .energy-cells { display: flex; gap: 3px; }
+        .energy-cell {
+            width: 30px; height: 26px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.75em; background: rgba(255,255,255,0.03);
+        }
+        .energy-cell .up { color: #ff5252; }
+        .energy-cell .dn { color: #448aff; }
+
+        /* Results */
+        .results-head { text-align: center; margin-bottom: 20px; }
+        .score-circle {
+            width: 120px; height: 120px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 20px auto; font-size: 2.2em; font-weight: 700;
+        }
+        .score-great { background: rgba(0,230,118,0.15); border: 3px solid #00e676; color: #00e676; }
+        .score-ok    { background: rgba(255,193,7,0.15); border: 3px solid #ffc107; color: #ffc107; }
+        .score-bad   { background: rgba(255,82,82,0.15); border: 3px solid #ff5252; color: #ff5252; }
+
+        .emoji-burst {
+            position: fixed; font-size: 2.5em; z-index: 1000;
+            animation: burst 0.9s ease-out forwards; pointer-events: none;
+        }
+        @keyframes burst {
+            0%   { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
+        }
+
+        .back-link { display: inline-block; margin-bottom: 8px; color: #ff9800; text-decoration: none; font-size: 0.82em; opacity: 0.7; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 1; }
+
+        @media (max-width: 500px) {
+            .formula-box { font-size: 1em; padding: 14px 16px; }
+            .orb-table td, .orb-table th { padding: 8px 10px; font-size: 0.82em; }
+            .orb-shapes-row { gap: 12px; }
+        }
+
+        sub { font-size: 0.75em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; Все предметы</a>
+    <h1>Строение атома</h1>
+    <div class="subtitle">Тема 2 &middot; Орбитали, квантовые числа, электронные конфигурации</div>
+
+    <!-- ── MENU ── -->
+    <div class="screen active" id="screenSetup">
+        <div class="card">
+            <div style="font-size:1.05em; font-weight:700; margin-bottom:18px; color:#e040fb;">Выбери:</div>
+            <button class="topic-btn" onclick="startTheory()">
+                <span class="t-label" style="color:#ff9800">ТЕОРИЯ НА ПАЛЬЦАХ</span>
+                Вся тема — красиво и по шагам
+                <span class="t-desc">Формы орбиталей, квантовые числа, правила заполнения</span>
+            </button>
+            <button class="topic-btn" onclick="startQuiz()">
+                <span class="t-label" style="color:#e040fb">КВИЗ — 12 вопросов</span>
+                Проверь, что запомнил(а)
+                <span class="t-desc">Лёгкие и средние вопросы, с объяснениями</span>
+            </button>
+            <button class="topic-btn" onclick="location.href='orbital-trainer.html'">
+                <span class="t-label" style="color:#4ade80">ТРЕНАЖЁР</span>
+                Заполнение орбиталей
+                <span class="t-desc">Расставляй электроны по ячейкам: Ауфбау, Паули, Хунд</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ── THEORY ── -->
+    <div class="screen" id="screenTheory">
+        <div style="text-align:right; margin-bottom:10px">
+            <button class="btn btn-outline" onclick="goSetup()" style="padding:7px 16px;font-size:0.82em">&larr; Меню</button>
+        </div>
+        <div class="card">
+            <div class="theory-title" id="theoryTitle"></div>
+            <div class="theory-content" id="theoryContent"></div>
+            <div class="theory-nav">
+                <button class="btn btn-outline" id="thPrev" onclick="theoryPrev()" style="padding:8px 18px;font-size:0.88em">&larr; Назад</button>
+                <div class="page-dots" id="pageDots"></div>
+                <button class="btn btn-primary" id="thNext" onclick="theoryNext()" style="padding:8px 18px;font-size:0.88em">Далее &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── QUIZ ── -->
+    <div class="screen" id="screenQuiz">
+        <div style="text-align:right; margin-bottom:8px">
+            <button class="btn btn-outline" onclick="goSetup()" style="padding:7px 16px;font-size:0.82em">&larr; Меню</button>
+        </div>
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="progLabel">Вопрос 1 из 12</span>
+                <span id="progScore">&check; 0 &middot; &cross; 0</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        </div>
+        <div class="card">
+            <span class="round-badge" id="roundBadge" style="display:none"></span>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsDiv"></div>
+            <div class="explanation" id="explanation"></div>
+            <div class="btn-row" id="nextBtnWrap" style="display:none">
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Следующий &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── RESULTS ── -->
+    <div class="screen" id="screenResults">
+        <div class="card">
+            <div class="results-head">
+                <div style="font-size:1.35em; font-weight:700;" id="resultsGrade"></div>
+                <div class="score-circle" id="scoreCircle"></div>
+                <div style="color:#888; font-size:0.88em;" id="resultsSub"></div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-outline" onclick="goSetup()">&larr; Меню</button>
+                <button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>
+                <button class="btn btn-repeat" id="btnRepeat" style="display:none" onclick="startRepeat()">Повторить ошибки (<span id="wrongCount">0</span>)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// THEORY — PAGINATED
+// ═══════════════════════════════════════════════════════════════════
+const THEORY_PAGES = [
+  // ─── PAGE 1: Что внутри атома ───
+  { title: 'Что внутри атома?',
+    html: `<div class="th-section"><span class="th-num">1</span>Атом — не шарик, а целый мир</div>
+    <p>Атом — мельчайшая частица элемента. Но внутри него есть структура:</p>
+
+    <div class="law-card">
+      <div class="law-name" style="color:#ff9800">Ядро</div>
+      <div class="law-text">Крошечный, но тяжёлый центр. Состоит из <span class="key">протонов</span> (заряд +) и <span class="key-blue">нейтронов</span> (заряд 0). Почти вся масса атома — здесь.</div>
+    </div>
+
+    <div class="law-card law-purple">
+      <div class="law-name" style="color:#e040fb">Электроны</div>
+      <div class="law-text">Летают вокруг ядра в <b>электронных облаках</b>. Заряд −1. Масса ничтожна по сравнению с ядром.</div>
+    </div>
+
+    <div class="note-box">
+      <span class="note-icon">&#x2728;</span> <b>Главное открытие:</b> <span class="key">атомный номер Z</span> = число протонов = число электронов (в нейтральном атоме). У водорода Z=1 (1 протон, 1 электрон), у углерода Z=6, у железа Z=26.
+    </div>
+
+    <p>Электроны живут не как попало, а по строгим правилам — на определённых <b>энергетических уровнях</b>. Представь многоэтажный дом: электроны поближе к ядру — на «первом этаже», подальше — на «втором», «третьем»…</p>
+
+    <div class="formula-box">
+      1-й уровень: макс 2 электрона<br>
+      2-й уровень: макс 8 электронов<br>
+      3-й уровень: макс 18 электронов<br>
+      <span style="font-size:0.78em;color:#aaa;">Формула: макс электронов = 2n&sup2;</span>
+    </div>` },
+
+  // ─── PAGE 2: Орбитали — не орбиты! ───
+  { title: 'Орбитали — облака, не дорожки',
+    html: `<div class="th-section"><span class="th-num">2</span>Забудь про «орбиты»!</div>
+    <p>В школе часто рисуют электроны на круговых дорожках вокруг ядра. Это <b>неправда</b>! Электрон — не планета, летающая по орбите.</p>
+
+    <div class="note-box">
+      <span class="note-icon">&#x1F4A1;</span> <b>Орбиталь</b> — это облако вероятности. Область пространства, где электрон бывает <b>чаще всего</b> (~90% времени). У этого облака есть <b>форма</b> — и именно она определяет тип орбитали.
+    </div>
+
+    <div class="th-section"><span class="th-num">3</span>Четыре формы облаков</div>
+
+    <div class="orb-shapes-row">
+      <div class="orb-shape-item">
+        <svg viewBox="-50 -50 100 100" width="80" height="80">
+          <circle cx="0" cy="0" r="30" fill="rgba(0,210,255,0.2)" stroke="#00d2ff" stroke-width="2"/>
+          <circle cx="0" cy="0" r="4" fill="#fff"/>
+        </svg>
+        <div class="orb-shape-label" style="color:#00d2ff">s — сфера</div>
+      </div>
+      <div class="orb-shape-item">
+        <svg viewBox="-50 -50 100 100" width="80" height="80">
+          <ellipse cx="0" cy="-20" rx="14" ry="25" fill="rgba(255,152,0,0.2)" stroke="#ff9800" stroke-width="2"/>
+          <ellipse cx="0" cy="20" rx="14" ry="25" fill="rgba(255,152,0,0.2)" stroke="#ff9800" stroke-width="2"/>
+          <circle cx="0" cy="0" r="4" fill="#fff"/>
+        </svg>
+        <div class="orb-shape-label" style="color:#ff9800">p — гантель</div>
+      </div>
+      <div class="orb-shape-item">
+        <svg viewBox="-50 -50 100 100" width="80" height="80">
+          <ellipse cx="-16" cy="-16" rx="10" ry="20" fill="rgba(224,64,251,0.15)" stroke="#e040fb" stroke-width="1.5" transform="rotate(45,-16,-16)"/>
+          <ellipse cx="16" cy="-16" rx="10" ry="20" fill="rgba(224,64,251,0.15)" stroke="#e040fb" stroke-width="1.5" transform="rotate(-45,16,-16)"/>
+          <ellipse cx="-16" cy="16" rx="10" ry="20" fill="rgba(224,64,251,0.15)" stroke="#e040fb" stroke-width="1.5" transform="rotate(-45,-16,16)"/>
+          <ellipse cx="16" cy="16" rx="10" ry="20" fill="rgba(224,64,251,0.15)" stroke="#e040fb" stroke-width="1.5" transform="rotate(45,16,16)"/>
+          <circle cx="0" cy="0" r="4" fill="#fff"/>
+        </svg>
+        <div class="orb-shape-label" style="color:#e040fb">d — клевер</div>
+      </div>
+    </div>
+
+    <table class="orb-table">
+      <tr><th>Тип</th><th>Форма</th><th>Орбиталей</th><th>Макс e&minus;</th></tr>
+      <tr><td style="color:#00d2ff;font-weight:700">s</td><td>Сфера</td><td>1</td><td>2</td></tr>
+      <tr><td style="color:#ff9800;font-weight:700">p</td><td>Гантель</td><td>3</td><td>6</td></tr>
+      <tr><td style="color:#e040fb;font-weight:700">d</td><td>Клевер</td><td>5</td><td>10</td></tr>
+      <tr><td style="color:#76ff03;font-weight:700">f</td><td>Сложная</td><td>7</td><td>14</td></tr>
+    </table>
+
+    <div class="note-box">
+      <span class="note-icon">&#x2728;</span> Запомни: в <b>каждой</b> орбитали — максимум <span class="key">2 электрона</span>. Один крутится «вверх» <span style="color:#ff5252">&uarr;</span>, другой «вниз» <span style="color:#448aff">&darr;</span>.
+    </div>
+
+    <a href="orbital-shapes.html" class="trainer-link">&#x1F52C; Интерактивные формы орбиталей &rarr;</a>` },
+
+  // ─── PAGE 3: Квантовые числа — адрес электрона ───
+  { title: 'Квантовые числа — адрес электрона',
+    html: `<div class="th-section"><span class="th-num">4</span>У каждого электрона — свой адрес</div>
+    <p>Как найти человека в городе? Улица &rarr; дом &rarr; квартира &rarr; комната. Точно так же у электрона есть <b>4 квантовых числа</b> — его уникальный адрес в атоме.</p>
+
+    <div class="law-card">
+      <div class="law-name" style="color:#ff9800">n — Главное квантовое число (этаж)</div>
+      <div class="law-text">
+        Номер энергетического уровня. <b>n = 1, 2, 3, 4…</b><br>
+        Совпадает с <b>номером периода</b> в таблице Менделеева!<br>
+        Чем больше n — тем дальше от ядра, тем выше энергия.
+      </div>
+    </div>
+
+    <div class="law-card law-blue">
+      <div class="law-name" style="color:#00d2ff">l — Орбитальное число (тип квартиры)</div>
+      <div class="law-text">
+        Форма орбитали. <b>l = 0, 1, 2… до (n&minus;1)</b><br>
+        l=0 &rarr; <b>s</b>-орбиталь (сфера)<br>
+        l=1 &rarr; <b>p</b>-орбиталь (гантель)<br>
+        l=2 &rarr; <b>d</b>-орбиталь (клевер)<br>
+        l=3 &rarr; <b>f</b>-орбиталь<br>
+        <em>На 1-м этаже — только s. На 2-м — s и p. На 3-м — s, p, d.</em>
+      </div>
+    </div>
+
+    <div class="law-card law-purple">
+      <div class="law-name" style="color:#e040fb">m<sub>l</sub> — Магнитное число (комната)</div>
+      <div class="law-text">
+        Ориентация орбитали в пространстве. <b>m<sub>l</sub> = от &minus;l до +l</b><br>
+        s: одна комната (m<sub>l</sub>=0)<br>
+        p: три комнаты (m<sub>l</sub>=&minus;1, 0, +1) &rarr; p<sub>x</sub>, p<sub>y</sub>, p<sub>z</sub><br>
+        d: пять комнат (m<sub>l</sub>=&minus;2, &minus;1, 0, +1, +2)
+      </div>
+    </div>
+
+    <div class="law-card law-green">
+      <div class="law-name" style="color:#76ff03">m<sub>s</sub> — Спиновое число (полка кровати)</div>
+      <div class="law-text">
+        Направление вращения электрона. Только <b>два варианта</b>:<br>
+        m<sub>s</sub> = <b>+&frac12;</b> &rarr; <span style="color:#ff5252">&uarr;</span> (первый жилец)<br>
+        m<sub>s</sub> = <b>&minus;&frac12;</b> &rarr; <span style="color:#448aff">&darr;</span> (второй жилец)
+      </div>
+    </div>
+
+    <div class="note-box">
+      <span class="note-icon">&#x1F3E0;</span> <b>Принцип Паули:</b> два электрона в одном атоме <span class="key">не могут иметь одинаковые 4 числа</span>. Как два человека не живут по одному адресу.
+    </div>
+
+    <a href="quantum-numbers.html" class="trainer-link">&#x1F3AF; Тренажёр квантовых чисел &rarr;</a>` },
+
+  // ─── PAGE 4: Правила заполнения ───
+  { title: 'Три правила заполнения',
+    html: `<div class="th-section"><span class="th-num">5</span>Как электроны заселяют «дом»?</div>
+    <p>Электроны не прыгают куда попало — они занимают орбитали по строгим правилам. Три главных:</p>
+
+    <div class="law-card">
+      <div class="law-name" style="color:#ff9800">Правило Ауфбау (принцип наименьшей энергии)</div>
+      <div class="law-text">
+        Электроны сначала заполняют орбитали с <b>наименьшей энергией</b>. Порядок заполнения:<br><br>
+        <div class="formula-box" style="font-size:0.95em;">
+          1s &rarr; 2s &rarr; 2p &rarr; 3s &rarr; 3p &rarr; <span class="key">4s &rarr; 3d</span> &rarr; 4p &rarr; 5s &rarr; 4d &rarr; 5p &rarr; <span class="key">6s &rarr; 4f</span> &rarr; 5d &rarr; 6p
+        </div>
+        <em>Обрати внимание: 4s заполняется <b>раньше</b> 3d! Это потому, что энергия 4s ниже, чем 3d. Правило Клечковского: сначала тот подуровень, где сумма n+l меньше.</em>
+      </div>
+    </div>
+
+    <div class="law-card law-red">
+      <div class="law-name" style="color:#ff5252">Принцип Паули</div>
+      <div class="law-text">
+        В одной орбитали — максимум <b>2 электрона с противоположными спинами</b> (<span style="color:#ff5252">&uarr;</span><span style="color:#448aff">&darr;</span>).<br>
+        <em>Нельзя засунуть в одну ячейку две стрелки вверх!</em>
+      </div>
+    </div>
+
+    <div class="law-card law-yellow">
+      <div class="law-name" style="color:#fbbf24">Правило Хунда</div>
+      <div class="law-text">
+        Электроны сначала <b>по одному</b> занимают все ячейки подуровня (с одинаковым спином), и только потом начинают спариваться.<br>
+        <em>Как в автобусе: сначала все садятся по одному, и только потом подсаживаются к кому-то.</em>
+      </div>
+    </div>
+
+    <div class="th-section"><span class="th-num">6</span>Пример: азот (N), Z = 7</div>
+
+    <div class="energy-diagram">
+      <div class="energy-row">
+        <div class="energy-label" style="color:#00d2ff">1s</div>
+        <div class="energy-cells">
+          <div class="energy-cell"><span class="up">&uarr;</span><span class="dn">&darr;</span></div>
+        </div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-label" style="color:#00d2ff">2s</div>
+        <div class="energy-cells">
+          <div class="energy-cell"><span class="up">&uarr;</span><span class="dn">&darr;</span></div>
+        </div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-label" style="color:#ff9800">2p</div>
+        <div class="energy-cells">
+          <div class="energy-cell"><span class="up">&uarr;</span></div>
+          <div class="energy-cell"><span class="up">&uarr;</span></div>
+          <div class="energy-cell"><span class="up">&uarr;</span></div>
+        </div>
+      </div>
+      <div style="font-size:0.78em;color:#888;margin-top:8px;">
+        Конфигурация: 1s&sup2; 2s&sup2; 2p&sup3; &nbsp;&mdash;&nbsp; три неспаренных электрона по правилу Хунда!
+      </div>
+    </div>
+
+    <a href="orbital-trainer.html" class="trainer-link">&#x1F52C; Тренажёр заполнения орбиталей &rarr;</a>` },
+
+  // ─── PAGE 5: Электронные конфигурации ───
+  { title: 'Электронные конфигурации и таблица',
+    html: `<div class="th-section"><span class="th-num">7</span>Как записать конфигурацию</div>
+    <p><span class="key">Электронная конфигурация</span> — это «адрес» <b>всех</b> электронов атома. Записывается так:</p>
+
+    <div class="formula-box">
+      Na (Z=11): &nbsp; 1s&sup2; 2s&sup2; 2p&#8310; 3s&sup1;
+    </div>
+
+    <p>Каждый блок — <b>подуровень</b>: цифра = номер уровня, буква = тип орбитали, степень = число электронов.</p>
+
+    <p>Для тяжёлых атомов используют <b>сокращённую запись</b> — внутренние уровни заменяют символом благородного газа:</p>
+
+    <div class="formula-box">
+      Fe (Z=26): &nbsp; [Ar] 3d&#8310; 4s&sup2;<br>
+      <span style="font-size:0.78em;color:#aaa;">[Ar] = 1s&sup2; 2s&sup2; 2p&#8310; 3s&sup2; 3p&#8310; (18 электронов аргона)</span>
+    </div>
+
+    <div class="th-section"><span class="th-num">8</span>Таблица Менделеева = шпаргалка</div>
+
+    <p>Положение элемента в таблице <b>прямо говорит</b> о его электронной конфигурации:</p>
+
+    <div class="law-card">
+      <div class="law-name" style="color:#ff9800">Номер периода = номер внешнего уровня (n)</div>
+      <div class="law-text">Na в 3-м периоде &rarr; внешний уровень n=3</div>
+    </div>
+
+    <div class="law-card law-blue">
+      <div class="law-name" style="color:#00d2ff">Номер группы (для главных подгрупп) = число внешних электронов</div>
+      <div class="law-text">Na в I группе &rarr; 1 внешний электрон (3s&sup1;)</div>
+    </div>
+
+    <div class="law-card law-purple">
+      <div class="law-name" style="color:#e040fb">Блоки таблицы = тип последнего подуровня</div>
+      <div class="law-text">
+        <b>s-блок:</b> I&ndash;II группы (щелочные, щелочноземельные)<br>
+        <b>p-блок:</b> III&ndash;VIII группы (главные подгруппы справа)<br>
+        <b>d-блок:</b> переходные металлы (середина таблицы)<br>
+        <b>f-блок:</b> лантаноиды и актиноиды (внизу)
+      </div>
+    </div>
+
+    <div class="note-box">
+      <span class="note-icon">&#x2728;</span> <b>Валентные электроны</b> — электроны <b>внешнего уровня</b>. Именно они участвуют в химических реакциях и определяют свойства элемента. У натрия — 1 валентный электрон, у хлора — 7.
+    </div>
+
+    <div style="margin-top:14px;">
+      <a href="orbital-trainer.html" class="trainer-link" style="margin-right:8px;">&#x1F52C; Тренажёр орбиталей</a>
+      <a href="quantum-numbers.html" class="trainer-link">&#x1F3AF; Тренажёр квантовых чисел</a>
+    </div>` }
+];
+
+let theoryPageIdx = 0;
+
+function startTheory() {
+    theoryPageIdx = 0;
+    showScreen('screenTheory');
+    renderTheoryPage();
+}
+
+function renderTheoryPage() {
+    const p = THEORY_PAGES[theoryPageIdx];
+    document.getElementById('theoryTitle').textContent = p.title;
+    document.getElementById('theoryContent').innerHTML = p.html;
+
+    // Dots
+    const dots = document.getElementById('pageDots');
+    dots.innerHTML = THEORY_PAGES.map((_, i) =>
+        `<div class="page-dot ${i === theoryPageIdx ? 'active' : ''}"></div>`
+    ).join('');
+
+    // Buttons
+    const prev = document.getElementById('thPrev');
+    const next = document.getElementById('thNext');
+    prev.style.visibility = theoryPageIdx === 0 ? 'hidden' : 'visible';
+
+    if (theoryPageIdx === THEORY_PAGES.length - 1) {
+        next.textContent = 'К квизу \u2192';
+        next.onclick = function() { startQuiz(); };
+    } else {
+        next.textContent = 'Далее \u2192';
+        next.onclick = function() { theoryNext(); };
+    }
+
+    window.scrollTo(0, 0);
+}
+
+function theoryPrev() { if (theoryPageIdx > 0) { theoryPageIdx--; renderTheoryPage(); } }
+function theoryNext() { if (theoryPageIdx < THEORY_PAGES.length - 1) { theoryPageIdx++; renderTheoryPage(); } }
+
+
+// ═══════════════════════════════════════════════════════════════════
+// QUIZ DATA
+// ═══════════════════════════════════════════════════════════════════
+const ALL_Q = [
+  { q:'Что определяет атомный номер Z элемента?',
+    o:['Число нейтронов','Число протонов в ядре','Массу атома','Число энергетических уровней'],
+    c:1, e:'Атомный номер Z = число протонов = число электронов (в нейтральном атоме). Именно протоны определяют, какой это элемент.' },
+
+  { q:'Какую форму имеет s-орбиталь?',
+    o:['Гантель','Сфера (шар)','Клевер (четырёхлистник)','Кольцо'],
+    c:1, e:'s-орбиталь — <b>сферическая</b>. Электронное облако равномерно окружает ядро со всех сторон.' },
+
+  { q:'Сколько электронов максимум помещается на одной орбитали?',
+    o:['1','2','4','8'],
+    c:1, e:'В одной орбитали — максимум <b>2 электрона</b> с противоположными спинами (принцип Паули).' },
+
+  { q:'Какие значения может принимать l при n = 3?',
+    o:['0, 1, 2','0, 1, 2, 3','1, 2, 3','0, 1'],
+    c:0, e:'l может быть от 0 до <b>n\u22121</b>. При n=3: l = 0 (s), 1 (p), 2 (d).' },
+
+  { q:'Сколько орбиталей на d-подуровне?',
+    o:['1','3','5','7'],
+    c:2, e:'d-подуровень (l=2): m\u2097 = \u22122, \u22121, 0, +1, +2 — <b>пять</b> орбиталей, вмещает до 10 электронов.' },
+
+  { q:'Что запрещает принцип Паули?',
+    o:['Электронам занимать d-подуровень','Двум электронам в атоме иметь одинаковые 4 квантовых числа','Электронам менять спин','Электронам находиться на одном уровне'],
+    c:1, e:'Принцип Паули: в одном атоме <b>не может быть двух электронов с одинаковым набором всех четырёх квантовых чисел</b>.' },
+
+  { q:'По правилу Хунда, как электроны заполняют p-орбитали?',
+    o:['Сначала по два в каждую ячейку','Сначала по одному в каждую ячейку, потом спариваются','В случайном порядке','Начиная с последней ячейки'],
+    c:1, e:'Правило Хунда: электроны сначала <b>по одному</b> занимают все ячейки подуровня (одинаковый спин), и только потом спариваются. Как в автобусе — сначала по одному.' },
+
+  { q:'Какой подуровень заполняется после 3p?',
+    o:['3d','4s','4p','3f'],
+    c:1, e:'После 3p заполняется <b>4s</b>, а не 3d! Энергия 4s ниже, чем 3d (правило Клечковского: по возрастанию суммы n+l).' },
+
+  { q:'Электронная конфигурация кислорода (Z = 8):',
+    o:['1s\u00B2 2s\u00B2 2p\u2074','1s\u00B2 2s\u00B2 2p\u2076','1s\u00B2 2p\u2076','1s\u00B2 2s\u00B2 3s\u00B2 3p\u00B2'],
+    c:0, e:'O (Z=8): 8 электронов. Заполняем по порядку: 1s\u00B2 (2) + 2s\u00B2 (4) + 2p\u2074 (8). Ответ: <b>1s\u00B2 2s\u00B2 2p\u2074</b>.' },
+
+  { q:'Сколько неспаренных электронов у азота (N, Z = 7)?',
+    o:['0','1','3','5'],
+    c:2, e:'N: 1s\u00B2 2s\u00B2 2p\u00B3. На 2p три ячейки, в каждой по одному электрону (правило Хунда) \u2014 <b>3 неспаренных</b>.' },
+
+  { q:'Что можно узнать по номеру периода элемента?',
+    o:['Число нейтронов','Номер внешнего энергетического уровня (n)','Число d-электронов','Массовое число'],
+    c:1, e:'Номер периода = <b>номер внешнего уровня</b>. Натрий в 3-м периоде \u2192 внешний уровень n=3.' },
+
+  { q:'Спиновое квантовое число m\u209B может принимать значения:',
+    o:['+1 и \u22121','0 и 1','+\u00BD и \u2212\u00BD','любые целые числа'],
+    c:2, e:'Спиновое число m\u209B имеет только <b>два значения: +\u00BD и \u2212\u00BD</b>. Это направление собственного вращения электрона (\u2191 или \u2193).' },
+];
+
+
+// ═══════════════════════════════════════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════════════════════════════════════
+let questions = [], qIdx = 0, score = 0, wrong = 0, wrongList = [], isRepeat = false;
+
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function startQuiz() {
+    questions = shuffle(ALL_Q);
+    qIdx = 0; score = 0; wrong = 0; wrongList = []; isRepeat = false;
+    document.getElementById('roundBadge').style.display = 'none';
+    showScreen('screenQuiz');
+    renderQ();
+}
+
+function startRepeat() {
+    questions = shuffle(wrongList);
+    qIdx = 0; score = 0; wrong = 0; wrongList = []; isRepeat = true;
+    document.getElementById('roundBadge').style.display = '';
+    document.getElementById('roundBadge').textContent = 'Работа над ошибками';
+    showScreen('screenQuiz');
+    renderQ();
+}
+
+function renderQ() {
+    const total = questions.length;
+    document.getElementById('progLabel').textContent = `Вопрос ${qIdx + 1} из ${total}`;
+    document.getElementById('progScore').innerHTML = `&check; ${score} &middot; &cross; ${wrong}`;
+    document.getElementById('progFill').style.width = ((qIdx / total) * 100) + '%';
+
+    const q = questions[qIdx];
+    document.getElementById('questionText').textContent = q.q;
+
+    const optDiv = document.getElementById('optionsDiv');
+    optDiv.innerHTML = '';
+    q.o.forEach((text, i) => {
+        const d = document.createElement('div');
+        d.className = 'option';
+        d.textContent = text;
+        d.onclick = () => pickAnswer(i);
+        optDiv.appendChild(d);
+    });
+
+    document.getElementById('explanation').style.display = 'none';
+    document.getElementById('explanation').innerHTML = '';
+    document.getElementById('nextBtnWrap').style.display = 'none';
+}
+
+function pickAnswer(i) {
+    const q = questions[qIdx];
+    const opts = document.querySelectorAll('.option');
+    opts.forEach(o => o.classList.add('disabled'));
+    opts[q.c].classList.add('correct');
+
+    if (i === q.c) {
+        score++;
+        emojiBurst('\u2705');
+    } else {
+        wrong++;
+        opts[i].classList.add('wrong');
+        wrongList.push(q);
+    }
+
+    const expl = document.getElementById('explanation');
+    expl.innerHTML = q.e;
+    expl.style.display = 'block';
+    document.getElementById('nextBtnWrap').style.display = '';
+    document.getElementById('progScore').innerHTML = `&check; ${score} &middot; &cross; ${wrong}`;
+}
+
+function nextQuestion() {
+    qIdx++;
+    if (qIdx >= questions.length) {
+        showResults();
+    } else {
+        renderQ();
+    }
+}
+
+function showResults() {
+    const total = questions.length;
+    const pct = Math.round((score / total) * 100);
+
+    let cls, emoji;
+    if (pct >= 80) { cls = 'score-great'; emoji = '\uD83C\uDF89'; }
+    else if (pct >= 50) { cls = 'score-ok'; emoji = '\uD83D\uDCAA'; }
+    else { cls = 'score-bad'; emoji = '\uD83D\uDCDA'; }
+
+    document.getElementById('resultsGrade').textContent =
+        pct >= 80 ? 'Отлично!' : pct >= 50 ? 'Неплохо!' : 'Нужно повторить';
+    document.getElementById('scoreCircle').className = 'score-circle ' + cls;
+    document.getElementById('scoreCircle').textContent = pct + '%';
+    document.getElementById('resultsSub').textContent = `${score} из ${total} правильных`;
+
+    const btn = document.getElementById('btnRepeat');
+    if (wrongList.length > 0) {
+        btn.style.display = '';
+        document.getElementById('wrongCount').textContent = wrongList.length;
+    } else {
+        btn.style.display = 'none';
+    }
+
+    showScreen('screenResults');
+    if (pct >= 80) emojiBurst(emoji);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+function goSetup() { showScreen('screenSetup'); }
+
+function emojiBurst(emoji) {
+    for (let i = 0; i < 6; i++) {
+        const el = document.createElement('div');
+        el.className = 'emoji-burst';
+        el.textContent = emoji;
+        el.style.left = (20 + Math.random() * 60) + 'vw';
+        el.style.top = (30 + Math.random() * 40) + 'vh';
+        el.style.animationDelay = (Math.random() * 0.3) + 's';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1200);
+    }
+}
+</script>
+</body>
+</html>
