@@ -257,8 +257,8 @@
     <div class="formula-choice" id="formulaChoice">
         <button class="fc-btn" data-ft="acid">Э = M / основность<br><span style="font-size:0.8em;color:#888;">кислоты</span></button>
         <button class="fc-btn" data-ft="base">Э = M / число OH&minus;<br><span style="font-size:0.8em;color:#888;">основания</span></button>
-        <button class="fc-btn" data-ft="salt">Э = M / (z&middot;k)<br><span style="font-size:0.8em;color:#888;">соли</span></button>
-        <button class="fc-btn" data-ft="oxide">Э = M / (z&middot;k)<br><span style="font-size:0.8em;color:#888;">оксиды</span></button>
+        <button class="fc-btn" data-ft="salt">Э = M / (вал.&times;кол.)<br><span style="font-size:0.8em;color:#888;">соли</span></button>
+        <button class="fc-btn" data-ft="oxide">Э = M / (вал.&times;кол.)<br><span style="font-size:0.8em;color:#888;">оксиды</span></button>
     </div>
 
     <div class="given-area" id="givenArea">
@@ -539,33 +539,33 @@ const equivTasks = [
       answer: 35.67, tolerance: 0.1,
       explanation: '\u042d = 107 / 3 \u2248 <b>35.67</b>' },
     { substance: 'NaCl', mr: 58.5, formulaType: 'salt',
-      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043d\u0430\u0442\u0440\u0438\u044f NaCl. Na\u207a (z=1, k=1).',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043d\u0430\u0442\u0440\u0438\u044f NaCl. \u0412\u0430\u043b\u0435\u043d\u0442\u043d\u043e\u0441\u0442\u044c Na = 1, \u0430\u0442\u043e\u043c\u043e\u0432 Na = 1.',
       parts: [{t:'el',v:'Na'},{t:'el',v:'Cl'}], elems: ['Na','Cl'],
       breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(Cl) = <b>23</b> + <b>35.5</b> = 58.5',
-      given: [{label:'z\u00b7k', value:1, unit:''}],
+      given: [{label:'\u0432\u0430\u043b.\u00d7\u043a\u043e\u043b.', value:1, unit:''}],
       answer: 58.5, tolerance: 0.1,
-      explanation: '\u042d = 58.5 / 1 = <b>58.5</b>' },
+      explanation: '\u042d = 58.5 / (1\u00d71) = <b>58.5</b>' },
     { substance: 'CaCl\u2082', mr: 111, formulaType: 'salt',
-      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043a\u0430\u043b\u044c\u0446\u0438\u044f CaCl\u2082. Ca\u00b2\u207a (z=2, k=1).',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043a\u0430\u043b\u044c\u0446\u0438\u044f CaCl\u2082. \u0412\u0430\u043b\u0435\u043d\u0442\u043d\u043e\u0441\u0442\u044c Ca = 2, \u0430\u0442\u043e\u043c\u043e\u0432 Ca = 1.',
       parts: [{t:'el',v:'Ca'},{t:'el',v:'Cl'},{t:'sub',v:'2'}], elems: ['Ca','Cl'],
       breakdown: 'A<sub>r</sub>(Ca) + A<sub>r</sub>(Cl)\u00d72 = <b>40</b> + <b>35.5</b>\u00d72 = 111',
-      given: [{label:'z\u00b7k', value:2, unit:''}],
+      given: [{label:'\u0432\u0430\u043b.\u00d7\u043a\u043e\u043b.', value:2, unit:''}],
       answer: 55.5, tolerance: 0.1,
-      explanation: '\u042d = 111 / 2 = <b>55.5</b>' },
+      explanation: '\u042d = 111 / (2\u00d71) = <b>55.5</b>' },
     { substance: 'Al\u2082(SO\u2084)\u2083', mr: 342, formulaType: 'salt',
-      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0441\u0443\u043b\u044c\u0444\u0430\u0442\u0430 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u044f Al\u2082(SO\u2084)\u2083. Al\u00b3\u207a (z=3, k=2).',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0441\u0443\u043b\u044c\u0444\u0430\u0442\u0430 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u044f Al\u2082(SO\u2084)\u2083. \u0412\u0430\u043b\u0435\u043d\u0442\u043d\u043e\u0441\u0442\u044c Al = 3, \u0430\u0442\u043e\u043c\u043e\u0432 Al = 2.',
       parts: [{t:'el',v:'Al'},{t:'sub',v:'2'},{t:'par',v:'('},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'},{t:'par',v:')'},{t:'sub',v:'3'}], elems: ['Al','S','O'],
       breakdown: 'A<sub>r</sub>(Al)\u00d72 + (A<sub>r</sub>(S)+A<sub>r</sub>(O)\u00d74)\u00d73 = <b>27</b>\u00d72 + (<b>32</b>+<b>16</b>\u00d74)\u00d73 = 342',
-      given: [{label:'z\u00b7k', value:6, unit:''}],
+      given: [{label:'\u0432\u0430\u043b.\u00d7\u043a\u043e\u043b.', value:6, unit:''}],
       answer: 57, tolerance: 0.1,
-      explanation: '\u042d = 342 / 6 = <b>57</b>' },
+      explanation: '\u042d = 342 / (3\u00d72) = <b>57</b>' },
     { substance: 'Fe\u2082O\u2083', mr: 160, formulaType: 'oxide',
-      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u043e\u043a\u0441\u0438\u0434\u0430 \u0436\u0435\u043b\u0435\u0437\u0430(III) Fe\u2082O\u2083. Fe\u00b3\u207a (z=3, k=2).',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u043e\u043a\u0441\u0438\u0434\u0430 \u0436\u0435\u043b\u0435\u0437\u0430(III) Fe\u2082O\u2083. \u0412\u0430\u043b\u0435\u043d\u0442\u043d\u043e\u0441\u0442\u044c Fe = 3, \u0430\u0442\u043e\u043c\u043e\u0432 Fe = 2.',
       parts: [{t:'el',v:'Fe'},{t:'sub',v:'2'},{t:'el',v:'O'},{t:'sub',v:'3'}], elems: ['Fe','O'],
       breakdown: 'A<sub>r</sub>(Fe)\u00d72 + A<sub>r</sub>(O)\u00d73 = <b>56</b>\u00d72 + <b>16</b>\u00d73 = 160',
-      given: [{label:'z\u00b7k', value:6, unit:''}],
+      given: [{label:'\u0432\u0430\u043b.\u00d7\u043a\u043e\u043b.', value:6, unit:''}],
       answer: 26.67, tolerance: 0.1,
-      explanation: '\u042d = 160 / 6 \u2248 <b>26.67</b>' },
+      explanation: '\u042d = 160 / (3\u00d72) \u2248 <b>26.67</b>' },
 ];
 
 /* ══════════════════════════════════════════════════════════
@@ -580,7 +580,7 @@ const modeState = {
     molar:         { idx: 0, score: 0, results: [] },
     concentration: { idx: 0, score: 0, results: [], step: 1, storedM: null },
     solutions:     { idx: 0, score: 0, results: [] },
-    equivalents:   { idx: 0, score: 0, results: [], step: 1, storedM: null, formulaPicked: false },
+    equivalents:   { idx: 0, score: 0, results: [], step: 1, storedM: null },
 };
 
 function getTasksForMode(mode) {
@@ -666,7 +666,7 @@ document.getElementById('tabsRow').addEventListener('click', e => {
     document.getElementById('feedback').className = 'feedback';
     document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
     // Reset step for two-step modes
-    if (ms().step !== undefined) { ms().step = 1; ms().storedM = null; ms().formulaPicked = false; }
+    if (ms().step !== undefined) { ms().step = 1; ms().storedM = null; }
     hideFormulaChoice();
     // If mode is complete, restart it
     const st = ms();
@@ -723,13 +723,17 @@ function renderFormula() {
     if ((currentMode === 'concentration' || currentMode === 'equivalents') && st.step === 2) {
         // Step 2: show formula with actual numbers (no parentheses needed)
         if (currentMode === 'concentration') {
+            // Concentration step 2: show formula with clickable subscripts + M, no spoilers
             document.getElementById('taskFormulaWrap').innerHTML =
-                '<span style="font-size:0.55em;color:#888;">' + task.substance + '</span><br>' +
-                '<span style="font-size:0.85em;">C = ' + task.given[0].value + ' / ' + st.storedM + ' / ' + task.given[1].value + ' = ?</span>';
+                '<span id="formula">' + html + '</span>' +
+                '<span style="margin-left:10px;font-size:0.7em;color:#4ade80;">M = ' + st.storedM + '</span>' +
+                '<br><span style="font-size:0.75em;color:#888;">C = m / (M \u00b7 V) = ?</span>';
         } else {
+            // Equivalents step 2: keep formula with clickable subscripts + M value
             document.getElementById('taskFormulaWrap').innerHTML =
-                '<span style="font-size:0.55em;color:#888;">' + task.substance + '</span><br>' +
-                '<span style="font-size:0.85em;">\u042d = ' + st.storedM + ' / ' + task.given[0].value + ' = ?</span>';
+                '<span id="formula">' + html + '</span>' +
+                '<span style="margin-left:10px;font-size:0.7em;color:#4ade80;">M = ' + st.storedM + '</span>' +
+                '<br><span style="font-size:0.75em;color:#888;">\u042d = M / n = ?</span>';
         }
     } else if (currentMode === 'concentration' || currentMode === 'equivalents') {
         // Step 1
@@ -798,12 +802,6 @@ function renderGivenCards() {
         cards.innerHTML = html;
         attachGivenCardListeners();
     } else if (isTwoStep && st.step === 2) {
-        // For equivalents, wait for formula pick before showing cards
-        if (currentMode === 'equivalents' && !st.formulaPicked) {
-            area.classList.remove('visible');
-            cards.innerHTML = '';
-            return;
-        }
         // Step 2: show stored M + given values
         area.classList.add('visible');
         let html = '<div class="given-card stored-m" data-gval="' + st.storedM + '">' +
@@ -1050,10 +1048,28 @@ function showWrong(val) {
         correctText = '\u041f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0439 \u043e\u0442\u0432\u0435\u0442: ' + task.answer;
     }
 
+    // Extra hint for equivalents step 2
+    let equivHint = '';
+    if (currentMode === 'equivalents' && ms().step === 2) {
+        const typeNames = {acid: '\u041a\u0438\u0441\u043b\u043e\u0442\u0430', base: '\u041e\u0441\u043d\u043e\u0432\u0430\u043d\u0438\u0435', salt: '\u0421\u043e\u043b\u044c', oxide: '\u041e\u043a\u0441\u0438\u0434'};
+        const formulaHints = {
+            acid: '\u042d = M / \u043e\u0441\u043d\u043e\u0432\u043d\u043e\u0441\u0442\u044c (\u0447\u0438\u0441\u043b\u043e H)',
+            base: '\u042d = M / \u0447\u0438\u0441\u043b\u043e OH',
+            salt: '\u042d = M / (\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u043e\u0441\u0442\u044c \u00d7 \u043a\u043e\u043b-\u0432\u043e \u0430\u0442\u043e\u043c\u043e\u0432 \u043c\u0435\u0442\u0430\u043b\u043b\u0430)',
+            oxide: '\u042d = M / (\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u043e\u0441\u0442\u044c \u00d7 \u043a\u043e\u043b-\u0432\u043e \u0430\u0442\u043e\u043c\u043e\u0432 \u043c\u0435\u0442\u0430\u043b\u043b\u0430)'
+        };
+        const ft = task.formulaType;
+        equivHint = '<div style="margin-top:6px;padding:8px 12px;border-radius:8px;background:rgba(255,152,0,0.1);border:1px solid rgba(255,152,0,0.25);font-size:0.82em;">' +
+            '<b style="color:#ff9800;">' + typeNames[ft] + ':</b> <span style="color:#ccc;">' + formulaHints[ft] + '</span><br>' +
+            '<span style="color:#4ade80;">\u042d = ' + ms().storedM + ' / ' + task.given[0].value + ' = <b>' + task.answer + '</b></span>' +
+            '</div>';
+    }
+
     fb.innerHTML = '<div class="fb-title">&#10007; \u041d\u0435\u0432\u0435\u0440\u043d\u043e (' + valStr + '). ' + correctText + '</div>' +
         zWarn +
+        equivHint +
         (task.explanation ? '<div class="fb-breakdown">' + task.explanation + '</div>' : (task.breakdown ? '<div class="fb-breakdown">' + task.breakdown + '</div>' : '')) +
-        (currentMode !== 'solutions' ? '<div style="margin-top:6px;font-size:0.8em;color:#ff9800;">\u0410\u0442\u043e\u043c\u043d\u0430\u044f \u043c\u0430\u0441\u0441\u0430 \u2014 <b style="color:#4fc3f7">\u043d\u0438\u0436\u043d\u0435\u0435 \u0447\u0438\u0441\u043b\u043e</b> \u0432 \u044f\u0447\u0435\u0439\u043a\u0435</div>' : '') +
+        (currentMode !== 'solutions' && !(currentMode === 'equivalents' && ms().step === 2) ? '<div style="margin-top:6px;font-size:0.8em;color:#ff9800;">\u0410\u0442\u043e\u043c\u043d\u0430\u044f \u043c\u0430\u0441\u0441\u0430 \u2014 <b style="color:#4fc3f7">\u043d\u0438\u0436\u043d\u0435\u0435 \u0447\u0438\u0441\u043b\u043e</b> \u0432 \u044f\u0447\u0435\u0439\u043a\u0435</div>' : '') +
         '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">' +
             '<button class="fb-next" onclick="retryTask()">\u041f\u043e\u043f\u0440\u043e\u0431\u043e\u0432\u0430\u0442\u044c \u0441\u043d\u043e\u0432\u0430</button>' +
             '<button class="fb-next" onclick="nextTask()" style="opacity:0.7;">' + (st.idx < tasks.length - 1 ? '\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c &rarr;' : '\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b &rarr;') + '</button>' +
@@ -1062,6 +1078,12 @@ function showWrong(val) {
     // Hint elements in table
     if (task.elems) {
         task.elems.forEach(sym => { if (cellMap[sym]) cellMap[sym].classList.add('hint'); });
+    }
+    // Highlight correct formula card for equivalents
+    if (currentMode === 'equivalents' && ms().step === 2 && task.formulaType) {
+        document.querySelectorAll('.fc-btn').forEach(b => {
+            if (b.dataset.ft === task.formulaType) b.classList.add('correct');
+        });
     }
 }
 
@@ -1099,9 +1121,8 @@ function goStep2() {
     tokens = [];
     locked = false;
     document.getElementById('feedback').className = 'feedback';
-    // For equivalents, show formula choice first
+    // For equivalents, show formula reference cards
     if (currentMode === 'equivalents') {
-        st.formulaPicked = false;
         showFormulaChoice();
     }
     renderStepIndicator();
@@ -1119,36 +1140,26 @@ function goStep2() {
 
 /* Formula choice for equivalents */
 function showFormulaChoice() {
+    document.getElementById('fcLabel').textContent = '\u0424\u043e\u0440\u043c\u0443\u043b\u044b \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043e\u0432 (\u0441\u043f\u0440\u0430\u0432\u043e\u0447\u043d\u0438\u043a):';
     document.getElementById('fcLabel').classList.add('visible');
     document.getElementById('formulaChoice').classList.add('visible');
     document.querySelectorAll('.fc-btn').forEach(b => {
         b.classList.remove('correct', 'wrong');
+        b.style.cursor = 'default';
+        b.style.opacity = '0.85';
     });
 }
 
 function hideFormulaChoice() {
     document.getElementById('fcLabel').classList.remove('visible');
     document.getElementById('formulaChoice').classList.remove('visible');
+    document.querySelectorAll('.fc-btn').forEach(b => {
+        b.style.cursor = '';
+        b.style.opacity = '';
+    });
 }
 
-document.getElementById('formulaChoice').addEventListener('click', e => {
-    const btn = e.target.closest('.fc-btn');
-    if (!btn) return;
-    const task = curTask();
-    const st = ms();
-    if (!task || st.formulaPicked) return;
-    const picked = btn.dataset.ft;
-    if (picked === task.formulaType) {
-        btn.classList.add('correct');
-        st.formulaPicked = true;
-        // Show given cards now
-        renderGivenCards();
-        setTimeout(() => hideFormulaChoice(), 800);
-    } else {
-        btn.classList.add('wrong');
-        setTimeout(() => btn.classList.remove('wrong'), 600);
-    }
-});
+/* Formula choice cards are now reference-only (no click gating) */
 
 function retryTask() {
     document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
@@ -1157,11 +1168,16 @@ function retryTask() {
     tokens = [];
     const st = ms();
     st.results[st.idx] = undefined;
-    // For two-step modes, reset to step 1
+    // For two-step modes on step 2, stay on step 2 (M already computed)
+    if (st.step === 2) {
+        document.querySelectorAll('.fc-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+        renderExpr();
+        return;
+    }
+    // For two-step modes on step 1, reset
     if (st.step !== undefined) {
         st.step = 1;
         st.storedM = null;
-        st.formulaPicked = false;
     }
     loadTask();
 }
@@ -1173,7 +1189,7 @@ function nextTask() {
     tokens = [];
     const st = ms();
     st.idx++;
-    if (st.step !== undefined) { st.step = 1; st.storedM = null; st.formulaPicked = false; }
+    if (st.step !== undefined) { st.step = 1; st.storedM = null; }
     if (st.idx >= curTasks().length) { showFinal(); return; }
     loadTask();
 }
@@ -1201,7 +1217,7 @@ function showFinal() {
 function restart() {
     const st = ms();
     st.idx = 0; st.score = 0; st.results = [];
-    if (st.step !== undefined) { st.step = 1; st.storedM = null; st.formulaPicked = false; }
+    if (st.step !== undefined) { st.step = 1; st.storedM = null; }
     tokens = []; locked = false;
     document.getElementById('feedback').className = 'feedback';
     loadTask();
