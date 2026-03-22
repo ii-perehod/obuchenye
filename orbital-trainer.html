@@ -894,7 +894,7 @@ const CHAR_VALENCES = {
 const VAL_EXPLAIN = {
     7: '3 неспаренных электрона дают валентность III. Одинокая пара 2s² может образовать донорно-акцепторную связь → максимальная валентность IV',
     4: 'В основном состоянии электроны спарены, но Be всегда возбуждается → валентность постоянно II',
-    12: 'В основном состоянии электроны спарены, но Mg всегда возбуждается → валентность постоянно II',
+    12: 'Магний: 3s² — спаренные электроны отдаёт сразу, валентность II. Возбуждение НЕ происходит',
     20: 'В основном состоянии электроны спарены, но Ca всегда возбуждается → валентность постоянно II',
     38: 'В основном состоянии электроны спарены, но Sr всегда возбуждается → валентность постоянно II',
     26:'Fe(II): отдаёт 4s² &nbsp;|&nbsp; Fe(III): отдаёт 4s² + один 3d',
@@ -964,6 +964,8 @@ function isPBlockHeavy(z){
 function findExcTarget(si){
     if(NOBLE_GASES.has(valZ2)) return null;
     if(SUBSHELLS[si].l==='d') return null;
+    // Be и Mg — только основное состояние, без возбуждения
+    if(valZ2===4||valZ2===12) return null;
     // d-блок и s-элементы периодов 4-5 — без возбуждения
     const isDBlock=(valZ2>=21&&valZ2<=30)||(valZ2>=39&&valZ2<=48);
     const isSBlock=(valZ2===19||valZ2===20||valZ2===37||valZ2===38);
@@ -1133,25 +1135,8 @@ function initValence(z){
     valZ2=z; excCount=0; excitedCells2=new Set();
     grid=buildGroundState(z);
     groundGrid2=grid.map(g=>g?[...g]:null);
-    // Be и Mg всегда двухвалентны — автовозбуждаем сразу
-    if(z===4||z===12){
-        const vs=getValenceSubshells();
-        outer: for(const si of vs){
-            if(!grid[si])continue;
-            for(let bi=0;bi<grid[si].length;bi++){
-                if(grid[si][bi]===2){
-                    const target=findExcTarget(si);
-                    if(target){
-                        grid[si][bi]=1;
-                        grid[target.si][target.bi]=1;
-                        excitedCells2.add(`${target.si}_${target.bi}`);
-                        excCount++;
-                        break outer;
-                    }
-                }
-            }
-        }
-    }
+    // Be и Mg открываются в основном состоянии, без автоexcitation
+    // (Оставляем как есть после buildGroundState)
     const el=ELEMENTS[z];
     document.getElementById('valSym').textContent=el?el.s:z;
     document.getElementById('valName').textContent=el?el.n:'';

@@ -25,11 +25,12 @@
 
         .tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; }
         .tab {
-            padding: 4px 12px; border-radius: 16px; font-size: 0.75em; cursor: default;
+            padding: 4px 12px; border-radius: 16px; font-size: 0.75em; cursor: pointer;
             border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: #888;
+            transition: all 0.2s;
         }
+        .tab:hover { background: rgba(255,255,255,0.08); }
         .tab.active { background: rgba(0,210,255,0.15); border-color: #00d2ff; color: #00d2ff; }
-        .tab.locked { opacity: 0.4; cursor: not-allowed; }
 
         .progress-row { display: flex; gap: 3px; justify-content: center; margin-bottom: 8px; flex-wrap: wrap; }
         .dot {
@@ -88,6 +89,7 @@
         .tok-sub { color: #ff9800; background: rgba(255,152,0,0.1); }
         .tok-op { color: #999; padding: 0 2px; }
         .tok-par { color: #e040fb; }
+        .tok-val { color: #4ade80; background: rgba(74,222,128,0.1); }
         .cursor-blink { display: inline-block; width: 2px; height: 1.1em; background: #00d2ff; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 2px; }
         @keyframes blink { 50% { opacity: 0; } }
 
@@ -109,6 +111,7 @@
 
         /* ── Short-form periodic table (Russian style) ── */
         .table-wrap { overflow-x: auto; margin-bottom: 8px; }
+        .table-wrap.hidden { display: none; }
         .ptable {
             display: grid;
             grid-template-columns: 30px repeat(7, 1fr) repeat(3, 1fr);
@@ -171,26 +174,47 @@
             background: rgba(0,210,255,0.15); color: #00d2ff; cursor: pointer; font-size: 0.88em; transition: all 0.2s;
         }
         .fb-next:hover { background: rgba(0,210,255,0.3); }
+
+        /* Given cards for two-step tasks */
+        .given-cards { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; justify-content: center; }
+        .given-card {
+            background: rgba(0,210,255,0.08); border: 1px solid rgba(0,210,255,0.3);
+            border-radius: 10px; padding: 8px 14px; cursor: pointer; text-align: center;
+            transition: all 0.2s; min-width: 80px;
+        }
+        .given-card:hover { background: rgba(0,210,255,0.15); border-color: #00d2ff; }
+        .given-card:active { transform: scale(0.95); }
+        .given-card .gc-label { font-size: 0.7em; color: #888; }
+        .given-card .gc-value { font-size: 1.1em; font-weight: 700; color: #00d2ff; }
+        .given-card .gc-unit { font-size: 0.75em; color: #888; }
+        .given-card.stored-m { border-color: #4ade80; }
+        .given-card.stored-m .gc-value { color: #4ade80; }
+        .step-indicator { text-align: center; font-size: 0.85em; margin: 6px 0; }
+        .step-indicator .step-active { color: #00d2ff; font-weight: 700; }
+        .step-indicator .step-done { color: #4ade80; }
+        .given-area { display: none; }
+        .given-area.visible { display: block; }
     </style>
 </head>
 <body>
 <div class="page">
     <a href="index.html" class="back-link">&larr; На главную</a>
     <h1>Молярная масса</h1>
-    <div class="subtitle">Нажимай на индексы в формуле и элементы в таблице &mdash; собирай выражение</div>
+    <div class="subtitle" id="subtitle">Нажимай на индексы в формуле и элементы в таблице &mdash; собирай выражение</div>
 
-    <div class="tabs">
-        <div class="tab active">Молярная масса</div>
-        <div class="tab locked">Концентрация 🔒</div>
-        <div class="tab locked">Растворы 🔒</div>
+    <div class="tabs" id="tabsRow">
+        <div class="tab active" data-mode="molar">Молярная масса</div>
+        <div class="tab" data-mode="concentration">Концентрация</div>
+        <div class="tab" data-mode="solutions">Растворы</div>
+        <div class="tab" data-mode="equivalents">Эквиваленты</div>
     </div>
 
     <div class="progress-row" id="progressRow"></div>
 
     <div class="top-row">
         <div class="task-card">
-            <div class="task-label">Вычислите</div>
-            <div class="task-formula">M<sub>r</sub>(<span id="formula"></span>) = ?</div>
+            <div class="task-label" id="taskLabel">Вычислите</div>
+            <div class="task-formula" id="taskFormulaWrap">M<sub>r</sub>(<span id="formula"></span>) = ?</div>
         </div>
         <div class="score-card">
             <div class="score-label">Верно</div>
@@ -198,19 +222,27 @@
         </div>
     </div>
 
+    <div class="step-indicator" id="stepIndicator" style="display:none;"></div>
+
+    <div class="given-area" id="givenArea">
+        <div class="given-cards" id="givenCards"></div>
+    </div>
+
     <div class="expr-wrap" id="exprWrap"><span class="cursor-blink"></span></div>
 
-    <div class="controls">
+    <div class="controls" id="controlsRow">
         <button class="ctrl-btn op" data-o="×">×</button>
         <button class="ctrl-btn op" data-o="+">+</button>
         <button class="ctrl-btn op" data-o="−">−</button>
         <button class="ctrl-btn op" data-o="/">/</button>
-        <button class="ctrl-btn del" data-act="del">⌫</button>
+        <button class="ctrl-btn op" data-o="(" style="display:none;" id="btnParenL">(</button>
+        <button class="ctrl-btn op" data-o=")" style="display:none;" id="btnParenR">)</button>
+        <button class="ctrl-btn del" data-act="del">&#9003;</button>
         <button class="ctrl-btn clr" data-act="clr">AC</button>
         <button class="ctrl-btn eq" data-act="eq">=</button>
     </div>
 
-    <div class="table-wrap">
+    <div class="table-wrap" id="tableWrap">
         <div class="ptable" id="ptable"></div>
     </div>
 
@@ -228,109 +260,321 @@ const EL = {};
     {z:37,sym:'Rb',ar:85,t:'s'},{z:38,sym:'Sr',ar:88,t:'s'},{z:39,sym:'Y',ar:89,t:'d'},{z:40,sym:'Zr',ar:91,t:'d'},{z:41,sym:'Nb',ar:93,t:'d'},{z:42,sym:'Mo',ar:96,t:'d'},{z:43,sym:'Tc',ar:98,t:'d'},{z:44,sym:'Ru',ar:101,t:'d'},{z:45,sym:'Rh',ar:103,t:'d'},{z:46,sym:'Pd',ar:106,t:'d'},{z:47,sym:'Ag',ar:108,t:'d'},{z:48,sym:'Cd',ar:112,t:'d'},{z:49,sym:'In',ar:115,t:'p'},{z:50,sym:'Sn',ar:119,t:'p'},{z:51,sym:'Sb',ar:122,t:'p'},{z:52,sym:'Te',ar:128,t:'p'},{z:53,sym:'I',ar:127,t:'p'},{z:54,sym:'Xe',ar:131,t:'p'}
 ].forEach(e => EL[e.sym] = e);
 
-/* ── Short-form table layout (Russian style) ──
-   Columns: [period] [I] [II] [III] [IV] [V] [VI] [VII] [VIII-1] [VIII-2] [VIII-3]
-   Rows per period: small periods = 1 row, large periods = 2 rows */
+/* ── Short-form table layout (Russian style) ── */
 const tableRows = [
-    // Period 1
     { per: '1', cells: ['H', '', '', '', '', '', '', '', '', 'He'] },
-    // Period 2
     { per: '2', cells: ['Li', 'Be', 'B', 'C', 'N', 'O', 'F', '', '', 'Ne'] },
-    // Period 3
     { per: '3', cells: ['Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', '', '', 'Ar'] },
-    // Period 4 row 1 (K,Ca + d-block Sc-Mn + VIII triad)
     { per: '4', cells: ['K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni'] },
-    // Period 4 row 2 (Cu,Zn + p-block Ga-Br + Kr)
     { per: '',  cells: ['Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', '', '', 'Kr'] },
-    // Period 5 row 1
     { per: '5', cells: ['Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd'] },
-    // Period 5 row 2
     { per: '',  cells: ['Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', '', '', 'Xe'] },
 ];
 
-/* ── Tasks with interactive formula parts ──
-   Part types: el (element text), sub (clickable subscript), par (clickable parenthesis), label (info text) */
-const tasks = [
-    // Simple inorganic
-    { mr:18, elems:['H','O'], breakdown:'A<sub>r</sub>(H)×2 + A<sub>r</sub>(O) = <b>1</b>×2 + <b>16</b> = 18',
+/* ══════════════════════════════════════════════════════════
+   ── TASK DATA FOR ALL MODES ──
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Molar mass tasks ── */
+const molarTasks = [
+    { mr:18, elems:['H','O'], breakdown:'A<sub>r</sub>(H)\u00d72 + A<sub>r</sub>(O) = <b>1</b>\u00d72 + <b>16</b> = 18',
       parts:[{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'O'}] },
-    { mr:44, elems:['C','O'], breakdown:'A<sub>r</sub>(C) + A<sub>r</sub>(O)×2 = <b>12</b> + <b>16</b>×2 = 44',
+    { mr:44, elems:['C','O'], breakdown:'A<sub>r</sub>(C) + A<sub>r</sub>(O)\u00d72 = <b>12</b> + <b>16</b>\u00d72 = 44',
       parts:[{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'2'}] },
     { mr:58.5, elems:['Na','Cl'], breakdown:'A<sub>r</sub>(Na) + A<sub>r</sub>(Cl) = <b>23</b> + <b>35.5</b> = 58.5',
       parts:[{t:'el',v:'Na'},{t:'el',v:'Cl'}] },
     { mr:36.5, elems:['H','Cl'], breakdown:'A<sub>r</sub>(H) + A<sub>r</sub>(Cl) = <b>1</b> + <b>35.5</b> = 36.5',
       parts:[{t:'el',v:'H'},{t:'el',v:'Cl'}] },
-    // Acids
-    { mr:63, elems:['H','N','O'], breakdown:'A<sub>r</sub>(H)+A<sub>r</sub>(N)+A<sub>r</sub>(O)×3 = <b>1</b>+<b>14</b>+<b>16</b>×3 = 63',
+    { mr:63, elems:['H','N','O'], breakdown:'A<sub>r</sub>(H)+A<sub>r</sub>(N)+A<sub>r</sub>(O)\u00d73 = <b>1</b>+<b>14</b>+<b>16</b>\u00d73 = 63',
       parts:[{t:'el',v:'H'},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
-    { mr:98, elems:['H','S','O'], breakdown:'A<sub>r</sub>(H)×2+A<sub>r</sub>(S)+A<sub>r</sub>(O)×4 = <b>1</b>×2+<b>32</b>+<b>16</b>×4 = 98',
+    { mr:98, elems:['H','S','O'], breakdown:'A<sub>r</sub>(H)\u00d72+A<sub>r</sub>(S)+A<sub>r</sub>(O)\u00d74 = <b>1</b>\u00d72+<b>32</b>+<b>16</b>\u00d74 = 98',
       parts:[{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}] },
-    { mr:98, elems:['H','P','O'], breakdown:'A<sub>r</sub>(H)×3+A<sub>r</sub>(P)+A<sub>r</sub>(O)×4 = <b>1</b>×3+<b>31</b>+<b>16</b>×4 = 98',
+    { mr:98, elems:['H','P','O'], breakdown:'A<sub>r</sub>(H)\u00d73+A<sub>r</sub>(P)+A<sub>r</sub>(O)\u00d74 = <b>1</b>\u00d73+<b>31</b>+<b>16</b>\u00d74 = 98',
       parts:[{t:'el',v:'H'},{t:'sub',v:'3'},{t:'el',v:'P'},{t:'el',v:'O'},{t:'sub',v:'4'}] },
-    { mr:62, elems:['H','C','O'], breakdown:'A<sub>r</sub>(H)×2+A<sub>r</sub>(C)+A<sub>r</sub>(O)×3 = <b>1</b>×2+<b>12</b>+<b>16</b>×3 = 62',
+    { mr:62, elems:['H','C','O'], breakdown:'A<sub>r</sub>(H)\u00d72+A<sub>r</sub>(C)+A<sub>r</sub>(O)\u00d73 = <b>1</b>\u00d72+<b>12</b>+<b>16</b>\u00d73 = 62',
       parts:[{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
-    { mr:78, elems:['H','Si','O'], breakdown:'A<sub>r</sub>(H)×2+A<sub>r</sub>(Si)+A<sub>r</sub>(O)×3 = <b>1</b>×2+<b>28</b>+<b>16</b>×3 = 78',
+    { mr:78, elems:['H','Si','O'], breakdown:'A<sub>r</sub>(H)\u00d72+A<sub>r</sub>(Si)+A<sub>r</sub>(O)\u00d73 = <b>1</b>\u00d72+<b>28</b>+<b>16</b>\u00d73 = 78',
       parts:[{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'Si'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
-    // Bases & oxides
     { mr:40, elems:['Na','O','H'], breakdown:'A<sub>r</sub>(Na)+A<sub>r</sub>(O)+A<sub>r</sub>(H) = <b>23</b>+<b>16</b>+<b>1</b> = 40',
       parts:[{t:'el',v:'Na'},{t:'el',v:'O'},{t:'el',v:'H'}] },
-    { mr:74, elems:['Ca','O','H'], breakdown:'A<sub>r</sub>(Ca)+(A<sub>r</sub>(O)+A<sub>r</sub>(H))×2 = <b>40</b>+(<b>16</b>+<b>1</b>)×2 = 74',
+    { mr:74, elems:['Ca','O','H'], breakdown:'A<sub>r</sub>(Ca)+(A<sub>r</sub>(O)+A<sub>r</sub>(H))\u00d72 = <b>40</b>+(<b>16</b>+<b>1</b>)\u00d72 = 74',
       parts:[{t:'el',v:'Ca'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'2'}] },
-    { mr:160, elems:['Fe','O'], breakdown:'A<sub>r</sub>(Fe)×2+A<sub>r</sub>(O)×3 = <b>56</b>×2+<b>16</b>×3 = 160',
+    { mr:160, elems:['Fe','O'], breakdown:'A<sub>r</sub>(Fe)\u00d72+A<sub>r</sub>(O)\u00d73 = <b>56</b>\u00d72+<b>16</b>\u00d73 = 160',
       parts:[{t:'el',v:'Fe'},{t:'sub',v:'2'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
     { mr:80, elems:['Cu','O'], breakdown:'A<sub>r</sub>(Cu)+A<sub>r</sub>(O) = <b>64</b>+<b>16</b> = 80',
       parts:[{t:'el',v:'Cu'},{t:'el',v:'O'}] },
-    // Salts
-    { mr:100, elems:['Ca','C','O'], breakdown:'A<sub>r</sub>(Ca)+A<sub>r</sub>(C)+A<sub>r</sub>(O)×3 = <b>40</b>+<b>12</b>+<b>16</b>×3 = 100',
+    { mr:100, elems:['Ca','C','O'], breakdown:'A<sub>r</sub>(Ca)+A<sub>r</sub>(C)+A<sub>r</sub>(O)\u00d73 = <b>40</b>+<b>12</b>+<b>16</b>\u00d73 = 100',
       parts:[{t:'el',v:'Ca'},{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'3'}] },
-    { mr:142, elems:['Na','S','O'], breakdown:'A<sub>r</sub>(Na)×2+A<sub>r</sub>(S)+A<sub>r</sub>(O)×4 = <b>23</b>×2+<b>32</b>+<b>16</b>×4 = 142',
+    { mr:142, elems:['Na','S','O'], breakdown:'A<sub>r</sub>(Na)\u00d72+A<sub>r</sub>(S)+A<sub>r</sub>(O)\u00d74 = <b>23</b>\u00d72+<b>32</b>+<b>16</b>\u00d74 = 142',
       parts:[{t:'el',v:'Na'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}] },
-    { mr:158, elems:['K','Mn','O'], breakdown:'A<sub>r</sub>(K)+A<sub>r</sub>(Mn)+A<sub>r</sub>(O)×4 = <b>39</b>+<b>55</b>+<b>16</b>×4 = 158',
+    { mr:158, elems:['K','Mn','O'], breakdown:'A<sub>r</sub>(K)+A<sub>r</sub>(Mn)+A<sub>r</sub>(O)\u00d74 = <b>39</b>+<b>55</b>+<b>16</b>\u00d74 = 158',
       parts:[{t:'el',v:'K'},{t:'el',v:'Mn'},{t:'el',v:'O'},{t:'sub',v:'4'}] },
-    { mr:95, elems:['Mg','Cl'], breakdown:'A<sub>r</sub>(Mg)+A<sub>r</sub>(Cl)×2 = <b>24</b>+<b>35.5</b>×2 = 95',
+    { mr:95, elems:['Mg','Cl'], breakdown:'A<sub>r</sub>(Mg)+A<sub>r</sub>(Cl)\u00d72 = <b>24</b>+<b>35.5</b>\u00d72 = 95',
       parts:[{t:'el',v:'Mg'},{t:'el',v:'Cl'},{t:'sub',v:'2'}] },
-    { mr:162.5, elems:['Fe','Cl'], breakdown:'A<sub>r</sub>(Fe)+A<sub>r</sub>(Cl)×3 = <b>56</b>+<b>35.5</b>×3 = 162.5',
+    { mr:162.5, elems:['Fe','Cl'], breakdown:'A<sub>r</sub>(Fe)+A<sub>r</sub>(Cl)\u00d73 = <b>56</b>+<b>35.5</b>\u00d73 = 162.5',
       parts:[{t:'el',v:'Fe'},{t:'el',v:'Cl'},{t:'sub',v:'3'}] },
-    { mr:294, elems:['K','Cr','O'], breakdown:'A<sub>r</sub>(K)×2+A<sub>r</sub>(Cr)×2+A<sub>r</sub>(O)×7 = <b>39</b>×2+<b>52</b>×2+<b>16</b>×7 = 294',
+    { mr:294, elems:['K','Cr','O'], breakdown:'A<sub>r</sub>(K)\u00d72+A<sub>r</sub>(Cr)\u00d72+A<sub>r</sub>(O)\u00d77 = <b>39</b>\u00d72+<b>52</b>\u00d72+<b>16</b>\u00d77 = 294',
       parts:[{t:'el',v:'K'},{t:'sub',v:'2'},{t:'el',v:'Cr'},{t:'sub',v:'2'},{t:'el',v:'O'},{t:'sub',v:'7'}] },
-    // With parentheses
-    { mr:148, elems:['Mg','N','O'], breakdown:'A<sub>r</sub>(Mg)+(A<sub>r</sub>(N)+A<sub>r</sub>(O)×3)×2 = <b>24</b>+(<b>14</b>+<b>16</b>×3)×2 = 148',
+    { mr:148, elems:['Mg','N','O'], breakdown:'A<sub>r</sub>(Mg)+(A<sub>r</sub>(N)+A<sub>r</sub>(O)\u00d73)\u00d72 = <b>24</b>+(<b>14</b>+<b>16</b>\u00d73)\u00d72 = 148',
       parts:[{t:'el',v:'Mg'},{t:'par',v:'('},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'},{t:'par',v:')'},{t:'sub',v:'2'}] },
-    { mr:342, elems:['Al','S','O'], breakdown:'A<sub>r</sub>(Al)×2+(A<sub>r</sub>(S)+A<sub>r</sub>(O)×4)×3 = <b>27</b>×2+(<b>32</b>+<b>16</b>×4)×3 = 342',
+    { mr:342, elems:['Al','S','O'], breakdown:'A<sub>r</sub>(Al)\u00d72+(A<sub>r</sub>(S)+A<sub>r</sub>(O)\u00d74)\u00d73 = <b>27</b>\u00d72+(<b>32</b>+<b>16</b>\u00d74)\u00d73 = 342',
       parts:[{t:'el',v:'Al'},{t:'sub',v:'2'},{t:'par',v:'('},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'},{t:'par',v:')'},{t:'sub',v:'3'}] },
-    { mr:107, elems:['Fe','O','H'], breakdown:'A<sub>r</sub>(Fe)+(A<sub>r</sub>(O)+A<sub>r</sub>(H))×3 = <b>56</b>+(<b>16</b>+<b>1</b>)×3 = 107',
+    { mr:107, elems:['Fe','O','H'], breakdown:'A<sub>r</sub>(Fe)+(A<sub>r</sub>(O)+A<sub>r</sub>(H))\u00d73 = <b>56</b>+(<b>16</b>+<b>1</b>)\u00d73 = 107',
       parts:[{t:'el',v:'Fe'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'3'}] },
-    { mr:188, elems:['Cu','N','O'], breakdown:'A<sub>r</sub>(Cu)+(A<sub>r</sub>(N)+A<sub>r</sub>(O)×3)×2 = <b>64</b>+(<b>14</b>+<b>16</b>×3)×2 = 188',
+    { mr:188, elems:['Cu','N','O'], breakdown:'A<sub>r</sub>(Cu)+(A<sub>r</sub>(N)+A<sub>r</sub>(O)\u00d73)\u00d72 = <b>64</b>+(<b>14</b>+<b>16</b>\u00d73)\u00d72 = 188',
       parts:[{t:'el',v:'Cu'},{t:'par',v:'('},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'},{t:'par',v:')'},{t:'sub',v:'2'}] },
-    // Organic
-    { mr:16, elems:['C','H'], breakdown:'A<sub>r</sub>(C)+A<sub>r</sub>(H)×4 = <b>12</b>+<b>1</b>×4 = 16',
-      parts:[{t:'el',v:'C'},{t:'el',v:'H'},{t:'sub',v:'4'},{t:'label',v:'метан'}] },
-    { mr:30, elems:['C','H'], breakdown:'A<sub>r</sub>(C)×2+A<sub>r</sub>(H)×6 = <b>12</b>×2+<b>1</b>×6 = 30',
-      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'6'},{t:'label',v:'этан'}] },
-    { mr:44, elems:['C','H'], breakdown:'A<sub>r</sub>(C)×3+A<sub>r</sub>(H)×8 = <b>12</b>×3+<b>1</b>×8 = 44',
-      parts:[{t:'el',v:'C'},{t:'sub',v:'3'},{t:'el',v:'H'},{t:'sub',v:'8'},{t:'label',v:'пропан'}] },
-    { mr:58, elems:['C','H'], breakdown:'A<sub>r</sub>(C)×4+A<sub>r</sub>(H)×10 = <b>12</b>×4+<b>1</b>×10 = 58',
-      parts:[{t:'el',v:'C'},{t:'sub',v:'4'},{t:'el',v:'H'},{t:'sub',v:'10'},{t:'label',v:'бутан'}] },
-    { mr:46, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)×2+A<sub>r</sub>(H)×6+A<sub>r</sub>(O) = <b>12</b>×2+<b>1</b>×6+<b>16</b> = 46',
-      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'6'},{t:'el',v:'O'},{t:'label',v:'этанол'}] },
-    { mr:60, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)×2+A<sub>r</sub>(H)×4+A<sub>r</sub>(O)×2 = <b>12</b>×2+<b>1</b>×4+<b>16</b>×2 = 60',
-      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'4'},{t:'el',v:'O'},{t:'sub',v:'2'},{t:'label',v:'уксусная к-та'}] },
-    { mr:180, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)×6+A<sub>r</sub>(H)×12+A<sub>r</sub>(O)×6 = <b>12</b>×6+<b>1</b>×12+<b>16</b>×6 = 180',
-      parts:[{t:'el',v:'C'},{t:'sub',v:'6'},{t:'el',v:'H'},{t:'sub',v:'12'},{t:'el',v:'O'},{t:'sub',v:'6'},{t:'label',v:'глюкоза'}] },
+    { mr:16, elems:['C','H'], breakdown:'A<sub>r</sub>(C)+A<sub>r</sub>(H)\u00d74 = <b>12</b>+<b>1</b>\u00d74 = 16',
+      parts:[{t:'el',v:'C'},{t:'el',v:'H'},{t:'sub',v:'4'},{t:'label',v:'\u043c\u0435\u0442\u0430\u043d'}] },
+    { mr:30, elems:['C','H'], breakdown:'A<sub>r</sub>(C)\u00d72+A<sub>r</sub>(H)\u00d76 = <b>12</b>\u00d72+<b>1</b>\u00d76 = 30',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'6'},{t:'label',v:'\u044d\u0442\u0430\u043d'}] },
+    { mr:44, elems:['C','H'], breakdown:'A<sub>r</sub>(C)\u00d73+A<sub>r</sub>(H)\u00d78 = <b>12</b>\u00d73+<b>1</b>\u00d78 = 44',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'3'},{t:'el',v:'H'},{t:'sub',v:'8'},{t:'label',v:'\u043f\u0440\u043e\u043f\u0430\u043d'}] },
+    { mr:58, elems:['C','H'], breakdown:'A<sub>r</sub>(C)\u00d74+A<sub>r</sub>(H)\u00d710 = <b>12</b>\u00d74+<b>1</b>\u00d710 = 58',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'4'},{t:'el',v:'H'},{t:'sub',v:'10'},{t:'label',v:'\u0431\u0443\u0442\u0430\u043d'}] },
+    { mr:46, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)\u00d72+A<sub>r</sub>(H)\u00d76+A<sub>r</sub>(O) = <b>12</b>\u00d72+<b>1</b>\u00d76+<b>16</b> = 46',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'6'},{t:'el',v:'O'},{t:'label',v:'\u044d\u0442\u0430\u043d\u043e\u043b'}] },
+    { mr:60, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)\u00d72+A<sub>r</sub>(H)\u00d74+A<sub>r</sub>(O)\u00d72 = <b>12</b>\u00d72+<b>1</b>\u00d74+<b>16</b>\u00d72 = 60',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'2'},{t:'el',v:'H'},{t:'sub',v:'4'},{t:'el',v:'O'},{t:'sub',v:'2'},{t:'label',v:'\u0443\u043a\u0441\u0443\u0441\u043d\u0430\u044f \u043a-\u0442\u0430'}] },
+    { mr:180, elems:['C','H','O'], breakdown:'A<sub>r</sub>(C)\u00d76+A<sub>r</sub>(H)\u00d712+A<sub>r</sub>(O)\u00d76 = <b>12</b>\u00d76+<b>1</b>\u00d712+<b>16</b>\u00d76 = 180',
+      parts:[{t:'el',v:'C'},{t:'sub',v:'6'},{t:'el',v:'H'},{t:'sub',v:'12'},{t:'el',v:'O'},{t:'sub',v:'6'},{t:'label',v:'\u0433\u043b\u044e\u043a\u043e\u0437\u0430'}] },
 ];
 
-/* ── State ── */
+/* ── Concentration tasks (two-step: M then C = m/(M*V)) ── */
+const concTasks = [
+    { substance: 'NaCl', mr: 58.5,
+      parts: [{t:'el',v:'Na'},{t:'el',v:'Cl'}],
+      elems: ['Na','Cl'],
+      breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(Cl) = <b>23</b> + <b>35.5</b> = 58.5',
+      given: [{label:'m', value:5.85, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 0.2, tolerance: 0.01,
+      explanation: 'C = 5.85 / (58.5 \u00b7 0.5) = 5.85 / 29.25 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'H\u2082SO\u2084', mr: 98,
+      parts: [{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}],
+      elems: ['H','S','O'],
+      breakdown: 'A<sub>r</sub>(H)\u00d72 + A<sub>r</sub>(S) + A<sub>r</sub>(O)\u00d74 = <b>1</b>\u00d72 + <b>32</b> + <b>16</b>\u00d74 = 98',
+      given: [{label:'m', value:4.9, unit:'\u0433'}, {label:'V', value:0.25, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 0.2, tolerance: 0.01,
+      explanation: 'C = 4.9 / (98 \u00b7 0.25) = 4.9 / 24.5 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'NaOH', mr: 40,
+      parts: [{t:'el',v:'Na'},{t:'el',v:'O'},{t:'el',v:'H'}],
+      elems: ['Na','O','H'],
+      breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(O) + A<sub>r</sub>(H) = <b>23</b> + <b>16</b> + <b>1</b> = 40',
+      given: [{label:'m', value:8, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 0.4, tolerance: 0.01,
+      explanation: 'C = 8 / (40 \u00b7 0.5) = 8 / 20 = <b>0.4 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'KOH', mr: 56,
+      parts: [{t:'el',v:'K'},{t:'el',v:'O'},{t:'el',v:'H'}],
+      elems: ['K','O','H'],
+      breakdown: 'A<sub>r</sub>(K) + A<sub>r</sub>(O) + A<sub>r</sub>(H) = <b>39</b> + <b>16</b> + <b>1</b> = 56',
+      given: [{label:'m', value:11.2, unit:'\u0433'}, {label:'V', value:0.2, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 1.0, tolerance: 0.01,
+      explanation: 'C = 11.2 / (56 \u00b7 0.2) = 11.2 / 11.2 = <b>1.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'CaCl\u2082', mr: 111,
+      parts: [{t:'el',v:'Ca'},{t:'el',v:'Cl'},{t:'sub',v:'2'}],
+      elems: ['Ca','Cl'],
+      breakdown: 'A<sub>r</sub>(Ca) + A<sub>r</sub>(Cl)\u00d72 = <b>40</b> + <b>35.5</b>\u00d72 = 111',
+      given: [{label:'m', value:5.55, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 0.1, tolerance: 0.01,
+      explanation: 'C = 5.55 / (111 \u00b7 0.5) = 5.55 / 55.5 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'HCl', mr: 36.5,
+      parts: [{t:'el',v:'H'},{t:'el',v:'Cl'}],
+      elems: ['H','Cl'],
+      breakdown: 'A<sub>r</sub>(H) + A<sub>r</sub>(Cl) = <b>1</b> + <b>35.5</b> = 36.5',
+      given: [{label:'m', value:7.3, unit:'\u0433'}, {label:'V', value:0.1, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 2.0, tolerance: 0.01,
+      explanation: 'C = 7.3 / (36.5 \u00b7 0.1) = 7.3 / 3.65 = <b>2.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'HNO\u2083', mr: 63,
+      parts: [{t:'el',v:'H'},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'}],
+      elems: ['H','N','O'],
+      breakdown: 'A<sub>r</sub>(H) + A<sub>r</sub>(N) + A<sub>r</sub>(O)\u00d73 = <b>1</b> + <b>14</b> + <b>16</b>\u00d73 = 63',
+      given: [{label:'m', value:12.6, unit:'\u0433'}, {label:'V', value:0.2, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 1.0, tolerance: 0.01,
+      explanation: 'C = 12.6 / (63 \u00b7 0.2) = 12.6 / 12.6 = <b>1.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'Na\u2082CO\u2083', mr: 106,
+      parts: [{t:'el',v:'Na'},{t:'sub',v:'2'},{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'3'}],
+      elems: ['Na','C','O'],
+      breakdown: 'A<sub>r</sub>(Na)\u00d72 + A<sub>r</sub>(C) + A<sub>r</sub>(O)\u00d73 = <b>23</b>\u00d72 + <b>12</b> + <b>16</b>\u00d73 = 106',
+      given: [{label:'m', value:5.3, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 0.1, tolerance: 0.01,
+      explanation: 'C = 5.3 / (106 \u00b7 0.5) = 5.3 / 53 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'KNO\u2083', mr: 101,
+      parts: [{t:'el',v:'K'},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'}],
+      elems: ['K','N','O'],
+      breakdown: 'A<sub>r</sub>(K) + A<sub>r</sub>(N) + A<sub>r</sub>(O)\u00d73 = <b>39</b> + <b>14</b> + <b>16</b>\u00d73 = 101',
+      given: [{label:'m', value:10.1, unit:'\u0433'}, {label:'V', value:1, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 0.1, tolerance: 0.01,
+      explanation: 'C = 10.1 / (101 \u00b7 1) = 10.1 / 101 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
+    { substance: 'MgCl\u2082', mr: 95,
+      parts: [{t:'el',v:'Mg'},{t:'el',v:'Cl'},{t:'sub',v:'2'}],
+      elems: ['Mg','Cl'],
+      breakdown: 'A<sub>r</sub>(Mg) + A<sub>r</sub>(Cl)\u00d72 = <b>24</b> + <b>35.5</b>\u00d72 = 95',
+      given: [{label:'m', value:9.5, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
+      find: 'C = m / (M \u00b7 V)',
+      answer: 0.2, tolerance: 0.01,
+      explanation: 'C = 9.5 / (95 \u00b7 0.5) = 9.5 / 47.5 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
+];
+
+/* ── Solutions tasks (direct calculation, no periodic table) ── */
+const solutionsTasks = [
+    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:20, unit:'\u0433'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:200, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+      find: '\u03c9 = m(\u0432-\u0432\u0430) / m(\u0440-\u0440\u0430) \u00b7 100%',
+      answer: 10, tolerance: 0.5,
+      explanation: '\u03c9 = 20 / 200 \u00b7 100 = <b>10%</b>' },
+    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:5, unit:'\u0433'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:50, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+      find: '\u03c9 = m(\u0432-\u0432\u0430) / m(\u0440-\u0440\u0430) \u00b7 100%',
+      answer: 10, tolerance: 0.5,
+      explanation: '\u03c9 = 5 / 50 \u00b7 100 = <b>10%</b>' },
+    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:15, unit:'\u0433'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:300, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+      find: '\u03c9 = m(\u0432-\u0432\u0430) / m(\u0440-\u0440\u0430) \u00b7 100%',
+      answer: 5, tolerance: 0.5,
+      explanation: '\u03c9 = 15 / 300 \u00b7 100 = <b>5%</b>' },
+    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:8, unit:'\u0433'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:40, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+      find: '\u03c9 = m(\u0432-\u0432\u0430) / m(\u0440-\u0440\u0430) \u00b7 100%',
+      answer: 20, tolerance: 0.5,
+      explanation: '\u03c9 = 8 / 40 \u00b7 100 = <b>20%</b>' },
+    { given: [{label:'\u03c9', value:5, unit:'%'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:500, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+      find: 'm(\u0432-\u0432\u0430) = \u03c9 \u00b7 m(\u0440-\u0440\u0430) / 100',
+      answer: 25, tolerance: 0.5,
+      explanation: 'm(\u0432-\u0432\u0430) = 5 \u00b7 500 / 100 = <b>25 \u0433</b>' },
+    { given: [{label:'\u03c9', value:10, unit:'%'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:250, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+      find: 'm(\u0432-\u0432\u0430) = \u03c9 \u00b7 m(\u0440-\u0440\u0430) / 100',
+      answer: 25, tolerance: 0.5,
+      explanation: 'm(\u0432-\u0432\u0430) = 10 \u00b7 250 / 100 = <b>25 \u0433</b>' },
+    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:12, unit:'\u0433'}, {label:'\u03c9', value:4, unit:'%'}, {label:'100', value:100, unit:''}],
+      find: 'm(\u0440-\u0440\u0430) = m(\u0432-\u0432\u0430) \u00b7 100 / \u03c9',
+      answer: 300, tolerance: 1,
+      explanation: 'm(\u0440-\u0440\u0430) = 12 \u00b7 100 / 4 = <b>300 \u0433</b>' },
+    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:30, unit:'\u0433'}, {label:'\u03c9', value:15, unit:'%'}, {label:'100', value:100, unit:''}],
+      find: 'm(\u0440-\u0440\u0430) = m(\u0432-\u0432\u0430) \u00b7 100 / \u03c9',
+      answer: 200, tolerance: 1,
+      explanation: 'm(\u0440-\u0440\u0430) = 30 \u00b7 100 / 15 = <b>200 \u0433</b>' },
+];
+
+/* ── Equivalents tasks (two-step: M then Э = M/n) ── */
+const equivTasks = [
+    { substance: 'HCl', mr: 36.5,
+      parts: [{t:'el',v:'H'},{t:'el',v:'Cl'}],
+      elems: ['H','Cl'],
+      breakdown: 'A<sub>r</sub>(H) + A<sub>r</sub>(Cl) = <b>1</b> + <b>35.5</b> = 36.5',
+      given: [{label:'n (основность)', value:1, unit:''}],
+      find: '\u042d = M / n',
+      answer: 36.5, tolerance: 0.1,
+      explanation: '\u042d = 36.5 / 1 = <b>36.5</b>' },
+    { substance: 'H\u2082SO\u2084', mr: 98,
+      parts: [{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}],
+      elems: ['H','S','O'],
+      breakdown: 'A<sub>r</sub>(H)\u00d72 + A<sub>r</sub>(S) + A<sub>r</sub>(O)\u00d74 = <b>1</b>\u00d72 + <b>32</b> + <b>16</b>\u00d74 = 98',
+      given: [{label:'n (основность)', value:2, unit:''}],
+      find: '\u042d = M / n',
+      answer: 49, tolerance: 0.1,
+      explanation: '\u042d = 98 / 2 = <b>49</b>' },
+    { substance: 'H\u2083PO\u2084', mr: 98,
+      parts: [{t:'el',v:'H'},{t:'sub',v:'3'},{t:'el',v:'P'},{t:'el',v:'O'},{t:'sub',v:'4'}],
+      elems: ['H','P','O'],
+      breakdown: 'A<sub>r</sub>(H)\u00d73 + A<sub>r</sub>(P) + A<sub>r</sub>(O)\u00d74 = <b>1</b>\u00d73 + <b>31</b> + <b>16</b>\u00d74 = 98',
+      given: [{label:'n (основность)', value:3, unit:''}],
+      find: '\u042d = M / n',
+      answer: 32.67, tolerance: 0.1,
+      explanation: '\u042d = 98 / 3 = <b>32.67</b>' },
+    { substance: 'NaOH', mr: 40,
+      parts: [{t:'el',v:'Na'},{t:'el',v:'O'},{t:'el',v:'H'}],
+      elems: ['Na','O','H'],
+      breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(O) + A<sub>r</sub>(H) = <b>23</b> + <b>16</b> + <b>1</b> = 40',
+      given: [{label:'n (число OH)', value:1, unit:''}],
+      find: '\u042d = M / n',
+      answer: 40, tolerance: 0.1,
+      explanation: '\u042d = 40 / 1 = <b>40</b>' },
+    { substance: 'Ca(OH)\u2082', mr: 74,
+      parts: [{t:'el',v:'Ca'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'2'}],
+      elems: ['Ca','O','H'],
+      breakdown: 'A<sub>r</sub>(Ca) + (A<sub>r</sub>(O)+A<sub>r</sub>(H))\u00d72 = <b>40</b> + (<b>16</b>+<b>1</b>)\u00d72 = 74',
+      given: [{label:'n (число OH)', value:2, unit:''}],
+      find: '\u042d = M / n',
+      answer: 37, tolerance: 0.1,
+      explanation: '\u042d = 74 / 2 = <b>37</b>' },
+    { substance: 'Fe(OH)\u2083', mr: 107,
+      parts: [{t:'el',v:'Fe'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'3'}],
+      elems: ['Fe','O','H'],
+      breakdown: 'A<sub>r</sub>(Fe) + (A<sub>r</sub>(O)+A<sub>r</sub>(H))\u00d73 = <b>56</b> + (<b>16</b>+<b>1</b>)\u00d73 = 107',
+      given: [{label:'n (число OH)', value:3, unit:''}],
+      find: '\u042d = M / n',
+      answer: 35.67, tolerance: 0.1,
+      explanation: '\u042d = 107 / 3 = <b>35.67</b>' },
+    { substance: 'NaCl', mr: 58.5,
+      parts: [{t:'el',v:'Na'},{t:'el',v:'Cl'}],
+      elems: ['Na','Cl'],
+      breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(Cl) = <b>23</b> + <b>35.5</b> = 58.5',
+      given: [{label:'n (Na\u207a, z=1, k=1)', value:1, unit:''}],
+      find: '\u042d = M / n',
+      answer: 58.5, tolerance: 0.1,
+      explanation: '\u042d = 58.5 / 1 = <b>58.5</b>' },
+    { substance: 'CaCl\u2082', mr: 111,
+      parts: [{t:'el',v:'Ca'},{t:'el',v:'Cl'},{t:'sub',v:'2'}],
+      elems: ['Ca','Cl'],
+      breakdown: 'A<sub>r</sub>(Ca) + A<sub>r</sub>(Cl)\u00d72 = <b>40</b> + <b>35.5</b>\u00d72 = 111',
+      given: [{label:'n (Ca\u00b2\u207a, z=2, k=1)', value:2, unit:''}],
+      find: '\u042d = M / n',
+      answer: 55.5, tolerance: 0.1,
+      explanation: '\u042d = 111 / 2 = <b>55.5</b>' },
+    { substance: 'Al\u2082(SO\u2084)\u2083', mr: 342,
+      parts: [{t:'el',v:'Al'},{t:'sub',v:'2'},{t:'par',v:'('},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'},{t:'par',v:')'},{t:'sub',v:'3'}],
+      elems: ['Al','S','O'],
+      breakdown: 'A<sub>r</sub>(Al)\u00d72 + (A<sub>r</sub>(S)+A<sub>r</sub>(O)\u00d74)\u00d73 = <b>27</b>\u00d72 + (<b>32</b>+<b>16</b>\u00d74)\u00d73 = 342',
+      given: [{label:'n (Al\u00b3\u207a, z=3, k=2)', value:6, unit:''}],
+      find: '\u042d = M / n',
+      answer: 57, tolerance: 0.1,
+      explanation: '\u042d = 342 / 6 = <b>57</b>' },
+    { substance: 'Fe\u2082O\u2083', mr: 160,
+      parts: [{t:'el',v:'Fe'},{t:'sub',v:'2'},{t:'el',v:'O'},{t:'sub',v:'3'}],
+      elems: ['Fe','O'],
+      breakdown: 'A<sub>r</sub>(Fe)\u00d72 + A<sub>r</sub>(O)\u00d73 = <b>56</b>\u00d72 + <b>16</b>\u00d73 = 160',
+      given: [{label:'n (Fe\u00b3\u207a, z=3, k=2)', value:6, unit:''}],
+      find: '\u042d = M / n',
+      answer: 26.67, tolerance: 0.1,
+      explanation: '\u042d = 160 / 6 = <b>26.67</b>' },
+];
+
+/* ══════════════════════════════════════════════════════════
+   ── STATE ──
+   ══════════════════════════════════════════════════════════ */
+let currentMode = 'molar'; // 'molar' | 'concentration' | 'solutions' | 'equivalents'
 let tokens = [];
-let current = 0;
-let score = 0;
-let results = [];
 let locked = false;
 
-/* ── Build periodic table ── */
+// Per-mode state
+const modeState = {
+    molar:         { idx: 0, score: 0, results: [] },
+    concentration: { idx: 0, score: 0, results: [], step: 1, storedM: null },
+    solutions:     { idx: 0, score: 0, results: [] },
+    equivalents:   { idx: 0, score: 0, results: [], step: 1, storedM: null },
+};
+
+function getTasksForMode(mode) {
+    if (mode === 'molar') return molarTasks;
+    if (mode === 'concentration') return concTasks;
+    if (mode === 'solutions') return solutionsTasks;
+    if (mode === 'equivalents') return equivTasks;
+    return [];
+}
+function ms() { return modeState[currentMode]; }
+function curTasks() { return getTasksForMode(currentMode); }
+function curTask() { return curTasks()[ms().idx]; }
+
+/* ══════════════════════════════════════════════════════════
+   ── BUILD PERIODIC TABLE ──
+   ══════════════════════════════════════════════════════════ */
 const cellMap = {};
 (function buildTable() {
     const pt = document.getElementById('ptable');
-    // Header row: period + group names
     const hdr = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
     hdr.forEach(h => {
         const d = document.createElement('div');
@@ -338,22 +582,18 @@ const cellMap = {};
         d.textContent = h;
         pt.appendChild(d);
     });
-    // VIII header spans 3 columns
     const viii = document.createElement('div');
     viii.className = 'pt-hdr grp';
     viii.textContent = 'VIII';
     viii.style.gridColumn = 'span 3';
     pt.appendChild(viii);
 
-    // Data rows
     tableRows.forEach(row => {
-        // Period number
         const pCell = document.createElement('div');
         pCell.className = 'pt-per';
         pCell.textContent = row.per;
         pt.appendChild(pCell);
 
-        // 10 element cells
         row.cells.forEach(sym => {
             const cell = document.createElement('div');
             if (!sym) {
@@ -384,71 +624,256 @@ const cellMap = {};
     });
 })();
 
-/* ── Render interactive formula ── */
+/* ══════════════════════════════════════════════════════════
+   ── TAB SWITCHING ──
+   ══════════════════════════════════════════════════════════ */
+document.getElementById('tabsRow').addEventListener('click', e => {
+    const tab = e.target.closest('.tab');
+    if (!tab || tab.classList.contains('active')) return;
+    const mode = tab.dataset.mode;
+    if (!mode) return;
+    // Switch
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentMode = mode;
+    tokens = [];
+    locked = false;
+    document.getElementById('feedback').className = 'feedback';
+    document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
+    // Reset step for two-step modes
+    if (ms().step !== undefined) { ms().step = 1; ms().storedM = null; }
+    loadTask();
+});
+
+/* ══════════════════════════════════════════════════════════
+   ── RENDER FUNCTIONS ──
+   ══════════════════════════════════════════════════════════ */
+
+function updateSubtitle() {
+    const el = document.getElementById('subtitle');
+    if (currentMode === 'molar') {
+        el.textContent = '\u041d\u0430\u0436\u0438\u043c\u0430\u0439 \u043d\u0430 \u0438\u043d\u0434\u0435\u043a\u0441\u044b \u0432 \u0444\u043e\u0440\u043c\u0443\u043b\u0435 \u0438 \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u044b \u0432 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u2014 \u0441\u043e\u0431\u0438\u0440\u0430\u0439 \u0432\u044b\u0440\u0430\u0436\u0435\u043d\u0438\u0435';
+    } else if (currentMode === 'concentration') {
+        el.textContent = '\u0412\u044b\u0447\u0438\u0441\u043b\u0438 M \u0438\u0437 \u0442\u0430\u0431\u043b\u0438\u0446\u044b, \u0437\u0430\u0442\u0435\u043c \u0440\u0430\u0441\u0441\u0447\u0438\u0442\u0430\u0439 \u043c\u043e\u043b\u044f\u0440\u043d\u0443\u044e \u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0430\u0446\u0438\u044e C = m/(M\u00b7V)';
+    } else if (currentMode === 'solutions') {
+        el.textContent = '\u041c\u0430\u0441\u0441\u043e\u0432\u0430\u044f \u0434\u043e\u043b\u044f: \u043d\u0430\u0436\u0438\u043c\u0430\u0439 \u043d\u0430 \u043a\u0430\u0440\u0442\u043e\u0447\u043a\u0438 \u0434\u0430\u043d\u043d\u044b\u0445 \u0438 \u0441\u043e\u0431\u0438\u0440\u0430\u0439 \u0432\u044b\u0440\u0430\u0436\u0435\u043d\u0438\u0435';
+    } else if (currentMode === 'equivalents') {
+        el.textContent = '\u0412\u044b\u0447\u0438\u0441\u043b\u0438 M \u0438\u0437 \u0442\u0430\u0431\u043b\u0438\u0446\u044b, \u0437\u0430\u0442\u0435\u043c \u0440\u0430\u0441\u0441\u0447\u0438\u0442\u0430\u0439 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442 \u042d = M/n';
+    }
+}
+
 function renderFormula() {
     const el = document.getElementById('formula');
-    const task = tasks[current];
+    const task = curTask();
+    if (!task) return;
+
+    // For solutions mode — no formula
+    if (currentMode === 'solutions') {
+        document.getElementById('taskFormulaWrap').innerHTML = '\u041c\u0430\u0441\u0441\u043e\u0432\u0430\u044f \u0434\u043e\u043b\u044f \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430';
+        return;
+    }
+
     let html = '';
-    task.parts.forEach((p, i) => {
+    const parts = task.parts;
+    parts.forEach((p, i) => {
         if (p.t === 'el') {
-            html += `<span class="f-el">${p.v}</span>`;
+            html += '<span class="f-el">' + p.v + '</span>';
         } else if (p.t === 'sub') {
-            html += `<span class="f-sub" data-idx="${i}" data-val="${p.v}">${p.v}</span>`;
+            html += '<span class="f-sub" data-idx="' + i + '" data-val="' + p.v + '">' + p.v + '</span>';
         } else if (p.t === 'par') {
-            html += `<span class="f-par" data-idx="${i}" data-val="${p.v}">${p.v}</span>`;
+            html += '<span class="f-par" data-idx="' + i + '" data-val="' + p.v + '">' + p.v + '</span>';
         } else if (p.t === 'label') {
-            html += ` <span class="f-label">(${p.v})</span>`;
+            html += ' <span class="f-label">(' + p.v + ')</span>';
         }
     });
     el.innerHTML = html;
 
-    // Attach click handlers for subscripts and parentheses
-    el.querySelectorAll('.f-sub').forEach(span => {
-        span.addEventListener('click', () => {
-            if (locked) return;
-            tokens.push({ type: 'sub', value: span.dataset.val });
-            span.classList.add('used');
-            renderExpr();
+    // For two-step modes, update the wrapper text
+    const st = ms();
+    if ((currentMode === 'concentration' || currentMode === 'equivalents') && st.step === 2) {
+        // Step 2: show stored M and find formula
+        document.getElementById('taskFormulaWrap').innerHTML = '<span style="font-size:0.6em;color:#888;">' + task.substance + '</span> &nbsp; ' + task.find + ' = ?';
+    } else if (currentMode === 'concentration' || currentMode === 'equivalents') {
+        // Step 1
+        document.getElementById('taskFormulaWrap').innerHTML = 'M<sub>r</sub>(<span id="formula">' + html + '</span>) = ?';
+    } else {
+        // Molar mass mode
+        document.getElementById('taskFormulaWrap').innerHTML = 'M<sub>r</sub>(<span id="formula">' + html + '</span>) = ?';
+    }
+
+    // Re-select the formula element (it was replaced)
+    const formulaEl = document.getElementById('formula');
+    if (formulaEl) {
+        formulaEl.querySelectorAll('.f-sub').forEach(span => {
+            span.addEventListener('click', () => {
+                if (locked) return;
+                tokens.push({ type: 'sub', value: span.dataset.val });
+                span.classList.add('used');
+                renderExpr();
+            });
         });
-    });
-    el.querySelectorAll('.f-par').forEach(span => {
-        span.addEventListener('click', () => {
-            if (locked) return;
-            tokens.push({ type: 'par', value: span.dataset.val });
-            renderExpr();
+        formulaEl.querySelectorAll('.f-par').forEach(span => {
+            span.addEventListener('click', () => {
+                if (locked) return;
+                tokens.push({ type: 'par', value: span.dataset.val });
+                renderExpr();
+            });
         });
-    });
+    }
 }
 
-/* ── Render expression ── */
 function renderExpr() {
     const wrap = document.getElementById('exprWrap');
     let html = '';
     tokens.forEach(t => {
-        if (t.type === 'ar') html += `<span class="tok tok-ar" title="Ar(${t.sym})">${t.value}</span>`;
-        else if (t.type === 'sub') html += `<span class="tok tok-sub">${t.value}</span>`;
-        else if (t.type === 'par') html += `<span class="tok tok-par">${t.value}</span>`;
-        else html += `<span class="tok tok-op">${t.value}</span>`;
+        if (t.type === 'ar') html += '<span class="tok tok-ar" title="Ar(' + t.sym + ')">' + t.value + '</span>';
+        else if (t.type === 'sub') html += '<span class="tok tok-sub">' + t.value + '</span>';
+        else if (t.type === 'par') html += '<span class="tok tok-par">' + t.value + '</span>';
+        else if (t.type === 'val') html += '<span class="tok tok-val">' + t.value + '</span>';
+        else html += '<span class="tok tok-op">' + t.value + '</span>';
     });
     if (!locked) html += '<span class="cursor-blink"></span>';
     wrap.innerHTML = html;
 }
 
-/* ── Element click (two zones) ── */
+function renderGivenCards() {
+    const area = document.getElementById('givenArea');
+    const cards = document.getElementById('givenCards');
+    const task = curTask();
+    const st = ms();
+
+    // Determine if we need given cards
+    const isTwoStep = (currentMode === 'concentration' || currentMode === 'equivalents');
+    const isSolutions = (currentMode === 'solutions');
+
+    if (isSolutions) {
+        // Show given cards directly
+        area.classList.add('visible');
+        let html = '';
+        task.given.forEach((g, i) => {
+            html += '<div class="given-card" data-gidx="' + i + '" data-gval="' + g.value + '">' +
+                '<div class="gc-label">' + g.label + '</div>' +
+                '<div class="gc-value">' + g.value + '</div>' +
+                (g.unit ? '<div class="gc-unit">' + g.unit + '</div>' : '') +
+                '</div>';
+        });
+        cards.innerHTML = html;
+        attachGivenCardListeners();
+    } else if (isTwoStep && st.step === 2) {
+        // Step 2: show stored M + given values
+        area.classList.add('visible');
+        let html = '<div class="given-card stored-m" data-gval="' + st.storedM + '">' +
+            '<div class="gc-label">M</div>' +
+            '<div class="gc-value">' + st.storedM + '</div>' +
+            '</div>';
+        task.given.forEach((g, i) => {
+            html += '<div class="given-card" data-gidx="' + i + '" data-gval="' + g.value + '">' +
+                '<div class="gc-label">' + g.label + '</div>' +
+                '<div class="gc-value">' + g.value + '</div>' +
+                (g.unit ? '<div class="gc-unit">' + g.unit + '</div>' : '') +
+                '</div>';
+        });
+        cards.innerHTML = html;
+        attachGivenCardListeners();
+    } else {
+        area.classList.remove('visible');
+        cards.innerHTML = '';
+    }
+}
+
+function attachGivenCardListeners() {
+    document.querySelectorAll('.given-card').forEach(card => {
+        card.addEventListener('click', () => {
+            if (locked) return;
+            const val = card.dataset.gval;
+            tokens.push({ type: 'val', value: val });
+            renderExpr();
+        });
+    });
+}
+
+function renderStepIndicator() {
+    const el = document.getElementById('stepIndicator');
+    const isTwoStep = (currentMode === 'concentration' || currentMode === 'equivalents');
+    if (!isTwoStep) {
+        el.style.display = 'none';
+        return;
+    }
+    el.style.display = 'block';
+    const st = ms();
+    const task = curTask();
+    if (!task) { el.style.display = 'none'; return; }
+
+    if (st.step === 1) {
+        el.innerHTML = '<span class="step-active">\u0428\u0430\u0433 1: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 M(' + task.substance + ')</span> &rarr; \u0428\u0430\u0433 2';
+    } else {
+        el.innerHTML = '<span class="step-done">\u0428\u0430\u0433 1: M = ' + st.storedM + ' \u2713</span> &rarr; <span class="step-active">\u0428\u0430\u0433 2: ' + task.find + '</span>';
+    }
+}
+
+function updateTableVisibility() {
+    const wrap = document.getElementById('tableWrap');
+    if (currentMode === 'solutions') {
+        wrap.classList.add('hidden');
+    } else {
+        wrap.classList.remove('hidden');
+    }
+}
+
+function updateParenButtons() {
+    const st = ms();
+    const show = (currentMode === 'solutions') ||
+                 ((currentMode === 'concentration' || currentMode === 'equivalents') && st.step === 2);
+    document.getElementById('btnParenL').style.display = show ? '' : 'none';
+    document.getElementById('btnParenR').style.display = show ? '' : 'none';
+}
+
+function updateScore() {
+    const st = ms();
+    const tasks = curTasks();
+    document.getElementById('scoreNum').textContent = st.score;
+    document.getElementById('scoreTotal').textContent = Math.max(st.idx + 1, st.results.length);
+}
+
+function renderDots() {
+    const row = document.getElementById('progressRow');
+    row.innerHTML = '';
+    const tasks = curTasks();
+    const st = ms();
+    tasks.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        if (i === st.idx && !locked) d.classList.add('cur');
+        if (st.results[i] === true) d.classList.add('done');
+        else if (st.results[i] === false) d.classList.add('fail');
+        row.appendChild(d);
+    });
+}
+
+/* ══════════════════════════════════════════════════════════
+   ── ELEMENT CLICK ──
+   ══════════════════════════════════════════════════════════ */
 function onZoneClick(el, zone) {
     if (locked) return;
+    // In solutions mode, periodic table is hidden, but just in case
+    if (currentMode === 'solutions') return;
+    // In two-step mode step 2, periodic table clicks are ignored
+    const st = ms();
+    if ((currentMode === 'concentration' || currentMode === 'equivalents') && st.step === 2) return;
+
     if (zone === 'ar') {
         tokens.push({ type: 'ar', value: String(el.ar), sym: el.sym });
     } else {
-        // Clicked Z (atomic number) — wrong number for Mr, but let them learn
         tokens.push({ type: 'ar', value: String(el.z), sym: el.sym + '(Z!)' });
     }
     flashCell(el.sym);
     renderExpr();
 }
 
-/* ── Controls ── */
-document.querySelector('.controls').addEventListener('click', e => {
+/* ══════════════════════════════════════════════════════════
+   ── CONTROLS ──
+   ══════════════════════════════════════════════════════════ */
+document.getElementById('controlsRow').addEventListener('click', e => {
     const btn = e.target.closest('.ctrl-btn');
     if (!btn || locked) return;
     const act = btn.dataset.act;
@@ -471,115 +896,245 @@ document.querySelector('.controls').addEventListener('click', e => {
 document.addEventListener('keydown', e => {
     if (locked) { if (e.key === 'Enter') retryTask(); return; }
     if (e.key === '+') { tokens.push({type:'op',value:'+'}); renderExpr(); }
-    else if (e.key === '-') { tokens.push({type:'op',value:'−'}); renderExpr(); }
-    else if (e.key === '*' || e.key === 'х' || e.key === 'Х') { tokens.push({type:'op',value:'×'}); renderExpr(); }
+    else if (e.key === '-') { tokens.push({type:'op',value:'\u2212'}); renderExpr(); }
+    else if (e.key === '*' || e.key === '\u0445' || e.key === '\u0425') { tokens.push({type:'op',value:'\u00d7'}); renderExpr(); }
     else if (e.key === '/') { tokens.push({type:'op',value:'/'}); renderExpr(); }
+    else if (e.key === '(' ) { tokens.push({type:'op',value:'('}); renderExpr(); }
+    else if (e.key === ')' ) { tokens.push({type:'op',value:')'}); renderExpr(); }
     else if (e.key === 'Backspace') { tokens.pop(); renderExpr(); }
     else if (e.key === 'Escape') { tokens = []; renderExpr(); document.querySelectorAll('.f-sub.used').forEach(s => s.classList.remove('used')); }
     else if (e.key === 'Enter' || e.key === '=') evaluate();
 });
 
-/* ── Evaluate ── */
+/* ══════════════════════════════════════════════════════════
+   ── EVALUATE ──
+   ══════════════════════════════════════════════════════════ */
 function evaluate() {
     if (tokens.length === 0) return;
-    const expr = tokens.map(t => t.value).join(' ').replace(/×/g, '*').replace(/−/g, '-');
+    const expr = tokens.map(t => t.value).join(' ').replace(/\u00d7/g, '*').replace(/\u2212/g, '-');
     let result;
     try { result = Function('"use strict"; return (' + expr + ')')(); } catch { showWrong(NaN); return; }
     if (typeof result !== 'number' || isNaN(result)) { showWrong(NaN); return; }
-    const task = tasks[current];
-    const rounded = Math.round(result * 10) / 10;
-    if (Math.abs(rounded - task.mr) < 0.01) showCorrect(rounded);
-    else showWrong(rounded);
+
+    const task = curTask();
+    const st = ms();
+    const isTwoStep = (currentMode === 'concentration' || currentMode === 'equivalents');
+
+    if (currentMode === 'molar') {
+        // Simple molar mass check
+        const rounded = Math.round(result * 10) / 10;
+        if (Math.abs(rounded - task.mr) < 0.01) showCorrect(rounded);
+        else showWrong(rounded);
+    } else if (isTwoStep && st.step === 1) {
+        // Step 1: check M
+        const rounded = Math.round(result * 10) / 10;
+        if (Math.abs(rounded - task.mr) < 0.01) {
+            // M is correct — move to step 2
+            st.storedM = task.mr;
+            st.step = 2;
+            tokens = [];
+            locked = false;
+            document.getElementById('feedback').className = 'feedback';
+            renderStepIndicator();
+            renderFormula();
+            renderGivenCards();
+            updateParenButtons();
+            renderExpr();
+        } else {
+            showWrongStep1(rounded);
+        }
+    } else if (isTwoStep && st.step === 2) {
+        // Step 2: check final answer
+        const rounded = Math.round(result * 100) / 100;
+        if (Math.abs(rounded - task.answer) < (task.tolerance || 0.01)) showCorrect(rounded);
+        else showWrong(rounded);
+    } else if (currentMode === 'solutions') {
+        // Direct check
+        const rounded = Math.round(result * 100) / 100;
+        if (Math.abs(rounded - task.answer) < (task.tolerance || 0.5)) showCorrect(rounded);
+        else showWrong(rounded);
+    }
 }
 
 function showCorrect(val) {
-    locked = true; score++; results[current] = true;
+    locked = true;
+    const st = ms();
+    st.score++;
+    st.results[st.idx] = true;
     updateScore(); renderDots();
     const fb = document.getElementById('feedback');
     fb.className = 'feedback correct';
-    fb.innerHTML = `<div class="fb-title">&#10003; Верно! M<sub>r</sub> = ${tasks[current].mr}</div>
-        <button class="fb-next" onclick="nextTask()">${current < tasks.length - 1 ? 'Следующее вещество &rarr;' : 'Результаты &rarr;'}</button>`;
+    const tasks = curTasks();
+    const task = curTask();
+
+    let title = '';
+    if (currentMode === 'molar') {
+        title = '\u2713 \u0412\u0435\u0440\u043d\u043e! M<sub>r</sub> = ' + task.mr;
+    } else if (currentMode === 'solutions') {
+        title = '\u2713 \u0412\u0435\u0440\u043d\u043e! \u041e\u0442\u0432\u0435\u0442: ' + task.answer;
+    } else {
+        title = '\u2713 \u0412\u0435\u0440\u043d\u043e! \u041e\u0442\u0432\u0435\u0442: ' + task.answer;
+    }
+
+    fb.innerHTML = '<div class="fb-title">' + title + '</div>' +
+        (task.explanation ? '<div class="fb-breakdown">' + task.explanation + '</div>' : '') +
+        '<button class="fb-next" onclick="nextTask()">' + (st.idx < tasks.length - 1 ? '\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0435 \u0437\u0430\u0434\u0430\u043d\u0438\u0435 &rarr;' : '\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b &rarr;') + '</button>';
     tokens.push({ type: 'op', value: '=' });
-    tokens.push({ type: 'sub', value: String(val) });
+    tokens.push({ type: 'val', value: String(val) });
     renderExpr();
 }
 
 function showWrong(val) {
-    locked = true; results[current] = false;
+    locked = true;
+    const st = ms();
+    st.results[st.idx] = false;
     updateScore(); renderDots();
-    const task = tasks[current];
+    const task = curTask();
+    const tasks = curTasks();
     const fb = document.getElementById('feedback');
     fb.className = 'feedback wrong';
-    const valStr = isNaN(val) ? 'ошибка в выражении' : val;
-    // Check if user accidentally used Z instead of Ar
+    const valStr = isNaN(val) ? '\u043e\u0448\u0438\u0431\u043a\u0430 \u0432 \u0432\u044b\u0440\u0430\u0436\u0435\u043d\u0438\u0438' : val;
+
     const usedZ = tokens.some(t => t.sym && t.sym.includes('(Z!)'));
-    const zWarn = usedZ ? '<div style="margin-top:6px;font-size:0.82em;color:#ef5350;font-weight:700;">&#9888; Ты взял(а) заряд ядра (верхнее число) вместо атомной массы (нижнее)!</div>' : '';
-    fb.innerHTML = `<div class="fb-title">&#10007; Неверно (${valStr}). Правильный ответ: ${task.mr}</div>
-        ${zWarn}
-        <div class="fb-breakdown">${task.breakdown}</div>
-        <div style="margin-top:6px;font-size:0.8em;color:#ff9800;">Атомная масса &mdash; <b style="color:#4fc3f7">нижнее число</b> в ячейке</div>
-        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <button class="fb-next" onclick="retryTask()">Попробовать снова</button>
-            <button class="fb-next" onclick="nextTask()" style="opacity:0.7;">${current < tasks.length - 1 ? 'Пропустить &rarr;' : 'Результаты &rarr;'}</button>
-        </div>`;
-    task.elems.forEach(sym => { if (cellMap[sym]) cellMap[sym].classList.add('hint'); });
+    const zWarn = usedZ ? '<div style="margin-top:6px;font-size:0.82em;color:#ef5350;font-weight:700;">&#9888; \u0422\u044b \u0432\u0437\u044f\u043b(\u0430) \u0437\u0430\u0440\u044f\u0434 \u044f\u0434\u0440\u0430 (\u0432\u0435\u0440\u0445\u043d\u0435\u0435 \u0447\u0438\u0441\u043b\u043e) \u0432\u043c\u0435\u0441\u0442\u043e \u0430\u0442\u043e\u043c\u043d\u043e\u0439 \u043c\u0430\u0441\u0441\u044b (\u043d\u0438\u0436\u043d\u0435\u0435)!</div>' : '';
+
+    let correctText = '';
+    if (currentMode === 'molar') {
+        correctText = '\u041f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0439 \u043e\u0442\u0432\u0435\u0442: ' + task.mr;
+    } else {
+        correctText = '\u041f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0439 \u043e\u0442\u0432\u0435\u0442: ' + task.answer;
+    }
+
+    fb.innerHTML = '<div class="fb-title">&#10007; \u041d\u0435\u0432\u0435\u0440\u043d\u043e (' + valStr + '). ' + correctText + '</div>' +
+        zWarn +
+        (task.explanation ? '<div class="fb-breakdown">' + task.explanation + '</div>' : (task.breakdown ? '<div class="fb-breakdown">' + task.breakdown + '</div>' : '')) +
+        (currentMode !== 'solutions' ? '<div style="margin-top:6px;font-size:0.8em;color:#ff9800;">\u0410\u0442\u043e\u043c\u043d\u0430\u044f \u043c\u0430\u0441\u0441\u0430 \u2014 <b style="color:#4fc3f7">\u043d\u0438\u0436\u043d\u0435\u0435 \u0447\u0438\u0441\u043b\u043e</b> \u0432 \u044f\u0447\u0435\u0439\u043a\u0435</div>' : '') +
+        '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">' +
+            '<button class="fb-next" onclick="retryTask()">\u041f\u043e\u043f\u0440\u043e\u0431\u043e\u0432\u0430\u0442\u044c \u0441\u043d\u043e\u0432\u0430</button>' +
+            '<button class="fb-next" onclick="nextTask()" style="opacity:0.7;">' + (st.idx < tasks.length - 1 ? '\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c &rarr;' : '\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b &rarr;') + '</button>' +
+        '</div>';
+
+    // Hint elements in table
+    if (task.elems) {
+        task.elems.forEach(sym => { if (cellMap[sym]) cellMap[sym].classList.add('hint'); });
+    }
+}
+
+function showWrongStep1(val) {
+    locked = true;
+    const task = curTask();
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback wrong';
+    const valStr = isNaN(val) ? '\u043e\u0448\u0438\u0431\u043a\u0430 \u0432 \u0432\u044b\u0440\u0430\u0436\u0435\u043d\u0438\u0438' : val;
+    const usedZ = tokens.some(t => t.sym && t.sym.includes('(Z!)'));
+    const zWarn = usedZ ? '<div style="margin-top:6px;font-size:0.82em;color:#ef5350;font-weight:700;">&#9888; \u0422\u044b \u0432\u0437\u044f\u043b(\u0430) \u0437\u0430\u0440\u044f\u0434 \u044f\u0434\u0440\u0430 (\u0432\u0435\u0440\u0445\u043d\u0435\u0435 \u0447\u0438\u0441\u043b\u043e) \u0432\u043c\u0435\u0441\u0442\u043e \u0430\u0442\u043e\u043c\u043d\u043e\u0439 \u043c\u0430\u0441\u0441\u044b (\u043d\u0438\u0436\u043d\u0435\u0435)!</div>' : '';
+    fb.innerHTML = '<div class="fb-title">&#10007; \u041d\u0435\u0432\u0435\u0440\u043d\u043e (' + valStr + '). M = ' + task.mr + '</div>' +
+        zWarn +
+        '<div class="fb-breakdown">' + task.breakdown + '</div>' +
+        '<div style="margin-top:6px;font-size:0.8em;color:#ff9800;">\u0410\u0442\u043e\u043c\u043d\u0430\u044f \u043c\u0430\u0441\u0441\u0430 \u2014 <b style="color:#4fc3f7">\u043d\u0438\u0436\u043d\u0435\u0435 \u0447\u0438\u0441\u043b\u043e</b> \u0432 \u044f\u0447\u0435\u0439\u043a\u0435</div>' +
+        '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">' +
+            '<button class="fb-next" onclick="retryStep1()">\u041f\u043e\u043f\u0440\u043e\u0431\u043e\u0432\u0430\u0442\u044c \u0441\u043d\u043e\u0432\u0430</button>' +
+        '</div>';
+    if (task.elems) {
+        task.elems.forEach(sym => { if (cellMap[sym]) cellMap[sym].classList.add('hint'); });
+    }
+}
+
+function retryStep1() {
+    document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
+    document.getElementById('feedback').className = 'feedback';
+    locked = false;
+    tokens = [];
+    renderExpr();
 }
 
 function retryTask() {
     document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
     document.getElementById('feedback').className = 'feedback';
-    locked = false; tokens = [];
-    results[current] = undefined; // reset result for this task
+    locked = false;
+    tokens = [];
+    const st = ms();
+    st.results[st.idx] = undefined;
+    // For two-step modes, reset to step 1
+    if (st.step !== undefined) {
+        st.step = 1;
+        st.storedM = null;
+    }
     loadTask();
 }
 
 function nextTask() {
     document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
     document.getElementById('feedback').className = 'feedback';
-    locked = false; tokens = []; current++;
-    if (current >= tasks.length) { showFinal(); return; }
+    locked = false;
+    tokens = [];
+    const st = ms();
+    st.idx++;
+    if (st.step !== undefined) { st.step = 1; st.storedM = null; }
+    if (st.idx >= curTasks().length) { showFinal(); return; }
     loadTask();
 }
 
 function showFinal() {
-    const pct = Math.round(score / tasks.length * 100);
+    const st = ms();
+    const tasks = curTasks();
+    const pct = Math.round(st.score / tasks.length * 100);
     const fb = document.getElementById('feedback');
     fb.className = 'feedback ' + (pct >= 70 ? 'correct' : 'wrong');
-    fb.innerHTML = `<div class="fb-title">Результат: ${score}/${tasks.length} (${pct}%)</div>
-        <div style="color:#bbb;">${pct >= 90 ? 'Отлично! Молярная масса &mdash; не проблема.' : pct >= 70 ? 'Хорошо! Ещё практики.' : 'Стоит повторить &mdash; обрати внимание на подсчёт атомов.'}</div>
-        <button class="fb-next" onclick="restart()">Пройти заново</button>`;
+    let msg = '';
+    if (pct >= 90) msg = '\u041e\u0442\u043b\u0438\u0447\u043d\u043e!';
+    else if (pct >= 70) msg = '\u0425\u043e\u0440\u043e\u0448\u043e! \u0415\u0449\u0451 \u043f\u0440\u0430\u043a\u0442\u0438\u043a\u0438.';
+    else msg = '\u0421\u0442\u043e\u0438\u0442 \u043f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u044c.';
+    fb.innerHTML = '<div class="fb-title">\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442: ' + st.score + '/' + tasks.length + ' (' + pct + '%)</div>' +
+        '<div style="color:#bbb;">' + msg + '</div>' +
+        '<button class="fb-next" onclick="restart()">\u041f\u0440\u043e\u0439\u0442\u0438 \u0437\u0430\u043d\u043e\u0432\u043e</button>';
     document.getElementById('exprWrap').innerHTML = '';
 }
 
 function restart() {
-    current = 0; score = 0; results = []; tokens = []; locked = false;
+    const st = ms();
+    st.idx = 0; st.score = 0; st.results = [];
+    if (st.step !== undefined) { st.step = 1; st.storedM = null; }
+    tokens = []; locked = false;
     document.getElementById('feedback').className = 'feedback';
-    updateScore(); renderDots(); loadTask();
+    loadTask();
 }
 
-/* ── Helpers ── */
+/* ══════════════════════════════════════════════════════════
+   ── HELPERS ──
+   ══════════════════════════════════════════════════════════ */
 function loadTask() {
+    updateSubtitle();
+    updateTableVisibility();
+    updateParenButtons();
+    renderStepIndicator();
     renderFormula();
+    renderGivenCards();
     renderExpr();
     renderDots();
-}
+    updateScore();
 
-function updateScore() {
-    document.getElementById('scoreNum').textContent = score;
-    document.getElementById('scoreTotal').textContent = Math.max(current + 1, results.length);
-}
+    // Update task label
+    const label = document.getElementById('taskLabel');
+    if (currentMode === 'molar') {
+        label.textContent = '\u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435';
+    } else if (currentMode === 'concentration') {
+        const st = ms();
+        label.textContent = st.step === 1 ? '\u0428\u0430\u0433 1: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 M' : '\u0428\u0430\u0433 2: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 C';
+    } else if (currentMode === 'solutions') {
+        label.textContent = '\u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435';
+    } else if (currentMode === 'equivalents') {
+        const st = ms();
+        label.textContent = st.step === 1 ? '\u0428\u0430\u0433 1: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 M' : '\u0428\u0430\u0433 2: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 \u042d';
+    }
 
-function renderDots() {
-    const row = document.getElementById('progressRow');
-    row.innerHTML = '';
-    tasks.forEach((_, i) => {
-        const d = document.createElement('div');
-        d.className = 'dot';
-        if (i === current && !locked) d.classList.add('cur');
-        if (results[i] === true) d.classList.add('done');
-        else if (results[i] === false) d.classList.add('fail');
-        row.appendChild(d);
-    });
+    // For solutions, show the find formula
+    if (currentMode === 'solutions') {
+        const task = curTask();
+        if (task) {
+            document.getElementById('taskFormulaWrap').innerHTML = '<span style="font-size:0.7em;">' + task.find + '</span> = ?';
+        }
+    }
 }
 
 function flashCell(sym) {
@@ -590,7 +1145,7 @@ function flashCell(sym) {
 }
 
 /* ── Init ── */
-loadTask(); updateScore(); renderDots();
+loadTask();
 </script>
 </body>
 </html>
