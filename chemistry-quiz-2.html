@@ -285,10 +285,6 @@
     <div class="screen active" id="screenSetup">
         <div class="card">
             <div style="font-size:1.05em; font-weight:700; margin-bottom:18px; color:#a78bfa;">Выбери тему:</div>
-            <button class="topic-btn" onclick="startQuiz('all')">
-                <span class="t-label" style="color:#60a5fa">ВСЕ ТЕМЫ — 58 вопросов</span>
-                <span class="t-desc">Периодические свойства + Ковалентная + Полярность + Водородная + Металлическая</span>
-            </button>
             <button class="topic-btn" onclick="startQuiz('3а')">
                 <span class="t-label" style="color:#60a5fa">ТЕМА 3а — 14 вопросов</span>
                 <span class="t-desc">Энергия ионизации, сродство к электрону, электроотрицательность, тренды</span>
@@ -308,6 +304,10 @@
             <button class="topic-btn" onclick="startQuiz('3д')">
                 <span class="t-label" style="color:#fb923c">ТЕМА 3д — 8 вопросов</span>
                 <span class="t-desc">Металлическая связь: электронный газ, проводимость, пластичность</span>
+            </button>
+            <button class="topic-btn" onclick="startQuiz('all')" style="margin-top:12px;border-color:rgba(96,165,250,0.4);">
+                <span class="t-label" style="color:#60a5fa">ВСЕ ТЕМЫ — 58 вопросов</span>
+                <span class="t-desc">Общий зачёт: все темы вперемешку. 1-й круг без объяснений, ошибки — с теорией</span>
             </button>
             <a href="stuart_brigleb.html" class="topic-btn" style="display:block;text-decoration:none;margin-top:6px;border-color:rgba(251,191,36,0.35)">
                 <span class="t-label" style="color:#fbbf24">🔬 ТРЕНАЖЁР — Модели Стюарта–Бриглеба</span>
@@ -1189,6 +1189,7 @@ function emojiBurst(emoji) {
 function goSetup() { showScreen('screenSetup'); }
 
 function startQuiz(topicKey) {
+  isAllMode = (topicKey === 'all');
   if (topicKey === 'all') {
     selectedTopics = ['3а', '3б', '3в', '3г', '3д'];
     queue = shuffle(ALL_Q);
@@ -1230,22 +1231,36 @@ function restartSame() {
 // ─────────────────────────────────────────────────────────────────
 // THEORY FLASH
 // ─────────────────────────────────────────────────────────────────
+let isAllMode = false;
+
 function showNextQuestion() {
   if (idx >= queue.length) {
     showResults();
     return;
   }
   const q = queue[idx];
-  // Show theory only in round 1, and only once per topic
-  if (!shownTheory.has(q.t) && THEORY[q.t]) {
-    shownTheory.add(q.t);
-    pendingQ = q;
-    document.getElementById('theoryTitle').textContent = THEORY[q.t].title;
-    document.getElementById('theoryContent').innerHTML = THEORY[q.t].html;
-    showScreen('screenTheory');
-    return;
+
+  if (isAllMode) {
+    // "Все темы": round 1 — без теории; повтор ошибок — теория перед каждым вопросом
+    if (round > 1 && THEORY[q.t]) {
+      pendingQ = q;
+      document.getElementById('theoryTitle').textContent = THEORY[q.t].title;
+      document.getElementById('theoryContent').innerHTML = THEORY[q.t].html;
+      showScreen('screenTheory');
+      return;
+    }
+  } else {
+    // Отдельная тема: теория один раз в начале
+    if (!shownTheory.has(q.t) && THEORY[q.t]) {
+      shownTheory.add(q.t);
+      pendingQ = q;
+      document.getElementById('theoryTitle').textContent = THEORY[q.t].title;
+      document.getElementById('theoryContent').innerHTML = THEORY[q.t].html;
+      showScreen('screenTheory');
+      return;
+    }
   }
-  renderQuestion(q, false);
+  renderQuestion(q, round > 1);
 }
 
 function skipTheory() {
