@@ -195,6 +195,29 @@
         .step-indicator .step-done { color: #4ade80; }
         .given-area { display: none; }
         .given-area.visible { display: block; }
+
+        /* Problem text */
+        .problem-text {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 10px 14px; margin-bottom: 8px;
+            font-size: 0.88em; line-height: 1.5; color: #ccc; display: none;
+        }
+        .problem-text.visible { display: block; }
+        .problem-text b { color: #00d2ff; }
+
+        /* Formula choice for equivalents */
+        .formula-choice { display: none; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; justify-content: center; }
+        .formula-choice.visible { display: flex; }
+        .fc-btn {
+            padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05); color: #ccc; font-size: 0.82em;
+            cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .fc-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+        .fc-btn.correct { background: rgba(0,230,118,0.15); border-color: #00e676; color: #00e676; }
+        .fc-btn.wrong { background: rgba(255,82,82,0.15); border-color: #ff5252; color: #ff5252; }
+        .fc-label { text-align: center; font-size: 0.78em; color: #888; margin-bottom: 4px; display: none; }
+        .fc-label.visible { display: block; }
     </style>
 </head>
 <body>
@@ -226,7 +249,17 @@
         </div>
     </div>
 
+    <div class="problem-text" id="problemText"></div>
+
     <div class="step-indicator" id="stepIndicator" style="display:none;"></div>
+
+    <div class="fc-label" id="fcLabel">\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0444\u043e\u0440\u043c\u0443\u043b\u0443 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u0430:</div>
+    <div class="formula-choice" id="formulaChoice">
+        <button class="fc-btn" data-ft="acid">\u042d = M / \u043e\u0441\u043d\u043e\u0432\u043d\u043e\u0441\u0442\u044c<br><span style="font-size:0.8em;color:#888;">\u043a\u0438\u0441\u043b\u043e\u0442\u044b</span></button>
+        <button class="fc-btn" data-ft="base">\u042d = M / \u0447\u0438\u0441\u043b\u043e OH\u207b<br><span style="font-size:0.8em;color:#888;">\u043e\u0441\u043d\u043e\u0432\u0430\u043d\u0438\u044f</span></button>
+        <button class="fc-btn" data-ft="salt">\u042d = M / (z\u00b7k)<br><span style="font-size:0.8em;color:#888;">\u0441\u043e\u043b\u0438</span></button>
+        <button class="fc-btn" data-ft="oxide">\u042d = M / (z\u00b7k)<br><span style="font-size:0.8em;color:#888;">\u043e\u043a\u0441\u0438\u0434\u044b</span></button>
+    </div>
 
     <div class="given-area" id="givenArea">
         <div class="given-cards" id="givenCards"></div>
@@ -346,205 +379,193 @@ const molarTasks = [
 /* ── Concentration tasks (two-step: M then C = m/(M*V)) ── */
 const concTasks = [
     { substance: 'NaCl', mr: 58.5,
-      parts: [{t:'el',v:'Na'},{t:'el',v:'Cl'}],
-      elems: ['Na','Cl'],
+      problem: '\u0412 0.5 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 5.85 \u0433 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043d\u0430\u0442\u0440\u0438\u044f NaCl. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u043c\u043e\u043b\u044f\u0440\u043d\u0443\u044e \u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0430\u0446\u0438\u044e.',
+      parts: [{t:'el',v:'Na'},{t:'el',v:'Cl'}], elems: ['Na','Cl'],
       breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(Cl) = <b>23</b> + <b>35.5</b> = 58.5',
       given: [{label:'m', value:5.85, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 0.2, tolerance: 0.01,
-      explanation: 'C = 5.85 / (58.5 \u00b7 0.5) = 5.85 / 29.25 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 5.85 / 58.5 / 0.5 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'H\u2082SO\u2084', mr: 98,
-      parts: [{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}],
-      elems: ['H','S','O'],
+      problem: '\u0412 0.25 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 4.9 \u0433 \u0441\u0435\u0440\u043d\u043e\u0439 \u043a\u0438\u0441\u043b\u043e\u0442\u044b H\u2082SO\u2084. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u043c\u043e\u043b\u044f\u0440\u043d\u0443\u044e \u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0430\u0446\u0438\u044e.',
+      parts: [{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}], elems: ['H','S','O'],
       breakdown: 'A<sub>r</sub>(H)\u00d72 + A<sub>r</sub>(S) + A<sub>r</sub>(O)\u00d74 = <b>1</b>\u00d72 + <b>32</b> + <b>16</b>\u00d74 = 98',
       given: [{label:'m', value:4.9, unit:'\u0433'}, {label:'V', value:0.25, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 0.2, tolerance: 0.01,
-      explanation: 'C = 4.9 / (98 \u00b7 0.25) = 4.9 / 24.5 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 4.9 / 98 / 0.25 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'NaOH', mr: 40,
-      parts: [{t:'el',v:'Na'},{t:'el',v:'O'},{t:'el',v:'H'}],
-      elems: ['Na','O','H'],
+      problem: '\u0412 0.5 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 8 \u0433 \u0433\u0438\u0434\u0440\u043e\u043a\u0441\u0438\u0434\u0430 \u043d\u0430\u0442\u0440\u0438\u044f NaOH. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 C.',
+      parts: [{t:'el',v:'Na'},{t:'el',v:'O'},{t:'el',v:'H'}], elems: ['Na','O','H'],
       breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(O) + A<sub>r</sub>(H) = <b>23</b> + <b>16</b> + <b>1</b> = 40',
       given: [{label:'m', value:8, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 0.4, tolerance: 0.01,
-      explanation: 'C = 8 / (40 \u00b7 0.5) = 8 / 20 = <b>0.4 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 8 / 40 / 0.5 = <b>0.4 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'KOH', mr: 56,
-      parts: [{t:'el',v:'K'},{t:'el',v:'O'},{t:'el',v:'H'}],
-      elems: ['K','O','H'],
+      problem: '\u0412 0.2 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 11.2 \u0433 \u0433\u0438\u0434\u0440\u043e\u043a\u0441\u0438\u0434\u0430 \u043a\u0430\u043b\u0438\u044f KOH. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 C.',
+      parts: [{t:'el',v:'K'},{t:'el',v:'O'},{t:'el',v:'H'}], elems: ['K','O','H'],
       breakdown: 'A<sub>r</sub>(K) + A<sub>r</sub>(O) + A<sub>r</sub>(H) = <b>39</b> + <b>16</b> + <b>1</b> = 56',
       given: [{label:'m', value:11.2, unit:'\u0433'}, {label:'V', value:0.2, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 1.0, tolerance: 0.01,
-      explanation: 'C = 11.2 / (56 \u00b7 0.2) = 11.2 / 11.2 = <b>1.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 11.2 / 56 / 0.2 = <b>1.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'CaCl\u2082', mr: 111,
-      parts: [{t:'el',v:'Ca'},{t:'el',v:'Cl'},{t:'sub',v:'2'}],
-      elems: ['Ca','Cl'],
+      problem: '\u0412 0.5 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 5.55 \u0433 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043a\u0430\u043b\u044c\u0446\u0438\u044f CaCl\u2082. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 C.',
+      parts: [{t:'el',v:'Ca'},{t:'el',v:'Cl'},{t:'sub',v:'2'}], elems: ['Ca','Cl'],
       breakdown: 'A<sub>r</sub>(Ca) + A<sub>r</sub>(Cl)\u00d72 = <b>40</b> + <b>35.5</b>\u00d72 = 111',
       given: [{label:'m', value:5.55, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 0.1, tolerance: 0.01,
-      explanation: 'C = 5.55 / (111 \u00b7 0.5) = 5.55 / 55.5 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 5.55 / 111 / 0.5 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'HCl', mr: 36.5,
-      parts: [{t:'el',v:'H'},{t:'el',v:'Cl'}],
-      elems: ['H','Cl'],
+      problem: '\u0412 0.1 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 7.3 \u0433 \u0441\u043e\u043b\u044f\u043d\u043e\u0439 \u043a\u0438\u0441\u043b\u043e\u0442\u044b HCl. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 C.',
+      parts: [{t:'el',v:'H'},{t:'el',v:'Cl'}], elems: ['H','Cl'],
       breakdown: 'A<sub>r</sub>(H) + A<sub>r</sub>(Cl) = <b>1</b> + <b>35.5</b> = 36.5',
       given: [{label:'m', value:7.3, unit:'\u0433'}, {label:'V', value:0.1, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 2.0, tolerance: 0.01,
-      explanation: 'C = 7.3 / (36.5 \u00b7 0.1) = 7.3 / 3.65 = <b>2.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 7.3 / 36.5 / 0.1 = <b>2.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'HNO\u2083', mr: 63,
-      parts: [{t:'el',v:'H'},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'}],
-      elems: ['H','N','O'],
+      problem: '\u0412 0.2 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 12.6 \u0433 \u0430\u0437\u043e\u0442\u043d\u043e\u0439 \u043a\u0438\u0441\u043b\u043e\u0442\u044b HNO\u2083. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 C.',
+      parts: [{t:'el',v:'H'},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'}], elems: ['H','N','O'],
       breakdown: 'A<sub>r</sub>(H) + A<sub>r</sub>(N) + A<sub>r</sub>(O)\u00d73 = <b>1</b> + <b>14</b> + <b>16</b>\u00d73 = 63',
       given: [{label:'m', value:12.6, unit:'\u0433'}, {label:'V', value:0.2, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 1.0, tolerance: 0.01,
-      explanation: 'C = 12.6 / (63 \u00b7 0.2) = 12.6 / 12.6 = <b>1.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 12.6 / 63 / 0.2 = <b>1.0 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'Na\u2082CO\u2083', mr: 106,
-      parts: [{t:'el',v:'Na'},{t:'sub',v:'2'},{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'3'}],
-      elems: ['Na','C','O'],
+      problem: '\u0412 0.5 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 5.3 \u0433 \u043a\u0430\u0440\u0431\u043e\u043d\u0430\u0442\u0430 \u043d\u0430\u0442\u0440\u0438\u044f Na\u2082CO\u2083. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 C.',
+      parts: [{t:'el',v:'Na'},{t:'sub',v:'2'},{t:'el',v:'C'},{t:'el',v:'O'},{t:'sub',v:'3'}], elems: ['Na','C','O'],
       breakdown: 'A<sub>r</sub>(Na)\u00d72 + A<sub>r</sub>(C) + A<sub>r</sub>(O)\u00d73 = <b>23</b>\u00d72 + <b>12</b> + <b>16</b>\u00d73 = 106',
       given: [{label:'m', value:5.3, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 0.1, tolerance: 0.01,
-      explanation: 'C = 5.3 / (106 \u00b7 0.5) = 5.3 / 53 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 5.3 / 106 / 0.5 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'KNO\u2083', mr: 101,
-      parts: [{t:'el',v:'K'},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'}],
-      elems: ['K','N','O'],
+      problem: '\u0412 1 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 10.1 \u0433 \u043d\u0438\u0442\u0440\u0430\u0442\u0430 \u043a\u0430\u043b\u0438\u044f KNO\u2083. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 C.',
+      parts: [{t:'el',v:'K'},{t:'el',v:'N'},{t:'el',v:'O'},{t:'sub',v:'3'}], elems: ['K','N','O'],
       breakdown: 'A<sub>r</sub>(K) + A<sub>r</sub>(N) + A<sub>r</sub>(O)\u00d73 = <b>39</b> + <b>14</b> + <b>16</b>\u00d73 = 101',
       given: [{label:'m', value:10.1, unit:'\u0433'}, {label:'V', value:1, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 0.1, tolerance: 0.01,
-      explanation: 'C = 10.1 / (101 \u00b7 1) = 10.1 / 101 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 10.1 / 101 / 1 = <b>0.1 \u043c\u043e\u043b\u044c/\u043b</b>' },
     { substance: 'MgCl\u2082', mr: 95,
-      parts: [{t:'el',v:'Mg'},{t:'el',v:'Cl'},{t:'sub',v:'2'}],
-      elems: ['Mg','Cl'],
+      problem: '\u0412 0.5 \u043b \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 9.5 \u0433 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043c\u0430\u0433\u043d\u0438\u044f MgCl\u2082. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 C.',
+      parts: [{t:'el',v:'Mg'},{t:'el',v:'Cl'},{t:'sub',v:'2'}], elems: ['Mg','Cl'],
       breakdown: 'A<sub>r</sub>(Mg) + A<sub>r</sub>(Cl)\u00d72 = <b>24</b> + <b>35.5</b>\u00d72 = 95',
       given: [{label:'m', value:9.5, unit:'\u0433'}, {label:'V', value:0.5, unit:'\u043b'}],
-      find: 'C = m / (M \u00b7 V)',
       answer: 0.2, tolerance: 0.01,
-      explanation: 'C = 9.5 / (95 \u00b7 0.5) = 9.5 / 47.5 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
+      explanation: 'C = 9.5 / 95 / 0.5 = <b>0.2 \u043c\u043e\u043b\u044c/\u043b</b>' },
 ];
 
 /* ── Solutions tasks (direct calculation, no periodic table) ── */
 const solutionsTasks = [
-    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:20, unit:'\u0433'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:200, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+    { problem: '\u0412 200 \u0433 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0438\u043b\u0438 20 \u0433 \u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u043c\u0430\u0441\u0441\u043e\u0432\u0443\u044e \u0434\u043e\u043b\u044e \u03c9 (%).',
+      given: [{label:'m(\u0432-\u0432\u0430)', value:20, unit:'\u0433'}, {label:'m(\u0440-\u0440\u0430)', value:200, unit:'\u0433'}, {label:'100', value:100, unit:''}],
       find: '\u03c9 = m(\u0432-\u0432\u0430) / m(\u0440-\u0440\u0430) \u00b7 100%',
       answer: 10, tolerance: 0.5,
       explanation: '\u03c9 = 20 / 200 \u00b7 100 = <b>10%</b>' },
-    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:5, unit:'\u0433'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:50, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+    { problem: '\u0412 50 \u0433 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 5 \u0433 \u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u03c9 (%).',
+      given: [{label:'m(\u0432-\u0432\u0430)', value:5, unit:'\u0433'}, {label:'m(\u0440-\u0440\u0430)', value:50, unit:'\u0433'}, {label:'100', value:100, unit:''}],
       find: '\u03c9 = m(\u0432-\u0432\u0430) / m(\u0440-\u0440\u0430) \u00b7 100%',
       answer: 10, tolerance: 0.5,
       explanation: '\u03c9 = 5 / 50 \u00b7 100 = <b>10%</b>' },
-    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:15, unit:'\u0433'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:300, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+    { problem: '\u0412 300 \u0433 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0438\u043b\u0438 15 \u0433 \u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u03c9 (%).',
+      given: [{label:'m(\u0432-\u0432\u0430)', value:15, unit:'\u0433'}, {label:'m(\u0440-\u0440\u0430)', value:300, unit:'\u0433'}, {label:'100', value:100, unit:''}],
       find: '\u03c9 = m(\u0432-\u0432\u0430) / m(\u0440-\u0440\u0430) \u00b7 100%',
       answer: 5, tolerance: 0.5,
       explanation: '\u03c9 = 15 / 300 \u00b7 100 = <b>5%</b>' },
-    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:8, unit:'\u0433'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:40, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+    { problem: '\u0412 40 \u0433 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044f 8 \u0433 \u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u03c9 (%).',
+      given: [{label:'m(\u0432-\u0432\u0430)', value:8, unit:'\u0433'}, {label:'m(\u0440-\u0440\u0430)', value:40, unit:'\u0433'}, {label:'100', value:100, unit:''}],
       find: '\u03c9 = m(\u0432-\u0432\u0430) / m(\u0440-\u0440\u0430) \u00b7 100%',
       answer: 20, tolerance: 0.5,
       explanation: '\u03c9 = 8 / 40 \u00b7 100 = <b>20%</b>' },
-    { given: [{label:'\u03c9', value:5, unit:'%'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:500, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+    { problem: '\u041c\u0430\u0441\u0441\u043e\u0432\u0430\u044f \u0434\u043e\u043b\u044f \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 5%. \u041c\u0430\u0441\u0441\u0430 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 500 \u0433. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u043c\u0430\u0441\u0441\u0443 \u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430 (\u0433).',
+      given: [{label:'\u03c9', value:5, unit:'%'}, {label:'m(\u0440-\u0440\u0430)', value:500, unit:'\u0433'}, {label:'100', value:100, unit:''}],
       find: 'm(\u0432-\u0432\u0430) = \u03c9 \u00b7 m(\u0440-\u0440\u0430) / 100',
       answer: 25, tolerance: 0.5,
-      explanation: 'm(\u0432-\u0432\u0430) = 5 \u00b7 500 / 100 = <b>25 \u0433</b>' },
-    { given: [{label:'\u03c9', value:10, unit:'%'}, {label:'m(\u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430)', value:250, unit:'\u0433'}, {label:'100', value:100, unit:''}],
+      explanation: 'm = 5 \u00b7 500 / 100 = <b>25 \u0433</b>' },
+    { problem: '\u041c\u0430\u0441\u0441\u043e\u0432\u0430\u044f \u0434\u043e\u043b\u044f \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 10%. \u041c\u0430\u0441\u0441\u0430 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 250 \u0433. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u043c\u0430\u0441\u0441\u0443 \u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430 (\u0433).',
+      given: [{label:'\u03c9', value:10, unit:'%'}, {label:'m(\u0440-\u0440\u0430)', value:250, unit:'\u0433'}, {label:'100', value:100, unit:''}],
       find: 'm(\u0432-\u0432\u0430) = \u03c9 \u00b7 m(\u0440-\u0440\u0430) / 100',
       answer: 25, tolerance: 0.5,
-      explanation: 'm(\u0432-\u0432\u0430) = 10 \u00b7 250 / 100 = <b>25 \u0433</b>' },
-    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:12, unit:'\u0433'}, {label:'\u03c9', value:4, unit:'%'}, {label:'100', value:100, unit:''}],
+      explanation: 'm = 10 \u00b7 250 / 100 = <b>25 \u0433</b>' },
+    { problem: '\u041c\u0430\u0441\u0441\u0430 \u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430 12 \u0433, \u043c\u0430\u0441\u0441\u043e\u0432\u0430\u044f \u0434\u043e\u043b\u044f 4%. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u043c\u0430\u0441\u0441\u0443 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 (\u0433).',
+      given: [{label:'m(\u0432-\u0432\u0430)', value:12, unit:'\u0433'}, {label:'\u03c9', value:4, unit:'%'}, {label:'100', value:100, unit:''}],
       find: 'm(\u0440-\u0440\u0430) = m(\u0432-\u0432\u0430) \u00b7 100 / \u03c9',
       answer: 300, tolerance: 1,
       explanation: 'm(\u0440-\u0440\u0430) = 12 \u00b7 100 / 4 = <b>300 \u0433</b>' },
-    { given: [{label:'m(\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430)', value:30, unit:'\u0433'}, {label:'\u03c9', value:15, unit:'%'}, {label:'100', value:100, unit:''}],
+    { problem: '\u041c\u0430\u0441\u0441\u0430 \u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0430 30 \u0433, \u043c\u0430\u0441\u0441\u043e\u0432\u0430\u044f \u0434\u043e\u043b\u044f 15%. \u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u043c\u0430\u0441\u0441\u0443 \u0440\u0430\u0441\u0442\u0432\u043e\u0440\u0430 (\u0433).',
+      given: [{label:'m(\u0432-\u0432\u0430)', value:30, unit:'\u0433'}, {label:'\u03c9', value:15, unit:'%'}, {label:'100', value:100, unit:''}],
       find: 'm(\u0440-\u0440\u0430) = m(\u0432-\u0432\u0430) \u00b7 100 / \u03c9',
       answer: 200, tolerance: 1,
       explanation: 'm(\u0440-\u0440\u0430) = 30 \u00b7 100 / 15 = <b>200 \u0433</b>' },
 ];
 
-/* ── Equivalents tasks (two-step: M then Э = M/n) ── */
+/* ── Equivalents tasks (two-step: M then choose formula then Э = M/n) ── */
 const equivTasks = [
-    { substance: 'HCl', mr: 36.5,
-      parts: [{t:'el',v:'H'},{t:'el',v:'Cl'}],
-      elems: ['H','Cl'],
+    { substance: 'HCl', mr: 36.5, formulaType: 'acid',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0441\u043e\u043b\u044f\u043d\u043e\u0439 \u043a\u0438\u0441\u043b\u043e\u0442\u044b HCl.',
+      parts: [{t:'el',v:'H'},{t:'el',v:'Cl'}], elems: ['H','Cl'],
       breakdown: 'A<sub>r</sub>(H) + A<sub>r</sub>(Cl) = <b>1</b> + <b>35.5</b> = 36.5',
-      given: [{label:'n (основность)', value:1, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'\u043e\u0441\u043d\u043e\u0432\u043d\u043e\u0441\u0442\u044c', value:1, unit:''}],
       answer: 36.5, tolerance: 0.1,
       explanation: '\u042d = 36.5 / 1 = <b>36.5</b>' },
-    { substance: 'H\u2082SO\u2084', mr: 98,
-      parts: [{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}],
-      elems: ['H','S','O'],
+    { substance: 'H\u2082SO\u2084', mr: 98, formulaType: 'acid',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0441\u0435\u0440\u043d\u043e\u0439 \u043a\u0438\u0441\u043b\u043e\u0442\u044b H\u2082SO\u2084.',
+      parts: [{t:'el',v:'H'},{t:'sub',v:'2'},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'}], elems: ['H','S','O'],
       breakdown: 'A<sub>r</sub>(H)\u00d72 + A<sub>r</sub>(S) + A<sub>r</sub>(O)\u00d74 = <b>1</b>\u00d72 + <b>32</b> + <b>16</b>\u00d74 = 98',
-      given: [{label:'n (основность)', value:2, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'\u043e\u0441\u043d\u043e\u0432\u043d\u043e\u0441\u0442\u044c', value:2, unit:''}],
       answer: 49, tolerance: 0.1,
       explanation: '\u042d = 98 / 2 = <b>49</b>' },
-    { substance: 'H\u2083PO\u2084', mr: 98,
-      parts: [{t:'el',v:'H'},{t:'sub',v:'3'},{t:'el',v:'P'},{t:'el',v:'O'},{t:'sub',v:'4'}],
-      elems: ['H','P','O'],
+    { substance: 'H\u2083PO\u2084', mr: 98, formulaType: 'acid',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0444\u043e\u0441\u0444\u043e\u0440\u043d\u043e\u0439 \u043a\u0438\u0441\u043b\u043e\u0442\u044b H\u2083PO\u2084.',
+      parts: [{t:'el',v:'H'},{t:'sub',v:'3'},{t:'el',v:'P'},{t:'el',v:'O'},{t:'sub',v:'4'}], elems: ['H','P','O'],
       breakdown: 'A<sub>r</sub>(H)\u00d73 + A<sub>r</sub>(P) + A<sub>r</sub>(O)\u00d74 = <b>1</b>\u00d73 + <b>31</b> + <b>16</b>\u00d74 = 98',
-      given: [{label:'n (основность)', value:3, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'\u043e\u0441\u043d\u043e\u0432\u043d\u043e\u0441\u0442\u044c', value:3, unit:''}],
       answer: 32.67, tolerance: 0.1,
-      explanation: '\u042d = 98 / 3 = <b>32.67</b>' },
-    { substance: 'NaOH', mr: 40,
-      parts: [{t:'el',v:'Na'},{t:'el',v:'O'},{t:'el',v:'H'}],
-      elems: ['Na','O','H'],
+      explanation: '\u042d = 98 / 3 \u2248 <b>32.67</b>' },
+    { substance: 'NaOH', mr: 40, formulaType: 'base',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0433\u0438\u0434\u0440\u043e\u043a\u0441\u0438\u0434\u0430 \u043d\u0430\u0442\u0440\u0438\u044f NaOH.',
+      parts: [{t:'el',v:'Na'},{t:'el',v:'O'},{t:'el',v:'H'}], elems: ['Na','O','H'],
       breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(O) + A<sub>r</sub>(H) = <b>23</b> + <b>16</b> + <b>1</b> = 40',
-      given: [{label:'n (число OH)', value:1, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'\u0447\u0438\u0441\u043b\u043e OH', value:1, unit:''}],
       answer: 40, tolerance: 0.1,
       explanation: '\u042d = 40 / 1 = <b>40</b>' },
-    { substance: 'Ca(OH)\u2082', mr: 74,
-      parts: [{t:'el',v:'Ca'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'2'}],
-      elems: ['Ca','O','H'],
+    { substance: 'Ca(OH)\u2082', mr: 74, formulaType: 'base',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0433\u0438\u0434\u0440\u043e\u043a\u0441\u0438\u0434\u0430 \u043a\u0430\u043b\u044c\u0446\u0438\u044f Ca(OH)\u2082.',
+      parts: [{t:'el',v:'Ca'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'2'}], elems: ['Ca','O','H'],
       breakdown: 'A<sub>r</sub>(Ca) + (A<sub>r</sub>(O)+A<sub>r</sub>(H))\u00d72 = <b>40</b> + (<b>16</b>+<b>1</b>)\u00d72 = 74',
-      given: [{label:'n (число OH)', value:2, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'\u0447\u0438\u0441\u043b\u043e OH', value:2, unit:''}],
       answer: 37, tolerance: 0.1,
       explanation: '\u042d = 74 / 2 = <b>37</b>' },
-    { substance: 'Fe(OH)\u2083', mr: 107,
-      parts: [{t:'el',v:'Fe'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'3'}],
-      elems: ['Fe','O','H'],
+    { substance: 'Fe(OH)\u2083', mr: 107, formulaType: 'base',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0433\u0438\u0434\u0440\u043e\u043a\u0441\u0438\u0434\u0430 \u0436\u0435\u043b\u0435\u0437\u0430(III) Fe(OH)\u2083.',
+      parts: [{t:'el',v:'Fe'},{t:'par',v:'('},{t:'el',v:'O'},{t:'el',v:'H'},{t:'par',v:')'},{t:'sub',v:'3'}], elems: ['Fe','O','H'],
       breakdown: 'A<sub>r</sub>(Fe) + (A<sub>r</sub>(O)+A<sub>r</sub>(H))\u00d73 = <b>56</b> + (<b>16</b>+<b>1</b>)\u00d73 = 107',
-      given: [{label:'n (число OH)', value:3, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'\u0447\u0438\u0441\u043b\u043e OH', value:3, unit:''}],
       answer: 35.67, tolerance: 0.1,
-      explanation: '\u042d = 107 / 3 = <b>35.67</b>' },
-    { substance: 'NaCl', mr: 58.5,
-      parts: [{t:'el',v:'Na'},{t:'el',v:'Cl'}],
-      elems: ['Na','Cl'],
+      explanation: '\u042d = 107 / 3 \u2248 <b>35.67</b>' },
+    { substance: 'NaCl', mr: 58.5, formulaType: 'salt',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043d\u0430\u0442\u0440\u0438\u044f NaCl. Na\u207a (z=1, k=1).',
+      parts: [{t:'el',v:'Na'},{t:'el',v:'Cl'}], elems: ['Na','Cl'],
       breakdown: 'A<sub>r</sub>(Na) + A<sub>r</sub>(Cl) = <b>23</b> + <b>35.5</b> = 58.5',
-      given: [{label:'n (Na\u207a, z=1, k=1)', value:1, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'z\u00b7k', value:1, unit:''}],
       answer: 58.5, tolerance: 0.1,
       explanation: '\u042d = 58.5 / 1 = <b>58.5</b>' },
-    { substance: 'CaCl\u2082', mr: 111,
-      parts: [{t:'el',v:'Ca'},{t:'el',v:'Cl'},{t:'sub',v:'2'}],
-      elems: ['Ca','Cl'],
+    { substance: 'CaCl\u2082', mr: 111, formulaType: 'salt',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0445\u043b\u043e\u0440\u0438\u0434\u0430 \u043a\u0430\u043b\u044c\u0446\u0438\u044f CaCl\u2082. Ca\u00b2\u207a (z=2, k=1).',
+      parts: [{t:'el',v:'Ca'},{t:'el',v:'Cl'},{t:'sub',v:'2'}], elems: ['Ca','Cl'],
       breakdown: 'A<sub>r</sub>(Ca) + A<sub>r</sub>(Cl)\u00d72 = <b>40</b> + <b>35.5</b>\u00d72 = 111',
-      given: [{label:'n (Ca\u00b2\u207a, z=2, k=1)', value:2, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'z\u00b7k', value:2, unit:''}],
       answer: 55.5, tolerance: 0.1,
       explanation: '\u042d = 111 / 2 = <b>55.5</b>' },
-    { substance: 'Al\u2082(SO\u2084)\u2083', mr: 342,
-      parts: [{t:'el',v:'Al'},{t:'sub',v:'2'},{t:'par',v:'('},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'},{t:'par',v:')'},{t:'sub',v:'3'}],
-      elems: ['Al','S','O'],
+    { substance: 'Al\u2082(SO\u2084)\u2083', mr: 342, formulaType: 'salt',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u0441\u0443\u043b\u044c\u0444\u0430\u0442\u0430 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u044f Al\u2082(SO\u2084)\u2083. Al\u00b3\u207a (z=3, k=2).',
+      parts: [{t:'el',v:'Al'},{t:'sub',v:'2'},{t:'par',v:'('},{t:'el',v:'S'},{t:'el',v:'O'},{t:'sub',v:'4'},{t:'par',v:')'},{t:'sub',v:'3'}], elems: ['Al','S','O'],
       breakdown: 'A<sub>r</sub>(Al)\u00d72 + (A<sub>r</sub>(S)+A<sub>r</sub>(O)\u00d74)\u00d73 = <b>27</b>\u00d72 + (<b>32</b>+<b>16</b>\u00d74)\u00d73 = 342',
-      given: [{label:'n (Al\u00b3\u207a, z=3, k=2)', value:6, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'z\u00b7k', value:6, unit:''}],
       answer: 57, tolerance: 0.1,
       explanation: '\u042d = 342 / 6 = <b>57</b>' },
-    { substance: 'Fe\u2082O\u2083', mr: 160,
-      parts: [{t:'el',v:'Fe'},{t:'sub',v:'2'},{t:'el',v:'O'},{t:'sub',v:'3'}],
-      elems: ['Fe','O'],
+    { substance: 'Fe\u2082O\u2083', mr: 160, formulaType: 'oxide',
+      problem: '\u041d\u0430\u0439\u0434\u0438\u0442\u0435 \u044d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u0443\u044e \u043c\u0430\u0441\u0441\u0443 \u043e\u043a\u0441\u0438\u0434\u0430 \u0436\u0435\u043b\u0435\u0437\u0430(III) Fe\u2082O\u2083. Fe\u00b3\u207a (z=3, k=2).',
+      parts: [{t:'el',v:'Fe'},{t:'sub',v:'2'},{t:'el',v:'O'},{t:'sub',v:'3'}], elems: ['Fe','O'],
       breakdown: 'A<sub>r</sub>(Fe)\u00d72 + A<sub>r</sub>(O)\u00d73 = <b>56</b>\u00d72 + <b>16</b>\u00d73 = 160',
-      given: [{label:'n (Fe\u00b3\u207a, z=3, k=2)', value:6, unit:''}],
-      find: '\u042d = M / n',
+      given: [{label:'z\u00b7k', value:6, unit:''}],
       answer: 26.67, tolerance: 0.1,
-      explanation: '\u042d = 160 / 6 = <b>26.67</b>' },
+      explanation: '\u042d = 160 / 6 \u2248 <b>26.67</b>' },
 ];
 
 /* ══════════════════════════════════════════════════════════
@@ -559,7 +580,7 @@ const modeState = {
     molar:         { idx: 0, score: 0, results: [] },
     concentration: { idx: 0, score: 0, results: [], step: 1, storedM: null },
     solutions:     { idx: 0, score: 0, results: [] },
-    equivalents:   { idx: 0, score: 0, results: [], step: 1, storedM: null },
+    equivalents:   { idx: 0, score: 0, results: [], step: 1, storedM: null, formulaPicked: false },
 };
 
 function getTasksForMode(mode) {
@@ -645,7 +666,13 @@ document.getElementById('tabsRow').addEventListener('click', e => {
     document.getElementById('feedback').className = 'feedback';
     document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
     // Reset step for two-step modes
-    if (ms().step !== undefined) { ms().step = 1; ms().storedM = null; }
+    if (ms().step !== undefined) { ms().step = 1; ms().storedM = null; ms().formulaPicked = false; }
+    hideFormulaChoice();
+    // If mode is complete, restart it
+    const st = ms();
+    if (st.idx >= getTasksForMode(currentMode).length) {
+        st.idx = 0; st.score = 0; st.results = [];
+    }
     loadTask();
 });
 
@@ -772,6 +799,12 @@ function renderGivenCards() {
         cards.innerHTML = html;
         attachGivenCardListeners();
     } else if (isTwoStep && st.step === 2) {
+        // For equivalents, wait for formula pick before showing cards
+        if (currentMode === 'equivalents' && !st.formulaPicked) {
+            area.classList.remove('visible');
+            cards.innerHTML = '';
+            return;
+        }
         // Step 2: show stored M + given values
         area.classList.add('visible');
         let html = '<div class="given-card stored-m" data-gval="' + st.storedM + '">' +
@@ -816,16 +849,18 @@ function renderStepIndicator() {
     const task = curTask();
     if (!task) { el.style.display = 'none'; return; }
 
+    const step2name = currentMode === 'concentration' ? '\u0432\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u044c C' : '\u0432\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u044c \u042d';
     if (st.step === 1) {
-        el.innerHTML = '<span class="step-active">\u0428\u0430\u0433 1: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 M(' + task.substance + ')</span> &rarr; \u0428\u0430\u0433 2';
+        el.innerHTML = '<span class="step-active">\u0428\u0430\u0433 1: M(' + task.substance + ')</span> &rarr; \u0428\u0430\u0433 2: ' + step2name;
     } else {
-        el.innerHTML = '<span class="step-done">\u0428\u0430\u0433 1: M = ' + st.storedM + ' \u2713</span> &rarr; <span class="step-active">\u0428\u0430\u0433 2: ' + task.find + '</span>';
+        el.innerHTML = '<span class="step-done">\u0428\u0430\u0433 1: M = ' + st.storedM + ' \u2713</span> &rarr; <span class="step-active">\u0428\u0430\u0433 2: ' + step2name + '</span>';
     }
 }
 
 function updateTableVisibility() {
     const wrap = document.getElementById('tableWrap');
-    if (currentMode === 'solutions') {
+    const st = ms();
+    if (currentMode === 'solutions' || ((currentMode === 'concentration' || currentMode === 'equivalents') && st.step === 2)) {
         wrap.classList.add('hidden');
     } else {
         wrap.classList.remove('hidden');
@@ -938,20 +973,19 @@ function evaluate() {
         if (Math.abs(rounded - task.mr) < 0.01) showCorrect(rounded);
         else showWrong(rounded);
     } else if (isTwoStep && st.step === 1) {
-        // Step 1: check M
+        // Step 1: check M — show result, then button to proceed
         const rounded = Math.round(result * 10) / 10;
         if (Math.abs(rounded - task.mr) < 0.01) {
-            // M is correct — move to step 2
             st.storedM = task.mr;
-            st.step = 2;
-            tokens = [];
-            locked = false;
-            document.getElementById('feedback').className = 'feedback';
-            renderStepIndicator();
-            renderFormula();
-            renderGivenCards();
-            updateParenButtons();
+            locked = true;
+            tokens.push({ type: 'op', value: '=' });
+            tokens.push({ type: 'val', value: String(rounded) });
             renderExpr();
+            const fb = document.getElementById('feedback');
+            fb.className = 'feedback correct';
+            fb.innerHTML = '<div class="fb-title">\u2713 M(' + task.substance + ') = ' + task.mr + '</div>' +
+                '<div class="fb-breakdown">' + task.breakdown + '</div>' +
+                '<button class="fb-next" onclick="goStep2()">\u0428\u0430\u0433 2: \u0432\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u044c ' + (currentMode === 'concentration' ? 'C' : '\u042d') + ' &rarr;</button>';
         } else {
             showWrongStep1(rounded);
         }
@@ -1060,6 +1094,63 @@ function retryStep1() {
     renderExpr();
 }
 
+function goStep2() {
+    const st = ms();
+    st.step = 2;
+    tokens = [];
+    locked = false;
+    document.getElementById('feedback').className = 'feedback';
+    // For equivalents, show formula choice first
+    if (currentMode === 'equivalents') {
+        st.formulaPicked = false;
+        showFormulaChoice();
+    }
+    renderStepIndicator();
+    renderFormula();
+    renderGivenCards();
+    renderProblemText();
+    updateParenButtons();
+    updateTableVisibility();
+    renderExpr();
+    // Update task label
+    const label = document.getElementById('taskLabel');
+    if (currentMode === 'concentration') label.textContent = '\u0428\u0430\u0433 2: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 C';
+    else if (currentMode === 'equivalents') label.textContent = '\u0428\u0430\u0433 2: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 \u042d';
+}
+
+/* Formula choice for equivalents */
+function showFormulaChoice() {
+    document.getElementById('fcLabel').classList.add('visible');
+    document.getElementById('formulaChoice').classList.add('visible');
+    document.querySelectorAll('.fc-btn').forEach(b => {
+        b.classList.remove('correct', 'wrong');
+    });
+}
+
+function hideFormulaChoice() {
+    document.getElementById('fcLabel').classList.remove('visible');
+    document.getElementById('formulaChoice').classList.remove('visible');
+}
+
+document.getElementById('formulaChoice').addEventListener('click', e => {
+    const btn = e.target.closest('.fc-btn');
+    if (!btn) return;
+    const task = curTask();
+    const st = ms();
+    if (!task || st.formulaPicked) return;
+    const picked = btn.dataset.ft;
+    if (picked === task.formulaType) {
+        btn.classList.add('correct');
+        st.formulaPicked = true;
+        // Show given cards now
+        renderGivenCards();
+        setTimeout(() => hideFormulaChoice(), 800);
+    } else {
+        btn.classList.add('wrong');
+        setTimeout(() => btn.classList.remove('wrong'), 600);
+    }
+});
+
 function retryTask() {
     document.querySelectorAll('.pcell.hint').forEach(c => c.classList.remove('hint'));
     document.getElementById('feedback').className = 'feedback';
@@ -1071,6 +1162,7 @@ function retryTask() {
     if (st.step !== undefined) {
         st.step = 1;
         st.storedM = null;
+        st.formulaPicked = false;
     }
     loadTask();
 }
@@ -1082,7 +1174,7 @@ function nextTask() {
     tokens = [];
     const st = ms();
     st.idx++;
-    if (st.step !== undefined) { st.step = 1; st.storedM = null; }
+    if (st.step !== undefined) { st.step = 1; st.storedM = null; st.formulaPicked = false; }
     if (st.idx >= curTasks().length) { showFinal(); return; }
     loadTask();
 }
@@ -1101,12 +1193,16 @@ function showFinal() {
         '<div style="color:#bbb;">' + msg + '</div>' +
         '<button class="fb-next" onclick="restart()">\u041f\u0440\u043e\u0439\u0442\u0438 \u0437\u0430\u043d\u043e\u0432\u043e</button>';
     document.getElementById('exprWrap').innerHTML = '';
+    document.getElementById('problemText').classList.remove('visible');
+    document.getElementById('stepIndicator').style.display = 'none';
+    document.getElementById('givenArea').classList.remove('visible');
+    hideFormulaChoice();
 }
 
 function restart() {
     const st = ms();
     st.idx = 0; st.score = 0; st.results = [];
-    if (st.step !== undefined) { st.step = 1; st.storedM = null; }
+    if (st.step !== undefined) { st.step = 1; st.storedM = null; st.formulaPicked = false; }
     tokens = []; locked = false;
     document.getElementById('feedback').className = 'feedback';
     loadTask();
@@ -1115,8 +1211,19 @@ function restart() {
 /* ══════════════════════════════════════════════════════════
    ── HELPERS ──
    ══════════════════════════════════════════════════════════ */
+function renderProblemText() {
+    const el = document.getElementById('problemText');
+    const task = curTask();
+    if (!task || !task.problem || (currentMode === 'molar')) {
+        el.classList.remove('visible');
+        return;
+    }
+    el.classList.add('visible');
+    el.innerHTML = task.problem;
+}
+
 function loadTask() {
-    // If all tasks done — show final, don't leave stale formula
+    // If all tasks done — show final
     if (ms().idx >= curTasks().length) { showFinal(); return; }
     updateSubtitle();
     updateTableVisibility();
@@ -1124,22 +1231,22 @@ function loadTask() {
     renderStepIndicator();
     renderFormula();
     renderGivenCards();
+    renderProblemText();
     renderExpr();
     renderDots();
     updateScore();
+    hideFormulaChoice();
 
     // Update task label
     const label = document.getElementById('taskLabel');
     if (currentMode === 'molar') {
         label.textContent = '\u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435';
     } else if (currentMode === 'concentration') {
-        const st = ms();
-        label.textContent = st.step === 1 ? '\u0428\u0430\u0433 1: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 M' : '\u0428\u0430\u0433 2: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 C';
+        label.textContent = '\u0428\u0430\u0433 1: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 M';
     } else if (currentMode === 'solutions') {
         label.textContent = '\u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435';
     } else if (currentMode === 'equivalents') {
-        const st = ms();
-        label.textContent = st.step === 1 ? '\u0428\u0430\u0433 1: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 M' : '\u0428\u0430\u0433 2: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 \u042d';
+        label.textContent = '\u0428\u0430\u0433 1: \u0412\u044b\u0447\u0438\u0441\u043b\u0438\u0442\u0435 M';
     }
 
     // For solutions, show the find formula
