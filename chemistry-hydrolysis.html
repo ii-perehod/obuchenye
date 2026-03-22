@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Гидролиз солей</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .card h2 { font-size: 1.15em; margin-bottom: 14px; color: #fff; }
+        .card h3 { font-size: 1em; margin: 16px 0 8px; color: #00d2ff; }
+        .card p, .card li { line-height: 1.7; margin-bottom: 8px; color: #ccc; }
+        .card ul { padding-left: 20px; }
+        .card .formula-box {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 1.1em;
+            text-align: center; color: #00d2ff;
+        }
+        .card .formula-box .label { font-size: 0.75em; color: #888; font-family: 'Segoe UI', Arial, sans-serif; display: block; margin-top: 6px; }
+        .card .analogy {
+            background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .analogy b { color: #f59e0b; }
+        .card .warning {
+            background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .warning b { color: #ef4444; }
+        .card table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .card th, .card td { border: 1px solid rgba(255,255,255,0.15); padding: 8px 12px; text-align: center; font-size: 0.9em; }
+        .card th { background: rgba(0,210,255,0.1); color: #00d2ff; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Buttons */
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d2ff, #7b2ff7); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,210,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-wrap { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+
+        /* Progress */
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #7b2ff7); border-radius: 10px; transition: width 0.4s; }
+
+        /* Tags */
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .tag-theory { background: rgba(0,210,255,0.2); color: #00d2ff; }
+        .tag-easy { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-medium { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .tag-hard { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+        /* Quiz options */
+        .quiz-option {
+            display: block; width: 100%; padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+            background: rgba(255,255,255,0.04); color: #e0e0e0;
+            font-size: 0.95em; cursor: pointer; margin-bottom: 8px;
+            text-align: left; transition: all 0.2s;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .quiz-option.correct { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+        .quiz-option.wrong { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+        .quiz-explain {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+            font-size: 0.88em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .quiz-explain b { color: #00d2ff; }
+
+        /* Trainer answer buttons */
+        .dir-buttons {
+            display: flex; gap: 10px; margin: 18px 0; justify-content: center; flex-wrap: wrap;
+        }
+        .dir-btn {
+            flex: 1; min-width: 120px; max-width: 220px; padding: 18px 10px; border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 14px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: center; transition: all 0.2s; font-weight: 700;
+        }
+        .dir-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+        .dir-btn.correct { background: rgba(74,222,128,0.2); border-color: #4ade80; color: #4ade80; }
+        .dir-btn.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #ef4444; }
+        .dir-btn .dir-sub { display: block; font-size: 0.55em; font-weight: 400; margin-top: 4px; color: #888; }
+
+        .train-explain {
+            padding: 14px 18px; border-radius: 10px; margin: 12px 0;
+            font-size: 0.92em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .train-explain.show-correct {
+            display: block; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
+        }
+        .train-explain.show-wrong {
+            display: block; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+        }
+        .train-explain b { color: #00d2ff; }
+
+        .reaction-display {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.25em; color: #00d2ff; text-align: center;
+            background: rgba(0,0,0,0.3); border-radius: 10px;
+            padding: 16px; margin: 12px 0; line-height: 1.6;
+        }
+        .change-display {
+            text-align: center; font-size: 1.05em; color: #f59e0b;
+            margin: 14px 0; font-weight: 600;
+        }
+        .retry-badge {
+            display: inline-block; background: rgba(239,68,68,0.2); color: #ef4444;
+            padding: 2px 10px; border-radius: 10px; font-size: 0.75em; font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        /* Results */
+        .result-score {
+            text-align: center; font-size: 2.5em; font-weight: 800;
+            margin: 20px 0 8px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .result-text { text-align: center; color: #aaa; font-size: 1.1em; margin-bottom: 20px; }
+
+        /* Error list */
+        .error-list { margin-top: 16px; }
+        .error-item {
+            background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+        }
+        .error-item .err-q { color: #e0e0e0; font-weight: 600; margin-bottom: 4px; }
+        .error-item .err-a { color: #4ade80; font-size: 0.88em; }
+
+        .mnemonic-box {
+            background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            text-align: center; font-size: 1.15em; font-weight: 700; color: #a78bfa;
+        }
+        .mnemonic-box .mnemonic-sub { font-size: 0.7em; font-weight: 400; color: #888; display: block; margin-top: 4px; }
+
+        .step-box {
+            background: rgba(0,210,255,0.05); border-left: 3px solid #00d2ff;
+            border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 8px 0;
+        }
+        .step-box .step-num { color: #00d2ff; font-weight: 700; }
+
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ==================== SCREEN 1: MENU ==================== -->
+    <div id="menuScreen" class="screen active">
+        <h1>Гидролиз солей</h1>
+        <p class="subtitle">Среда раствора, ионы, уравнения гидролиза</p>
+        <div class="card">
+            <button class="topic-btn" onclick="showScreen('theorySimple')">
+                <span class="t-label" style="color:#4ade80">ТЕОРИЯ</span>
+                Теория на пальцах
+                <span class="t-desc">Простые аналогии, без зубрёжки</span>
+            </button>
+            <button class="topic-btn" onclick="showScreen('theoryFormal')">
+                <span class="t-label" style="color:#60a5fa">ТЕОРИЯ + КВИЗ</span>
+                Теория по-взрослому
+                <span class="t-desc">Определения, таблицы, уравнения гидролиза, тест</span>
+            </button>
+            <button class="topic-btn" onclick="startTrainer()">
+                <span class="t-label" style="color:#f59e0b">ТРЕНАЖЁР</span>
+                Тренажёр
+                <span class="t-desc">Среда раствора, тип гидролиза, слабые электролиты</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 2: THEORY SIMPLE ==================== -->
+    <div id="theorySimple" class="screen">
+        <h1>На пальцах</h1>
+        <p class="subtitle">Гидролиз без формул и зубрёжки</p>
+
+        <div class="card">
+            <h2>Что такое гидролиз?</h2>
+            <p>Когда соль растворяется в воде, она распадается на ионы (это мы уже знаем из диссоциации). Но иногда эти ионы начинают <b>взаимодействовать с водой</b>, образуя обратно слабый электролит. Вот это и есть <b>гидролиз</b>.</p>
+            <p>По сути, гидролиз — процесс, <b>обратный нейтрализации</b>. Нейтрализация: кислота + основание = соль + вода. Гидролиз: соль + вода = частично «воскрешает» слабую кислоту или слабое основание.</p>
+        </div>
+
+        <div class="card">
+            <h2>Аналогия: «Боксёрский матч»</h2>
+            <div class="analogy">
+                <b>Представь, что кислота и основание — два боксёра.</b> Они дрались (реакция нейтрализации) и оба «упали» — получилась соль (ничья). Но тут приходит <b>вода-рефери</b> и начинает «оживлять» того боксёра, который был слабее.<br><br>
+                Кто был <b>слабым</b> — того вода и «воскрешает» обратно. А сильный так и лежит в виде ионов, ему вода не нужна.
+            </div>
+            <p>Отсюда главное правило:</p>
+            <div class="mnemonic-box">
+                «Слабый гидролизуется»
+                <span class="mnemonic-sub">Гидролизу подвергается тот ион, который образован СЛАБЫМ электролитом</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Определение среды: кто побеждает?</h2>
+            <div class="analogy">
+                <b>Вода — судья в споре между кислотой и основанием.</b> Если кто-то из них «слабак» — вода берёт его сторону и «добивает», образуя слабый электролит обратно. Среда раствора зависит от того, кто «побеждает»:
+            </div>
+            <div class="step-box"><span class="step-num">1.</span> <b>Сильный + сильный</b> = ничья. Среда <b>нейтральная</b> (pH ~ 7). Гидролиз НЕ идёт. Пример: NaCl (NaOH + HCl).</div>
+            <div class="step-box"><span class="step-num">2.</span> <b>Сильное основание + слабая кислота</b> = побеждает основание. Среда <b>щелочная</b> (pH > 7). Гидролиз по <b>аниону</b>. Пример: Na₂CO₃.</div>
+            <div class="step-box"><span class="step-num">3.</span> <b>Слабое основание + сильная кислота</b> = побеждает кислота. Среда <b>кислая</b> (pH < 7). Гидролиз по <b>катиону</b>. Пример: NH₄Cl.</div>
+            <div class="step-box"><span class="step-num">4.</span> <b>Слабый + слабый</b> = непредсказуемо (кто слабее). Гидролиз по <b>обоим ионам</b>. Пример: CH₃COONH₄.</div>
+        </div>
+
+        <div class="card">
+            <h2>Главная таблица</h2>
+            <table>
+                <tr>
+                    <th>Соль образована</th>
+                    <th>Среда</th>
+                    <th>Гидролиз</th>
+                    <th>Пример</th>
+                </tr>
+                <tr>
+                    <td>Сильн. осн. + сильн. кисл.</td>
+                    <td style="color:#aaa">Нейтральная</td>
+                    <td>Не идёт</td>
+                    <td>NaCl, KNO₃</td>
+                </tr>
+                <tr>
+                    <td>Сильн. осн. + слаб. кисл.</td>
+                    <td style="color:#60a5fa">Щелочная</td>
+                    <td>По аниону</td>
+                    <td>Na₂CO₃, CH₃COONa</td>
+                </tr>
+                <tr>
+                    <td>Слаб. осн. + сильн. кисл.</td>
+                    <td style="color:#ef4444">Кислая</td>
+                    <td>По катиону</td>
+                    <td>NH₄Cl, CuSO₄</td>
+                </tr>
+                <tr>
+                    <td>Слаб. осн. + слаб. кисл.</td>
+                    <td style="color:#a78bfa">Зависит</td>
+                    <td>По обоим</td>
+                    <td>(NH₄)₂CO₃</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Примеры «на пальцах»</h2>
+            <h3>Na₂CO₃ (сода)</h3>
+            <p>Образована: <b>NaOH</b> (сильное основание) + <b>H₂CO₃</b> (слабая кислота).</p>
+            <p>Слабый здесь — кислота (H₂CO₃). Значит, гидролизуется <b>анион CO₃²⁻</b> (он «от кислоты»). Вода «воскрешает» слабую кислоту, при этом выделяется OH⁻ → среда <b>щелочная</b>.</p>
+            <div class="formula-box">
+                CO₃²⁻ + H₂O ⇌ HCO₃⁻ + OH⁻
+                <span class="label">OH⁻ в растворе → щелочная среда</span>
+            </div>
+
+            <h3>NH₄Cl (нашатырь)</h3>
+            <p>Образована: <b>NH₃·H₂O</b> (слабое основание) + <b>HCl</b> (сильная кислота).</p>
+            <p>Слабый здесь — основание. Значит, гидролизуется <b>катион NH₄⁺</b>. Вода «воскрешает» слабое основание, при этом выделяется H⁺ → среда <b>кислая</b>.</p>
+            <div class="formula-box">
+                NH₄⁺ + H₂O ⇌ NH₃·H₂O + H⁺
+                <span class="label">H⁺ в растворе → кислая среда</span>
+            </div>
+
+            <h3>NaCl (поваренная соль)</h3>
+            <p>Образована: <b>NaOH</b> (сильное основание) + <b>HCl</b> (сильная кислота).</p>
+            <p>Оба сильные — никто не «слабак». Гидролиз <b>НЕ идёт</b>. Среда <b>нейтральная</b>.</p>
+        </div>
+
+        <div class="card">
+            <h2>Ступенчатый гидролиз</h2>
+            <p>Если ион многозарядный (CO₃²⁻, PO₄³⁻, Al³⁺, Fe³⁺), гидролиз идёт <b>ступенчато</b> — по одной ступени за раз. В обычных условиях преимущественно идёт <b>первая ступень</b>.</p>
+            <div class="analogy">
+                <b>Аналогия:</b> Вода «воскрешает» слабого боксёра не сразу целиком, а по частям — сначала руку поднимет, потом голову... Полностью «оживить» удаётся редко (только при нагревании или разбавлении).
+            </div>
+            <div class="formula-box">
+                Na₂CO₃: CO₃²⁻ + H₂O ⇌ HCO₃⁻ + OH⁻
+                <span class="label">1-я ступень (основная). 2-я: HCO₃⁻ + H₂O ⇌ H₂CO₃ + OH⁻ (пренебрежимо мала)</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Необратимый (полный) гидролиз</h2>
+            <p>Некоторые соли, образованные <b>слабым основанием И слабой кислотой</b>, гидролизуются <b>полностью</b> — они вообще не могут существовать в водном растворе!</p>
+            <div class="formula-box">
+                Al₂S₃ + 6H₂O → 2Al(OH)₃↓ + 3H₂S↑
+                <span class="label">Сульфид алюминия полностью разлагается водой</span>
+            </div>
+            <div class="warning">
+                <b>Признак полного гидролиза:</b> продукты «уходят» из раствора — осадок (↓) и газ (↑). Равновесие полностью смещается вправо.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Шпаргалка: кто сильный, кто слабый</h2>
+            <table>
+                <tr><th>Сильные кислоты</th><th>Слабые кислоты</th></tr>
+                <tr><td>HCl, HBr, HI, H₂SO₄, HNO₃, HClO₄</td><td>H₂CO₃, H₂SO₃, HF, H₂S, CH₃COOH, H₂SiO₃, HNO₂, H₃PO₄</td></tr>
+            </table>
+            <table>
+                <tr><th>Сильные основания</th><th>Слабые основания</th></tr>
+                <tr><td>NaOH, KOH, LiOH, Ca(OH)₂, Ba(OH)₂</td><td>NH₃·H₂O, Fe(OH)₂, Fe(OH)₃, Cu(OH)₂, Al(OH)₃, Zn(OH)₂, Cr(OH)₃</td></tr>
+            </table>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="showScreen('theoryFormal')">Теория по-взрослому →</button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 3: THEORY FORMAL + QUIZ ==================== -->
+    <div id="theoryFormal" class="screen">
+        <h1>По-взрослому</h1>
+        <p class="subtitle">Определения, таблицы, уравнения гидролиза, тест</p>
+
+        <div class="card">
+            <h2>Определение гидролиза</h2>
+            <p><b style="color:#00d2ff">Гидролиз солей</b> — обменное взаимодействие ионов соли с молекулами воды, приводящее к образованию слабого электролита и изменению pH среды.</p>
+            <p>Гидролиз — процесс, <b>обратный нейтрализации</b>:</p>
+            <div class="formula-box">
+                Нейтрализация: кислота + основание → соль + H₂O<br>
+                Гидролиз: соль + H₂O ⇌ кислота + основание
+                <span class="label">Обратимый процесс (⇌), кроме случаев полного гидролиза</span>
+            </div>
+            <p><b>Правило:</b> гидролизу подвергается тот ион соли, который образован <b>слабым электролитом</b>. Ион, образованный сильным электролитом, с водой не взаимодействует.</p>
+        </div>
+
+        <div class="card">
+            <h2>Типы гидролиза</h2>
+            <table>
+                <tr>
+                    <th>Тип соли</th>
+                    <th>Среда</th>
+                    <th>pH</th>
+                    <th>Гидролиз</th>
+                </tr>
+                <tr>
+                    <td>Сильн. осн. + сильн. кисл.</td>
+                    <td>Нейтральная</td>
+                    <td>≈ 7</td>
+                    <td>Не идёт</td>
+                </tr>
+                <tr>
+                    <td>Сильн. осн. + слаб. кисл.</td>
+                    <td style="color:#60a5fa">Щелочная</td>
+                    <td>> 7</td>
+                    <td>По аниону</td>
+                </tr>
+                <tr>
+                    <td>Слаб. осн. + сильн. кисл.</td>
+                    <td style="color:#ef4444">Кислая</td>
+                    <td>< 7</td>
+                    <td>По катиону</td>
+                </tr>
+                <tr>
+                    <td>Слаб. осн. + слаб. кисл.</td>
+                    <td style="color:#a78bfa">Зависит от Kд</td>
+                    <td>≈ 7</td>
+                    <td>По обоим ионам</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Гидролиз по аниону</h2>
+            <p>Соль образована <b>сильным основанием</b> и <b>слабой кислотой</b>. Анион (от слабой кислоты) реагирует с водой.</p>
+
+            <h3>Na₂CO₃ (карбонат натрия)</h3>
+            <p>Образована: NaOH (сильн.) + H₂CO₃ (слаб.). Гидролизуется анион CO₃²⁻.</p>
+            <div class="formula-box">
+                <b>Ионное:</b> CO₃²⁻ + H₂O ⇌ HCO₃⁻ + OH⁻<br>
+                <b>Молекулярное:</b> Na₂CO₃ + H₂O ⇌ NaHCO₃ + NaOH
+                <span class="label">Среда щелочная (OH⁻), pH > 7</span>
+            </div>
+
+            <h3>CH₃COONa (ацетат натрия)</h3>
+            <p>Образована: NaOH (сильн.) + CH₃COOH (слаб.). Гидролизуется анион CH₃COO⁻.</p>
+            <div class="formula-box">
+                CH₃COO⁻ + H₂O ⇌ CH₃COOH + OH⁻
+                <span class="label">Среда щелочная (OH⁻), pH > 7</span>
+            </div>
+
+            <h3>K₂SiO₃ (силикат калия)</h3>
+            <p>Образована: KOH (сильн.) + H₂SiO₃ (слаб.). Гидролизуется анион SiO₃²⁻.</p>
+            <div class="formula-box">
+                SiO₃²⁻ + H₂O ⇌ HSiO₃⁻ + OH⁻
+                <span class="label">Среда щелочная (OH⁻), pH > 7</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Гидролиз по катиону</h2>
+            <p>Соль образована <b>слабым основанием</b> и <b>сильной кислотой</b>. Катион (от слабого основания) реагирует с водой.</p>
+
+            <h3>NH₄Cl (хлорид аммония)</h3>
+            <p>Образована: NH₃·H₂O (слаб.) + HCl (сильн.). Гидролизуется катион NH₄⁺.</p>
+            <div class="formula-box">
+                NH₄⁺ + H₂O ⇌ NH₃·H₂O + H⁺
+                <span class="label">Среда кислая (H⁺), pH < 7</span>
+            </div>
+
+            <h3>CuSO₄ (сульфат меди)</h3>
+            <p>Образована: Cu(OH)₂ (слаб.) + H₂SO₄ (сильн.). Гидролизуется катион Cu²⁺.</p>
+            <div class="formula-box">
+                Cu²⁺ + H₂O ⇌ CuOH⁺ + H⁺
+                <span class="label">Среда кислая (H⁺), pH < 7</span>
+            </div>
+
+            <h3>AlCl₃ (хлорид алюминия)</h3>
+            <p>Образована: Al(OH)₃ (слаб.) + HCl (сильн.). Гидролизуется катион Al³⁺.</p>
+            <div class="formula-box">
+                Al³⁺ + H₂O ⇌ AlOH²⁺ + H⁺
+                <span class="label">Среда кислая (H⁺), pH < 7, первая ступень</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Гидролиз по обоим ионам</h2>
+            <p>Соль образована <b>слабым основанием</b> и <b>слабой кислотой</b>. Оба иона реагируют с водой.</p>
+            <div class="formula-box">
+                CH₃COONH₄ + H₂O ⇌ CH₃COOH + NH₃·H₂O
+                <span class="label">Среда близка к нейтральной (зависит от соотношения констант)</span>
+            </div>
+
+            <h3>Необратимый (полный) гидролиз</h3>
+            <p>Если оба продукта уходят из раствора (↓ и ↑), гидролиз идёт <b>до конца</b>:</p>
+            <div class="formula-box">
+                Al₂S₃ + 6H₂O → 2Al(OH)₃↓ + 3H₂S↑
+                <span class="label">Полный гидролиз — необратимый (→, не ⇌)</span>
+            </div>
+            <div class="formula-box">
+                Cr₂S₃ + 6H₂O → 2Cr(OH)₃↓ + 3H₂S↑
+                <span class="label">Ещё пример полного гидролиза</span>
+            </div>
+            <div class="warning">
+                <b>Важно:</b> Al₂S₃, Cr₂S₃, Al₂(CO₃)₃, Fe₂(CO₃)₃ — эти соли <b>не существуют в водном растворе</b>, так как полностью гидролизуются. Их нельзя получить обменной реакцией в растворе!
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Факторы, усиливающие гидролиз</h2>
+            <ul>
+                <li><b>Нагревание</b> — смещает равновесие вправо (эндотермический процесс)</li>
+                <li><b>Разбавление</b> — увеличивает концентрацию воды, смещает равновесие</li>
+                <li><b>Удаление продуктов</b> — выпадение осадка, выделение газа</li>
+            </ul>
+        </div>
+
+        <div class="card" style="text-align:center">
+            <h2>Проверь себя</h2>
+            <p>12 вопросов из 22: лёгкие, средние и сложные</p>
+            <div class="btn-wrap">
+                <button class="btn btn-primary" onclick="startQuiz()">Начать тест</button>
+            </div>
+        </div>
+
+        <!-- Quiz area -->
+        <div id="quizArea" style="display:none">
+            <div class="prog-wrap">
+                <div class="prog-info">
+                    <span id="quizProgress">Вопрос 1 / 12</span>
+                    <span id="quizScore">0 правильных</span>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" id="quizBar" style="width:0%"></div></div>
+            </div>
+            <div class="card" id="quizCard">
+                <div id="quizTag"></div>
+                <p id="quizQuestion" style="font-weight:600;color:#fff;margin-bottom:14px;font-size:1.05em"></p>
+                <div id="quizOptions"></div>
+                <div class="quiz-explain" id="quizExplain"></div>
+                <div class="btn-wrap" id="quizNextWrap" style="display:none">
+                    <button class="btn btn-primary" onclick="nextQuizQuestion()">Дальше →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz results -->
+        <div id="quizResults" style="display:none">
+            <div class="card">
+                <div class="result-score" id="quizResultScore"></div>
+                <div class="result-text" id="quizResultText"></div>
+                <div class="error-list" id="quizErrors"></div>
+                <div class="btn-wrap" id="quizResultBtns"></div>
+            </div>
+        </div>
+
+        <div class="btn-wrap" id="formalNav">
+            <button class="btn btn-secondary" onclick="showScreen('theorySimple')">← На пальцах</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">Меню</button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 4: TRAINER ==================== -->
+    <div id="trainScreen" class="screen" style="position:relative;">
+        <button style="position:absolute;top:12px;right:16px;background:none;border:1px solid rgba(255,255,255,0.2);color:#888;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:0.82em;" onclick="showScreen('menuScreen')">✕ Выйти</button>
+        <h1>Тренажёр</h1>
+        <p class="subtitle">Среда раствора, тип гидролиза, слабые электролиты</p>
+
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="trainProgress">Задание 1 / 33</span>
+                <span id="trainScore">0 правильных</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="trainBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card" id="trainCard">
+            <div id="trainRetryBadge"></div>
+            <div class="reaction-display" id="trainReaction"></div>
+            <div class="change-display" id="trainChange"></div>
+            <div class="dir-buttons" id="trainButtons"></div>
+            <div class="train-explain" id="trainExplain"></div>
+            <div class="btn-wrap" id="trainNextWrap" style="display:none">
+                <button class="btn btn-primary" onclick="nextTrainTask()">Дальше →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 5: RESULTS ==================== -->
+    <div id="trainResults" class="screen">
+        <h1>Результаты</h1>
+        <div class="card">
+            <div class="result-score" id="trainResultScore"></div>
+            <div class="result-text" id="trainResultText"></div>
+            <div class="btn-wrap">
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+                <button class="btn btn-primary" onclick="startTrainer()">Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===================== NAVIGATION =====================
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ===================== SHUFFLE =====================
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ===================== QUIZ DATA =====================
+const quizData = {
+    easy: [
+        {
+            q: 'Что такое гидролиз солей?',
+            opts: ['Взаимодействие ионов соли с водой с образованием слабого электролита', 'Растворение соли в воде', 'Распад соли на ионы', 'Выпадение соли в осадок'],
+            ans: 0,
+            explain: 'Гидролиз — это <b>взаимодействие ионов соли с водой</b>, приводящее к образованию слабого электролита и изменению pH среды.'
+        },
+        {
+            q: 'Какая среда раствора NaCl?',
+            opts: ['Нейтральная', 'Кислая', 'Щелочная', 'Сильнощелочная'],
+            ans: 0,
+            explain: 'NaCl образована <b>NaOH (сильн. осн.) + HCl (сильн. кисл.)</b>. Оба сильные — гидролиз не идёт, среда <b>нейтральная</b>.'
+        },
+        {
+            q: 'Какая среда раствора Na₂CO₃?',
+            opts: ['Щелочная', 'Кислая', 'Нейтральная', 'Сильнокислая'],
+            ans: 0,
+            explain: 'Na₂CO₃ образована <b>NaOH (сильн.) + H₂CO₃ (слаб.)</b>. Гидролиз по аниону → среда <b>щелочная</b> (OH⁻).'
+        },
+        {
+            q: 'Какая среда раствора NH₄Cl?',
+            opts: ['Кислая', 'Щелочная', 'Нейтральная', 'Зависит от температуры'],
+            ans: 0,
+            explain: 'NH₄Cl образована <b>NH₃·H₂O (слаб.) + HCl (сильн.)</b>. Гидролиз по катиону → среда <b>кислая</b> (H⁺).'
+        },
+        {
+            q: 'Гидролиз — это процесс, обратный:',
+            opts: ['Нейтрализации', 'Диссоциации', 'Окислению', 'Восстановлению'],
+            ans: 0,
+            explain: 'Гидролиз — процесс, <b>обратный нейтрализации</b>. Нейтрализация: кислота + основание → соль + вода. Гидролиз: соль + вода ⇌ ...'
+        },
+        {
+            q: 'Какой ион подвергается гидролизу?',
+            opts: ['Ион, образованный слабым электролитом', 'Ион, образованный сильным электролитом', 'Любой ион', 'Только катион'],
+            ans: 0,
+            explain: 'Правило: <b>гидролизуется тот ион, который образован СЛАБЫМ электролитом</b>. Сильный ион воду «не трогает».'
+        },
+        {
+            q: 'Идёт ли гидролиз KNO₃?',
+            opts: ['Нет, не идёт', 'Да, по катиону', 'Да, по аниону', 'Да, по обоим ионам'],
+            ans: 0,
+            explain: 'KNO₃ образована <b>KOH (сильн.) + HNO₃ (сильн.)</b>. Оба иона от сильных электролитов — гидролиз <b>не идёт</b>.'
+        },
+        {
+            q: 'Какая среда раствора Na₂SO₄?',
+            opts: ['Нейтральная', 'Кислая', 'Щелочная', 'Слабощелочная'],
+            ans: 0,
+            explain: 'Na₂SO₄ образована <b>NaOH (сильн.) + H₂SO₄ (сильн.)</b>. Оба сильные — гидролиз не идёт, среда <b>нейтральная</b>.'
+        }
+    ],
+    medium: [
+        {
+            q: 'По какому иону гидролизуется CuSO₄?',
+            opts: ['По катиону Cu²⁺', 'По аниону SO₄²⁻', 'По обоим ионам', 'Не гидролизуется'],
+            ans: 0,
+            explain: 'CuSO₄: <b>Cu(OH)₂ (слаб. осн.) + H₂SO₄ (сильн. кисл.)</b>. Слабый — основание, значит гидролиз <b>по катиону Cu²⁺</b>.'
+        },
+        {
+            q: 'По какому иону гидролизуется CH₃COONa?',
+            opts: ['По аниону CH₃COO⁻', 'По катиону Na⁺', 'По обоим ионам', 'Не гидролизуется'],
+            ans: 0,
+            explain: 'CH₃COONa: <b>NaOH (сильн.) + CH₃COOH (слаб.)</b>. Слабая — кислота, значит гидролиз <b>по аниону CH₃COO⁻</b>.'
+        },
+        {
+            q: 'Что образуется при гидролизе Na₂CO₃ по первой ступени?',
+            opts: ['NaHCO₃ и NaOH', 'Na₂CO₃ и H₂O', 'H₂CO₃ и NaOH', 'NaCl и CO₂'],
+            ans: 0,
+            explain: 'Na₂CO₃ + H₂O ⇌ <b>NaHCO₃ + NaOH</b>. Ионное: CO₃²⁻ + H₂O ⇌ HCO₃⁻ + OH⁻ (первая ступень).'
+        },
+        {
+            q: 'Какая среда раствора FeCl₃?',
+            opts: ['Кислая', 'Щелочная', 'Нейтральная', 'Сильнощелочная'],
+            ans: 0,
+            explain: 'FeCl₃: <b>Fe(OH)₃ (слаб. осн.) + HCl (сильн. кисл.)</b>. Гидролиз по катиону → среда <b>кислая</b>.'
+        },
+        {
+            q: 'Какая среда раствора K₂SiO₃?',
+            opts: ['Щелочная', 'Кислая', 'Нейтральная', 'Зависит от концентрации'],
+            ans: 0,
+            explain: 'K₂SiO₃: <b>KOH (сильн.) + H₂SiO₃ (слаб.)</b>. Гидролиз по аниону → среда <b>щелочная</b>.'
+        },
+        {
+            q: 'При гидролизе AlCl₃ по первой ступени образуется:',
+            opts: ['AlOH²⁺ и H⁺', 'Al(OH)₃ и HCl', 'Al³⁺ и OH⁻', 'AlCl₂ и HCl'],
+            ans: 0,
+            explain: 'AlCl₃: Al³⁺ + H₂O ⇌ <b>AlOH²⁺ + H⁺</b>. Первая ступень — присоединяется один OH.'
+        },
+        {
+            q: 'По какому иону гидролизуется (NH₄)₂CO₃?',
+            opts: ['По обоим ионам', 'Только по катиону', 'Только по аниону', 'Не гидролизуется'],
+            ans: 0,
+            explain: '(NH₄)₂CO₃: <b>NH₃·H₂O (слаб.) + H₂CO₃ (слаб.)</b>. Оба слабые — гидролиз <b>по обоим ионам</b>.'
+        },
+        {
+            q: 'Что усиливает гидролиз?',
+            opts: ['Нагревание и разбавление', 'Охлаждение и концентрирование', 'Добавление соли', 'Ничего, гидролиз постоянен'],
+            ans: 0,
+            explain: '<b>Нагревание</b> (эндотермический процесс) и <b>разбавление</b> (больше воды) усиливают гидролиз.'
+        }
+    ],
+    hard: [
+        {
+            q: 'Почему Al₂S₃ нельзя получить обменной реакцией в растворе?',
+            opts: ['Полностью гидролизуется водой', 'Не растворяется', 'Не существует вообще', 'Слишком сильный электролит'],
+            ans: 0,
+            explain: 'Al₂S₃ — соль слабого основания Al(OH)₃ и слабой кислоты H₂S. В воде <b>полностью гидролизуется</b>: Al₂S₃ + 6H₂O → 2Al(OH)₃↓ + 3H₂S↑.'
+        },
+        {
+            q: 'При смешивании растворов AlCl₃ и Na₂CO₃ выпадает осадок и выделяется газ. Это пример:',
+            opts: ['Совместного (взаимного) гидролиза', 'Обычной обменной реакции', 'Окислительно-восстановительной реакции', 'Реакции нейтрализации'],
+            ans: 0,
+            explain: 'Al³⁺ гидролизуется по катиону, CO₃²⁻ по аниону. Они <b>усиливают гидролиз друг друга</b> → полный гидролиз: 2AlCl₃ + 3Na₂CO₃ + 3H₂O → 2Al(OH)₃↓ + 3CO₂↑ + 6NaCl.'
+        },
+        {
+            q: 'Раствор какой соли имеет pH > 7?',
+            opts: ['Na₃PO₄', 'ZnCl₂', 'KNO₃', 'NH₄NO₃'],
+            ans: 0,
+            explain: 'Na₃PO₄: <b>NaOH (сильн.) + H₃PO₄ (слаб.)</b>. Гидролиз по аниону → щелочная среда, <b>pH > 7</b>. ZnCl₂ — кислая, KNO₃ — нейтральная, NH₄NO₃ — кислая.'
+        },
+        {
+            q: 'Какой из растворов имеет наиболее кислую среду?',
+            opts: ['AlCl₃', 'NaCl', 'Na₂CO₃', 'KNO₃'],
+            ans: 0,
+            explain: '<b>AlCl₃</b>: Al(OH)₃ (слаб.) + HCl (сильн.) → кислая среда. Al³⁺ — трёхзарядный, гидролиз сильный. NaCl и KNO₃ — нейтральные, Na₂CO₃ — щелочная.'
+        },
+        {
+            q: 'При гидролизе Na₂S по первой ступени ионное уравнение:',
+            opts: ['S²⁻ + H₂O ⇌ HS⁻ + OH⁻', 'S²⁻ + 2H₂O ⇌ H₂S + 2OH⁻', 'Na⁺ + H₂O ⇌ NaOH + H⁺', 'Na₂S → 2Na⁺ + S²⁻'],
+            ans: 0,
+            explain: 'Na₂S: NaOH (сильн.) + H₂S (слаб.). Гидролиз по аниону, 1-я ступень: <b>S²⁻ + H₂O ⇌ HS⁻ + OH⁻</b>.'
+        },
+        {
+            q: 'Какая соль подвергается полному (необратимому) гидролизу?',
+            opts: ['Cr₂S₃', 'Na₂CO₃', 'CuSO₄', 'NH₄Cl'],
+            ans: 0,
+            explain: '<b>Cr₂S₃</b> — соль слабого основания Cr(OH)₃ и слабой кислоты H₂S. Продукты уходят (↓ и ↑) → <b>полный гидролиз</b>: Cr₂S₃ + 6H₂O → 2Cr(OH)₃↓ + 3H₂S↑.'
+        }
+    ]
+};
+
+// ===================== QUIZ ENGINE =====================
+let quizQuestions = [], quizIndex = 0, quizCorrect = 0, quizAnswered = false;
+let quizErrors = [], quizTotalAsked = 0;
+
+function startQuiz() {
+    const easy = shuffle(quizData.easy).slice(0, 4);
+    const medium = shuffle(quizData.medium).slice(0, 4);
+    const hard = shuffle(quizData.hard).slice(0, 4);
+    easy.forEach(q => q._diff = 'easy');
+    medium.forEach(q => q._diff = 'medium');
+    hard.forEach(q => q._diff = 'hard');
+    quizQuestions = [...easy, ...medium, ...hard];
+    quizIndex = 0; quizCorrect = 0; quizErrors = []; quizTotalAsked = 0;
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    const q = quizQuestions[quizIndex];
+    quizAnswered = false;
+    const diffNames = {easy: 'Лёгкий', medium: 'Средний', hard: 'Сложный'};
+    const diffTags = {easy: 'tag-easy', medium: 'tag-medium', hard: 'tag-hard'};
+    document.getElementById('quizTag').innerHTML = `<span class="topic-tag ${diffTags[q._diff]}">${diffNames[q._diff]}</span>`;
+    document.getElementById('quizQuestion').textContent = q.q;
+    document.getElementById('quizProgress').textContent = `Вопрос ${quizIndex + 1} / ${quizQuestions.length}`;
+    document.getElementById('quizScore').textContent = `${quizCorrect} правильных`;
+    document.getElementById('quizBar').style.width = ((quizIndex) / quizQuestions.length * 100) + '%';
+    document.getElementById('quizExplain').style.display = 'none';
+    document.getElementById('quizNextWrap').style.display = 'none';
+
+    const optsDiv = document.getElementById('quizOptions');
+    optsDiv.innerHTML = '';
+    const indices = shuffle(Array.from({length: q.opts.length}, (_, i) => i));
+    indices.forEach(i => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.innerHTML = q.opts[i];
+        btn.dataset.idx = i;
+        btn.onclick = () => selectQuizOption(i, btn);
+        optsDiv.appendChild(btn);
+    });
+}
+
+function selectQuizOption(idx, btn) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    const q = quizQuestions[quizIndex];
+    const allBtns = document.querySelectorAll('#quizOptions .quiz-option');
+    allBtns.forEach(b => {
+        b.style.pointerEvents = 'none';
+        if (parseInt(b.dataset.idx) === q.ans) b.classList.add('correct');
+    });
+    if (idx === q.ans) {
+        quizCorrect++;
+        btn.classList.add('correct');
+    } else {
+        btn.classList.add('wrong');
+        quizErrors.push({ q: q.q, correctAns: q.opts[q.ans], full: q });
+    }
+    document.getElementById('quizExplain').innerHTML = q.explain;
+    document.getElementById('quizExplain').style.display = 'block';
+    document.getElementById('quizNextWrap').style.display = 'flex';
+    document.getElementById('quizScore').textContent = `${quizCorrect} правильных`;
+}
+
+function nextQuizQuestion() {
+    quizIndex++;
+    if (quizIndex >= quizQuestions.length) {
+        showQuizResults();
+    } else {
+        renderQuizQuestion();
+    }
+}
+
+function showQuizResults() {
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('quizResults').style.display = 'block';
+    if (!quizTotalAsked) quizTotalAsked = quizQuestions.length;
+    const pct = Math.round(quizCorrect / quizTotalAsked * 100);
+    document.getElementById('quizResultScore').textContent = `${quizCorrect} / ${quizTotalAsked} (${pct}%)`;
+    let text = pct === 100 ? 'Молодец! Всё верно!' : pct >= 75 ? 'Хороший результат!' : pct >= 50 ? 'Неплохо, но стоит повторить.' : 'Нужно ещё раз перечитать теорию.';
+    document.getElementById('quizResultText').textContent = text;
+
+    const errDiv = document.getElementById('quizErrors');
+    errDiv.innerHTML = '';
+    const btnsDiv = document.getElementById('quizResultBtns');
+
+    if (quizErrors.length > 0) {
+        errDiv.innerHTML = '<h3 style="color:#ef4444;margin-bottom:10px;">Ошибки:</h3>';
+        quizErrors.forEach(e => {
+            errDiv.innerHTML += `<div class="error-item"><div class="err-q">${e.q}</div><div class="err-a">Правильный ответ: ${e.correctAns}</div></div>`;
+        });
+        btnsDiv.innerHTML = `<button class="btn btn-primary" onclick="retryQuizErrors()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;">Повторить ошибки (${quizErrors.length})</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>`;
+    } else {
+        btnsDiv.innerHTML = `<button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>`;
+    }
+}
+
+function retryQuizErrors() {
+    quizQuestions = shuffle(quizErrors.map(e => e.full));
+    quizIndex = 0;
+    quizErrors = [];
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+// ===================== TRAINER DATA =====================
+const trainTasks = [
+    // TYPE 1: Какая среда раствора? (15 tasks)
+    { type: 'environment', substance: 'NaCl', answer: 'Нейтральная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>NaCl</b>: NaOH (сильн. осн.) + HCl (сильн. кисл.). Оба сильные — гидролиз <b>не идёт</b>, среда <b>нейтральная</b>.' },
+    { type: 'environment', substance: 'Na₂CO₃', answer: 'Щелочная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>Na₂CO₃</b>: NaOH (сильн.) + H₂CO₃ (слаб. кисл.). Гидролиз по аниону CO₃²⁻ → образуется OH⁻ → среда <b>щелочная</b>.' },
+    { type: 'environment', substance: 'NH₄Cl', answer: 'Кислая', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>NH₄Cl</b>: NH₃·H₂O (слаб. осн.) + HCl (сильн. кисл.). Гидролиз по катиону NH₄⁺ → образуется H⁺ → среда <b>кислая</b>.' },
+    { type: 'environment', substance: 'CuSO₄', answer: 'Кислая', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>CuSO₄</b>: Cu(OH)₂ (слаб. осн.) + H₂SO₄ (сильн. кисл.). Гидролиз по катиону Cu²⁺ → среда <b>кислая</b>.' },
+    { type: 'environment', substance: 'KNO₃', answer: 'Нейтральная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>KNO₃</b>: KOH (сильн. осн.) + HNO₃ (сильн. кисл.). Оба сильные — гидролиз <b>не идёт</b>, среда <b>нейтральная</b>.' },
+    { type: 'environment', substance: 'CH₃COONa', answer: 'Щелочная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>CH₃COONa</b>: NaOH (сильн.) + CH₃COOH (слаб. кисл.). Гидролиз по аниону CH₃COO⁻ → среда <b>щелочная</b>.' },
+    { type: 'environment', substance: 'FeCl₃', answer: 'Кислая', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>FeCl₃</b>: Fe(OH)₃ (слаб. осн.) + HCl (сильн. кисл.). Гидролиз по катиону Fe³⁺ → среда <b>кислая</b>.' },
+    { type: 'environment', substance: 'K₂SiO₃', answer: 'Щелочная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>K₂SiO₃</b>: KOH (сильн.) + H₂SiO₃ (слаб. кисл.). Гидролиз по аниону SiO₃²⁻ → среда <b>щелочная</b>.' },
+    { type: 'environment', substance: 'AlCl₃', answer: 'Кислая', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>AlCl₃</b>: Al(OH)₃ (слаб. осн.) + HCl (сильн. кисл.). Гидролиз по катиону Al³⁺ → среда <b>кислая</b>.' },
+    { type: 'environment', substance: 'Na₂SO₄', answer: 'Нейтральная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>Na₂SO₄</b>: NaOH (сильн.) + H₂SO₄ (сильн.). Оба сильные — гидролиз <b>не идёт</b>, среда <b>нейтральная</b>.' },
+    { type: 'environment', substance: 'Na₃PO₄', answer: 'Щелочная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>Na₃PO₄</b>: NaOH (сильн.) + H₃PO₄ (слаб. кисл.). Гидролиз по аниону PO₄³⁻ → среда <b>щелочная</b>.' },
+    { type: 'environment', substance: 'ZnCl₂', answer: 'Кислая', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>ZnCl₂</b>: Zn(OH)₂ (слаб. осн.) + HCl (сильн. кисл.). Гидролиз по катиону Zn²⁺ → среда <b>кислая</b>.' },
+    { type: 'environment', substance: 'Na₂S', answer: 'Щелочная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>Na₂S</b>: NaOH (сильн.) + H₂S (слаб. кисл.). Гидролиз по аниону S²⁻ → среда <b>щелочная</b>.' },
+    { type: 'environment', substance: 'NH₄NO₃', answer: 'Кислая', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>NH₄NO₃</b>: NH₃·H₂O (слаб. осн.) + HNO₃ (сильн. кисл.). Гидролиз по катиону NH₄⁺ → среда <b>кислая</b>.' },
+    { type: 'environment', substance: 'BaCl₂', answer: 'Нейтральная', options: ['Кислая', 'Щелочная', 'Нейтральная'],
+      explanation: '<b>BaCl₂</b>: Ba(OH)₂ (сильн. осн.) + HCl (сильн. кисл.). Оба сильные — гидролиз <b>не идёт</b>, среда <b>нейтральная</b>.' },
+
+    // TYPE 2: По какому иону идёт гидролиз? (10 tasks)
+    { type: 'ion_type', substance: 'Na₂CO₃', answer: 'По аниону', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>Na₂CO₃</b>: Na⁺ от NaOH (сильн.), CO₃²⁻ от H₂CO₃ (слаб.). Слабый — анион → гидролиз <b>по аниону</b>.' },
+    { type: 'ion_type', substance: 'NH₄Cl', answer: 'По катиону', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>NH₄Cl</b>: NH₄⁺ от NH₃·H₂O (слаб.), Cl⁻ от HCl (сильн.). Слабый — катион → гидролиз <b>по катиону</b>.' },
+    { type: 'ion_type', substance: 'NaCl', answer: 'Не идёт', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>NaCl</b>: Na⁺ от NaOH (сильн.), Cl⁻ от HCl (сильн.). Оба сильные — гидролиз <b>не идёт</b>.' },
+    { type: 'ion_type', substance: '(NH₄)₂CO₃', answer: 'По обоим', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>(NH₄)₂CO₃</b>: NH₄⁺ от NH₃·H₂O (слаб.), CO₃²⁻ от H₂CO₃ (слаб.). Оба слабые → гидролиз <b>по обоим ионам</b>.' },
+    { type: 'ion_type', substance: 'FeCl₃', answer: 'По катиону', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>FeCl₃</b>: Fe³⁺ от Fe(OH)₃ (слаб.), Cl⁻ от HCl (сильн.). Слабый — катион → гидролиз <b>по катиону</b>.' },
+    { type: 'ion_type', substance: 'K₂SiO₃', answer: 'По аниону', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>K₂SiO₃</b>: K⁺ от KOH (сильн.), SiO₃²⁻ от H₂SiO₃ (слаб.). Слабый — анион → гидролиз <b>по аниону</b>.' },
+    { type: 'ion_type', substance: 'CuSO₄', answer: 'По катиону', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>CuSO₄</b>: Cu²⁺ от Cu(OH)₂ (слаб.), SO₄²⁻ от H₂SO₄ (сильн.). Слабый — катион → гидролиз <b>по катиону</b>.' },
+    { type: 'ion_type', substance: 'KNO₃', answer: 'Не идёт', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>KNO₃</b>: K⁺ от KOH (сильн.), NO₃⁻ от HNO₃ (сильн.). Оба сильные — гидролиз <b>не идёт</b>.' },
+    { type: 'ion_type', substance: 'CH₃COONH₄', answer: 'По обоим', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>CH₃COONH₄</b>: NH₄⁺ от NH₃·H₂O (слаб.), CH₃COO⁻ от CH₃COOH (слаб.). Оба слабые → гидролиз <b>по обоим ионам</b>.' },
+    { type: 'ion_type', substance: 'AlCl₃', answer: 'По катиону', options: ['По катиону', 'По аниону', 'По обоим', 'Не идёт'],
+      explanation: '<b>AlCl₃</b>: Al³⁺ от Al(OH)₃ (слаб.), Cl⁻ от HCl (сильн.). Слабый — катион → гидролиз <b>по катиону</b>.' },
+
+    // TYPE 3: Какой слабый электролит образовал эту соль? (8 tasks)
+    { type: 'weak_electrolyte', substance: 'Na₂CO₃', answer: 'H₂CO₃ (угольная кислота)', options: ['H₂CO₃ (угольная кислота)', 'H₂SO₄ (серная кислота)', 'NaOH (гидроксид натрия)', 'HCl (соляная кислота)'],
+      explanation: '<b>Na₂CO₃</b> = NaOH + H₂CO₃. NaOH — сильный, <b>H₂CO₃ — слабая кислота</b> (именно она «слабак»).' },
+    { type: 'weak_electrolyte', substance: 'NH₄Cl', answer: 'NH₃·H₂O (гидрат аммиака)', options: ['NH₃·H₂O (гидрат аммиака)', 'HCl (соляная кислота)', 'NaOH (гидроксид натрия)', 'H₂CO₃ (угольная кислота)'],
+      explanation: '<b>NH₄Cl</b> = NH₃·H₂O + HCl. HCl — сильная, <b>NH₃·H₂O — слабое основание</b> (именно оно «слабак»).' },
+    { type: 'weak_electrolyte', substance: 'CuSO₄', answer: 'Cu(OH)₂ (гидроксид меди)', options: ['Cu(OH)₂ (гидроксид меди)', 'H₂SO₄ (серная кислота)', 'CuO (оксид меди)', 'NaOH (гидроксид натрия)'],
+      explanation: '<b>CuSO₄</b> = Cu(OH)₂ + H₂SO₄. H₂SO₄ — сильная, <b>Cu(OH)₂ — слабое основание</b>.' },
+    { type: 'weak_electrolyte', substance: 'CH₃COONa', answer: 'CH₃COOH (уксусная кислота)', options: ['CH₃COOH (уксусная кислота)', 'NaOH (гидроксид натрия)', 'H₂CO₃ (угольная кислота)', 'HCl (соляная кислота)'],
+      explanation: '<b>CH₃COONa</b> = NaOH + CH₃COOH. NaOH — сильный, <b>CH₃COOH — слабая кислота</b>.' },
+    { type: 'weak_electrolyte', substance: 'FeCl₃', answer: 'Fe(OH)₃ (гидроксид железа(III))', options: ['Fe(OH)₃ (гидроксид железа(III))', 'HCl (соляная кислота)', 'Fe₂O₃ (оксид железа)', 'NaOH (гидроксид натрия)'],
+      explanation: '<b>FeCl₃</b> = Fe(OH)₃ + HCl. HCl — сильная, <b>Fe(OH)₃ — слабое основание</b>.' },
+    { type: 'weak_electrolyte', substance: 'K₂SiO₃', answer: 'H₂SiO₃ (кремниевая кислота)', options: ['H₂SiO₃ (кремниевая кислота)', 'KOH (гидроксид калия)', 'H₂SO₄ (серная кислота)', 'SiO₂ (оксид кремния)'],
+      explanation: '<b>K₂SiO₃</b> = KOH + H₂SiO₃. KOH — сильный, <b>H₂SiO₃ — слабая кислота</b>.' },
+    { type: 'weak_electrolyte', substance: 'AlCl₃', answer: 'Al(OH)₃ (гидроксид алюминия)', options: ['Al(OH)₃ (гидроксид алюминия)', 'HCl (соляная кислота)', 'Al₂O₃ (оксид алюминия)', 'NaOH (гидроксид натрия)'],
+      explanation: '<b>AlCl₃</b> = Al(OH)₃ + HCl. HCl — сильная, <b>Al(OH)₃ — слабое основание</b>.' },
+    { type: 'weak_electrolyte', substance: 'Na₂S', answer: 'H₂S (сероводородная кислота)', options: ['H₂S (сероводородная кислота)', 'NaOH (гидроксид натрия)', 'H₂SO₄ (серная кислота)', 'SO₂ (оксид серы)'],
+      explanation: '<b>Na₂S</b> = NaOH + H₂S. NaOH — сильный, <b>H₂S — слабая кислота</b>.' },
+];
+
+// ===================== TRAINER ENGINE =====================
+let trainList = [], trainIndex = 0, trainCorrectCount = 0, trainAnswered = false;
+let trainErrors = [], trainRetryMode = false, trainTotalTasks = 0;
+
+function startTrainer() {
+    trainList = shuffle(trainTasks);
+    trainIndex = 0;
+    trainCorrectCount = 0;
+    trainAnswered = false;
+    trainErrors = [];
+    trainRetryMode = false;
+    trainTotalTasks = trainList.length;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+function renderTrainTask() {
+    if (trainIndex >= trainList.length) {
+        if (trainErrors.length > 0) {
+            trainRetryMode = true;
+            trainList = shuffle([...trainErrors]);
+            trainErrors = [];
+            trainIndex = 0;
+            renderTrainTask();
+            return;
+        }
+        showTrainResults();
+        return;
+    }
+
+    trainAnswered = false;
+    const task = trainList[trainIndex];
+
+    document.getElementById('trainRetryBadge').innerHTML = trainRetryMode ? '<span class="retry-badge">&#8635; Повтор ошибок</span>' : '';
+
+    let reactionHTML = '';
+    let questionHTML = '';
+
+    if (task.type === 'environment') {
+        reactionHTML = task.substance;
+        questionHTML = 'Какая среда раствора этой соли?';
+    } else if (task.type === 'ion_type') {
+        reactionHTML = task.substance;
+        questionHTML = 'По какому иону идёт гидролиз?';
+    } else if (task.type === 'weak_electrolyte') {
+        reactionHTML = task.substance;
+        questionHTML = 'Какой слабый электролит образовал эту соль?';
+    }
+
+    document.getElementById('trainReaction').innerHTML = reactionHTML;
+    document.getElementById('trainChange').innerHTML = questionHTML;
+
+    const label = trainRetryMode ? `&#8635; Повтор ${trainIndex + 1} / ${trainList.length}` : `Задание ${trainIndex + 1} / ${trainList.length}`;
+    document.getElementById('trainProgress').innerHTML = label;
+    document.getElementById('trainScore').textContent = `${trainCorrectCount} правильных`;
+
+    const pct = (trainIndex) / trainList.length * 100;
+    document.getElementById('trainBar').style.width = pct + '%';
+
+    const btnsDiv = document.getElementById('trainButtons');
+    btnsDiv.innerHTML = '';
+    const shuffledOpts = shuffle(task.options);
+    shuffledOpts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'dir-btn';
+        btn.innerHTML = opt;
+        btn.onclick = () => answerTrain(opt, btn);
+        btnsDiv.appendChild(btn);
+    });
+
+    document.getElementById('trainExplain').className = 'train-explain';
+    document.getElementById('trainExplain').style.display = 'none';
+    document.getElementById('trainNextWrap').style.display = 'none';
+}
+
+function answerTrain(choice, clickedBtn) {
+    if (trainAnswered) return;
+    trainAnswered = true;
+
+    const task = trainList[trainIndex];
+    const isCorrect = choice === task.answer;
+
+    const btns = document.querySelectorAll('#trainButtons .dir-btn');
+    btns.forEach(b => {
+        b.style.pointerEvents = 'none';
+        if (b.innerHTML === task.answer) b.classList.add('correct');
+        if (b === clickedBtn && !isCorrect) b.classList.add('wrong');
+    });
+
+    if (isCorrect) {
+        trainCorrectCount++;
+    } else {
+        trainErrors.push(task);
+    }
+
+    const el = document.getElementById('trainExplain');
+    el.innerHTML = (isCorrect ? '&#10003; Верно! ' : '&#10007; Неверно. ') + task.explanation;
+    el.className = 'train-explain ' + (isCorrect ? 'show-correct' : 'show-wrong');
+    el.style.display = 'block';
+
+    document.getElementById('trainScore').textContent = `${trainCorrectCount} правильных`;
+    document.getElementById('trainNextWrap').style.display = 'flex';
+}
+
+function nextTrainTask() {
+    trainIndex++;
+    renderTrainTask();
+}
+
+function showTrainResults() {
+    showScreen('trainResults');
+    const pct = Math.round(trainCorrectCount / trainTotalTasks * 100);
+    document.getElementById('trainResultScore').textContent = `${trainCorrectCount} / ${trainTotalTasks} (${pct}%)`;
+    let text;
+    if (pct === 100) text = 'Молодец! Всё верно!';
+    else if (pct >= 80) text = 'Отличный результат!';
+    else if (pct >= 60) text = 'Неплохо, но стоит повторить ошибки.';
+    else text = 'Нужно перечитать теорию и попробовать снова.';
+    document.getElementById('trainResultText').textContent = text;
+}
+</script>
+</body>
+</html>

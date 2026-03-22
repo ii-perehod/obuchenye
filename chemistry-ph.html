@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — pH и ионное произведение воды</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .card h2 { font-size: 1.15em; margin-bottom: 14px; color: #fff; }
+        .card h3 { font-size: 1em; margin: 16px 0 8px; color: #00d2ff; }
+        .card p, .card li { line-height: 1.7; margin-bottom: 8px; color: #ccc; }
+        .card ul { padding-left: 20px; }
+        .card .formula-box {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 1.1em;
+            text-align: center; color: #00d2ff;
+        }
+        .card .formula-box .label { font-size: 0.75em; color: #888; font-family: 'Segoe UI', Arial, sans-serif; display: block; margin-top: 6px; }
+        .card .analogy {
+            background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .analogy b { color: #f59e0b; }
+        .card .warning {
+            background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .warning b { color: #ef4444; }
+        .card table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .card th, .card td { border: 1px solid rgba(255,255,255,0.15); padding: 8px 12px; text-align: center; font-size: 0.9em; }
+        .card th { background: rgba(0,210,255,0.1); color: #00d2ff; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Buttons */
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d2ff, #7b2ff7); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,210,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-wrap { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+
+        /* Progress */
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #7b2ff7); border-radius: 10px; transition: width 0.4s; }
+
+        /* Tags */
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .tag-theory { background: rgba(0,210,255,0.2); color: #00d2ff; }
+        .tag-easy { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-medium { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .tag-hard { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+        /* Quiz options */
+        .quiz-option {
+            display: block; width: 100%; padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+            background: rgba(255,255,255,0.04); color: #e0e0e0;
+            font-size: 0.95em; cursor: pointer; margin-bottom: 8px;
+            text-align: left; transition: all 0.2s;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .quiz-option.correct { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+        .quiz-option.wrong { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+        .quiz-explain {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+            font-size: 0.88em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .quiz-explain b { color: #00d2ff; }
+
+        /* Trainer answer buttons */
+        .dir-buttons {
+            display: flex; gap: 10px; margin: 18px 0; justify-content: center; flex-wrap: wrap;
+        }
+        .dir-btn {
+            flex: 1; min-width: 120px; max-width: 220px; padding: 18px 10px; border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 14px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: center; transition: all 0.2s; font-weight: 700;
+        }
+        .dir-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+        .dir-btn.correct { background: rgba(74,222,128,0.2); border-color: #4ade80; color: #4ade80; }
+        .dir-btn.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #ef4444; }
+
+        .train-explain {
+            padding: 14px 18px; border-radius: 10px; margin: 12px 0;
+            font-size: 0.92em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .train-explain.show-correct {
+            display: block; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
+        }
+        .train-explain.show-wrong {
+            display: block; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+        }
+        .train-explain b { color: #00d2ff; }
+
+        .reaction-display {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.15em; color: #00d2ff; text-align: center;
+            background: rgba(0,0,0,0.3); border-radius: 10px;
+            padding: 16px; margin: 12px 0; line-height: 1.6;
+        }
+        .change-display {
+            text-align: center; font-size: 1.05em; color: #f59e0b;
+            margin: 14px 0; font-weight: 600;
+        }
+        .retry-badge {
+            display: inline-block; background: rgba(239,68,68,0.2); color: #ef4444;
+            padding: 2px 10px; border-radius: 10px; font-size: 0.75em; font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        /* Results */
+        .result-score {
+            text-align: center; font-size: 2.5em; font-weight: 800;
+            margin: 20px 0 8px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .result-text { text-align: center; color: #aaa; font-size: 1.1em; margin-bottom: 20px; }
+
+        /* Error list */
+        .error-list { margin-top: 16px; }
+        .error-item {
+            background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+        }
+        .error-item .err-q { color: #e0e0e0; font-weight: 600; margin-bottom: 4px; }
+        .error-item .err-a { color: #4ade80; font-size: 0.88em; }
+
+        .mnemonic-box {
+            background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            text-align: center; font-size: 1.15em; font-weight: 700; color: #a78bfa;
+        }
+        .mnemonic-box .mnemonic-sub { font-size: 0.7em; font-weight: 400; color: #888; display: block; margin-top: 4px; }
+
+        .step-box {
+            background: rgba(0,210,255,0.05); border-left: 3px solid #00d2ff;
+            border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 8px 0;
+        }
+        .step-box .step-num { color: #00d2ff; font-weight: 700; }
+
+        /* pH scale visual */
+        .ph-scale {
+            display: flex; border-radius: 10px; overflow: hidden; margin: 16px 0; height: 36px;
+        }
+        .ph-cell {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            font-size: 0.7em; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .ph-labels {
+            display: flex; margin: 4px 0 12px;
+        }
+        .ph-labels span {
+            flex: 1; text-align: center; font-size: 0.65em; color: #888; line-height: 1.3;
+        }
+
+        .back-link { display: inline-block; margin-bottom: 8px; color: #00d2ff; text-decoration: none; font-size: 0.82em; opacity: 0.7; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 1; }
+
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; На главную</a>
+
+    <!-- ==================== SCREEN 1: MENU ==================== -->
+    <div id="menuScreen" class="screen active">
+        <h1>pH и ионное произведение воды</h1>
+        <p class="subtitle">Водородный показатель, шкала pH, индикаторы</p>
+        <div class="card">
+            <button class="topic-btn" onclick="showScreen('theorySimple')">
+                <span class="t-label" style="color:#4ade80">ТЕОРИЯ</span>
+                Теория на пальцах
+                <span class="t-desc">Простые аналогии, шкала pH, индикаторы</span>
+            </button>
+            <button class="topic-btn" onclick="showScreen('theoryFormal')">
+                <span class="t-label" style="color:#60a5fa">ТЕОРИЯ + КВИЗ</span>
+                Теория по-взрослому
+                <span class="t-desc">Формулы, расчёты, ионное произведение, тест</span>
+            </button>
+            <button class="topic-btn" onclick="startTrainer()">
+                <span class="t-label" style="color:#f59e0b">ТРЕНАЖЁР</span>
+                Тренажёр
+                <span class="t-desc">Среда, pH, [H⁺], pOH, индикаторы — 36 задач</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 2: THEORY SIMPLE ==================== -->
+    <div id="theorySimple" class="screen">
+        <h1>На пальцах</h1>
+        <p class="subtitle">pH без формул и зубрёжки</p>
+
+        <div class="card">
+            <h2>Что такое pH?</h2>
+            <div class="analogy">
+                <b>pH — это «термометр» для кислотности.</b> Как температура показывает «горячо или холодно», pH показывает «кисло или щёлочно». Только шкала наоборот: чем МЕНЬШЕ число — тем КИСЛЕЕ.
+            </div>
+            <p>pH — число от <b>0 до 14</b>. Оно показывает, насколько раствор кислый или щелочной.</p>
+            <ul>
+                <li><b style="color:#ef4444">pH &lt; 7</b> — кислая среда (много ионов H⁺)</li>
+                <li><b style="color:#4ade80">pH = 7</b> — нейтральная (чистая вода)</li>
+                <li><b style="color:#60a5fa">pH &gt; 7</b> — щелочная среда (много ионов OH⁻)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Шкала pH: примеры из жизни</h2>
+            <div class="ph-scale">
+                <div class="ph-cell" style="background:#ff0000">0</div>
+                <div class="ph-cell" style="background:#ff3300">1</div>
+                <div class="ph-cell" style="background:#ff6600">2</div>
+                <div class="ph-cell" style="background:#ff9900">3</div>
+                <div class="ph-cell" style="background:#ffcc00;color:#333">4</div>
+                <div class="ph-cell" style="background:#ccdd00;color:#333">5</div>
+                <div class="ph-cell" style="background:#88ee00;color:#333">6</div>
+                <div class="ph-cell" style="background:#00cc44">7</div>
+                <div class="ph-cell" style="background:#00aacc">8</div>
+                <div class="ph-cell" style="background:#0088dd">9</div>
+                <div class="ph-cell" style="background:#0055ee">10</div>
+                <div class="ph-cell" style="background:#3333dd">11</div>
+                <div class="ph-cell" style="background:#5500cc">12</div>
+                <div class="ph-cell" style="background:#7700aa">13</div>
+                <div class="ph-cell" style="background:#990088">14</div>
+            </div>
+            <div class="ph-labels">
+                <span>HCl</span><span>желуд. сок</span><span>лимон</span><span>уксус</span><span>томат</span><span>кофе</span><span>молоко</span><span>вода</span><span>море</span><span>мыло</span><span>мыло</span><span>аммиак</span><span>отбел.</span><span>щёлочь</span><span>NaOH</span>
+            </div>
+            <div class="warning">
+                <b>Важно!</b> Шкала «обратная»: pH 1 — это очень сильная кислота, а pH 13 — очень сильная щёлочь. Чистая вода — ровно посередине, pH = 7.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Откуда берётся pH? Вода «разговаривает сама с собой»</h2>
+            <p>Чистая вода — не просто H₂O. В ней постоянно происходит <b>автопротолиз</b>: молекулы воды сами чуть-чуть распадаются на ионы.</p>
+            <div class="formula-box">
+                H₂O &#8652; H⁺ + OH⁻
+                <span class="label">Вода сама слегка диссоциирует</span>
+            </div>
+            <div class="analogy">
+                <b>Ионное произведение воды — это как качели.</b> Если ионов H⁺ стало больше (добавили кислоту), то ионов OH⁻ автоматически станет меньше. И наоборот. Произведение [H⁺] &middot; [OH⁻] всегда равно 10⁻¹⁴. Одна сторона качелей вверх — другая вниз.
+            </div>
+            <p>В чистой воде: [H⁺] = [OH⁻] = 10⁻⁷ моль/л. Проверяем: 10⁻⁷ &times; 10⁻⁷ = 10⁻¹⁴. Сходится!</p>
+        </div>
+
+        <div class="card">
+            <h2>Индикаторы — «хамелеоны» химии</h2>
+            <div class="analogy">
+                <b>Лакмус — «стыдливый хамелеон»:</b> в кислоте краснеет (как от стыда), в щёлочи синеет (как от холода). В нейтральной среде — фиолетовый (спокоен).
+            </div>
+            <div class="analogy">
+                <b>Фенолфталеин — «скромняга»:</b> в кислоте и нейтральной среде молчит (бесцветный). Но в щёлочи вспыхивает малиновым — как будто наконец решился высказаться!
+            </div>
+            <div class="analogy">
+                <b>Метилоранж — «светофор»:</b> в кислоте — красный/розовый (стоп!), в нейтральной — оранжевый, в щёлочи — жёлтый (путь свободен).
+            </div>
+            <table>
+                <tr><th>Индикатор</th><th style="color:#ef4444">Кислота (pH&lt;7)</th><th style="color:#4ade80">Нейтральная (pH=7)</th><th style="color:#60a5fa">Щёлочь (pH&gt;7)</th></tr>
+                <tr><td><b>Лакмус</b></td><td style="color:#ef4444">Красный</td><td style="color:#a78bfa">Фиолетовый</td><td style="color:#60a5fa">Синий</td></tr>
+                <tr><td><b>Фенолфталеин</b></td><td>Бесцветный</td><td>Бесцветный</td><td style="color:#e040fb">Малиновый</td></tr>
+                <tr><td><b>Метилоранж</b></td><td style="color:#ef4444">Красный/розовый</td><td style="color:#f59e0b">Оранжевый</td><td style="color:#fde047">Жёлтый</td></tr>
+            </table>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">&#8592; Меню</button>
+            <button class="btn btn-primary" onclick="showScreen('theoryFormal')">Теория по-взрослому &#8594;</button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 3: THEORY FORMAL + QUIZ ==================== -->
+    <div id="theoryFormal" class="screen">
+        <h1>По-взрослому</h1>
+        <p class="subtitle">Определения, формулы, расчёты, тест</p>
+
+        <div class="card">
+            <h2>Автопротолиз воды</h2>
+            <p><b style="color:#00d2ff">Автопротолиз</b> — самодиссоциация воды. Молекулы воды обмениваются протонами друг с другом:</p>
+            <div class="formula-box">
+                H₂O + H₂O &#8652; H₃O⁺ + OH⁻
+                <span class="label">Упрощённо: H₂O &#8652; H⁺ + OH⁻</span>
+            </div>
+            <p>В чистой воде при 25°C концентрации ионов: <b>[H⁺] = [OH⁻] = 10⁻⁷ моль/л</b>.</p>
+        </div>
+
+        <div class="card">
+            <h2>Ионное произведение воды (Kw)</h2>
+            <div class="formula-box">
+                K<sub>w</sub> = [H⁺] &middot; [OH⁻] = 10⁻¹⁴
+                <span class="label">При 25°C, в ЛЮБОМ водном растворе (не только в чистой воде!)</span>
+            </div>
+            <div class="warning">
+                <b>Ключевой момент!</b> Kw = 10⁻¹⁴ — это константа. Она не меняется при добавлении кислоты или щёлочи (при 25°C). Если [H⁺] увеличивается, [OH⁻] обязана уменьшиться, чтобы произведение осталось 10⁻¹⁴.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Водородный показатель pH</h2>
+            <div class="formula-box">
+                pH = &minus;lg[H⁺]
+                <span class="label">lg — десятичный логарифм</span>
+            </div>
+            <p>Если [H⁺] = 10⁻ˣ моль/л, то <b>pH = x</b>. Всё просто!</p>
+
+            <h3>Примеры расчётов</h3>
+            <div class="step-box"><span class="step-num">1.</span> [H⁺] = 10⁻³ моль/л &rarr; pH = &minus;lg(10⁻³) = <b>3</b> (кислая среда)</div>
+            <div class="step-box"><span class="step-num">2.</span> pH = 5 &rarr; [H⁺] = 10⁻⁵ моль/л</div>
+            <div class="step-box"><span class="step-num">3.</span> [OH⁻] = 10⁻² моль/л &rarr; pOH = 2, pH = 14 &minus; 2 = <b>12</b> (щелочная)</div>
+        </div>
+
+        <div class="card">
+            <h2>pOH и связь с pH</h2>
+            <div class="formula-box">
+                pOH = &minus;lg[OH⁻]
+            </div>
+            <div class="mnemonic-box">
+                pH + pOH = 14
+                <span class="mnemonic-sub">Всегда! При 25°C</span>
+            </div>
+            <p>Зная одно, всегда можно найти другое: <b>pH = 14 &minus; pOH</b> и наоборот.</p>
+        </div>
+
+        <div class="card">
+            <h2>Среда раствора</h2>
+            <table>
+                <tr><th>Среда</th><th>[H⁺]</th><th>[OH⁻]</th><th>pH</th></tr>
+                <tr><td style="color:#ef4444"><b>Кислая</b></td><td>&gt; 10⁻⁷</td><td>&lt; 10⁻⁷</td><td>&lt; 7</td></tr>
+                <tr><td style="color:#4ade80"><b>Нейтральная</b></td><td>= 10⁻⁷</td><td>= 10⁻⁷</td><td>= 7</td></tr>
+                <tr><td style="color:#60a5fa"><b>Щелочная</b></td><td>&lt; 10⁻⁷</td><td>&gt; 10⁻⁷</td><td>&gt; 7</td></tr>
+            </table>
+        </div>
+
+        <!-- QUIZ inside formal theory screen -->
+        <div class="card" id="quizStartCard">
+            <h2>Проверь себя: Квиз</h2>
+            <p>12 вопросов: лёгкие, средние, сложные. Ошибки можно перерешать!</p>
+            <div class="btn-wrap">
+                <button class="btn btn-primary" onclick="startQuiz()">Начать квиз</button>
+            </div>
+        </div>
+
+        <div id="quizArea" style="display:none">
+            <div class="prog-wrap">
+                <div class="prog-info">
+                    <span id="quizProgress">Вопрос 1 / 12</span>
+                    <span id="quizScore">0 правильных</span>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" id="quizBar" style="width:0%"></div></div>
+            </div>
+            <div class="card" id="quizCard">
+                <div id="quizTag"></div>
+                <p id="quizQuestion" style="font-weight:600;color:#fff;margin-bottom:14px;font-size:1.05em"></p>
+                <div id="quizOptions"></div>
+                <div class="quiz-explain" id="quizExplain"></div>
+                <div class="btn-wrap" id="quizNextWrap" style="display:none">
+                    <button class="btn btn-primary" onclick="nextQuizQuestion()">Дальше &#8594;</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz results -->
+        <div id="quizResults" style="display:none">
+            <div class="card">
+                <div class="result-score" id="quizResultScore"></div>
+                <div class="result-text" id="quizResultText"></div>
+                <div class="error-list" id="quizErrors"></div>
+                <div class="btn-wrap" id="quizResultBtns"></div>
+            </div>
+        </div>
+
+        <div class="btn-wrap" id="formalNav">
+            <button class="btn btn-secondary" onclick="showScreen('theorySimple')">&#8592; На пальцах</button>
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">Меню</button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 4: TRAINER ==================== -->
+    <div id="trainScreen" class="screen" style="position:relative;">
+        <button style="position:absolute;top:12px;right:16px;background:none;border:1px solid rgba(255,255,255,0.2);color:#888;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:0.82em;" onclick="showScreen('menuScreen')">&#10005; Выйти</button>
+        <h1>Тренажёр</h1>
+        <p class="subtitle">pH, среда, [H⁺], pOH, индикаторы</p>
+
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="trainProgress">Задание 1 / 36</span>
+                <span id="trainScore">0 правильных</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="trainBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card" id="trainCard">
+            <div id="trainRetryBadge"></div>
+            <div class="reaction-display" id="trainReaction"></div>
+            <div class="change-display" id="trainChange"></div>
+            <div class="dir-buttons" id="trainButtons"></div>
+            <div class="train-explain" id="trainExplain"></div>
+            <div class="btn-wrap" id="trainNextWrap" style="display:none">
+                <button class="btn btn-primary" onclick="nextTrainTask()">Дальше &#8594;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 5: RESULTS ==================== -->
+    <div id="trainResults" class="screen">
+        <h1>Результаты</h1>
+        <div class="card">
+            <div class="result-score" id="trainResultScore"></div>
+            <div class="result-text" id="trainResultText"></div>
+            <div class="btn-wrap">
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">&#8592; Меню</button>
+                <button class="btn btn-primary" onclick="startTrainer()">Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===================== NAVIGATION =====================
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ===================== SHUFFLE =====================
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ===================== QUIZ DATA =====================
+const quizData = {
+    easy: [
+        {
+            q: 'Что показывает pH?',
+            opts: ['Кислотность раствора', 'Температуру раствора', 'Плотность раствора', 'Объём раствора'],
+            ans: 0,
+            explain: '<b>pH</b> — водородный показатель, показывает <b>кислотность</b> раствора (концентрацию ионов H⁺).'
+        },
+        {
+            q: 'Какой pH у чистой воды при 25°C?',
+            opts: ['7', '0', '14', '1'],
+            ans: 0,
+            explain: 'В чистой воде [H⁺] = 10⁻⁷, значит <b>pH = 7</b> — нейтральная среда.'
+        },
+        {
+            q: 'Раствор с pH = 3 — какая среда?',
+            opts: ['Кислая', 'Нейтральная', 'Щелочная', 'Невозможно определить'],
+            ans: 0,
+            explain: 'pH &lt; 7 — <b>кислая среда</b>. pH = 3 — сильнокислый раствор.'
+        },
+        {
+            q: 'Какой цвет лакмуса в кислоте?',
+            opts: ['Красный', 'Синий', 'Фиолетовый', 'Бесцветный'],
+            ans: 0,
+            explain: '<b>Лакмус в кислоте — красный</b>. Запомни: в кислоте «краснеет от стыда».'
+        },
+        {
+            q: 'Какой цвет фенолфталеина в щёлочи?',
+            opts: ['Малиновый', 'Бесцветный', 'Красный', 'Жёлтый'],
+            ans: 0,
+            explain: '<b>Фенолфталеин в щёлочи — малиновый</b>. В кислоте он бесцветный.'
+        },
+        {
+            q: 'Раствор с pH = 11 — какая среда?',
+            opts: ['Щелочная', 'Кислая', 'Нейтральная', 'Слабокислая'],
+            ans: 0,
+            explain: 'pH &gt; 7 — <b>щелочная среда</b>. pH = 11 — сильнощелочной раствор.'
+        },
+        {
+            q: 'Что такое автопротолиз воды?',
+            opts: ['Самодиссоциация воды на H⁺ и OH⁻', 'Испарение воды', 'Замерзание воды', 'Растворение соли в воде'],
+            ans: 0,
+            explain: '<b>Автопротолиз</b> — самодиссоциация воды: H₂O ⇌ H⁺ + OH⁻.'
+        },
+        {
+            q: 'Какой цвет метилоранжа в щёлочи?',
+            opts: ['Жёлтый', 'Красный', 'Оранжевый', 'Малиновый'],
+            ans: 0,
+            explain: '<b>Метилоранж в щёлочи — жёлтый</b>. В кислоте — красный/розовый.'
+        }
+    ],
+    medium: [
+        {
+            q: 'Если [H⁺] = 10⁻⁴ моль/л, чему равен pH?',
+            opts: ['4', '10', '14', '0.0001'],
+            ans: 0,
+            explain: 'pH = −lg[H⁺] = −lg(10⁻⁴) = <b>4</b>.'
+        },
+        {
+            q: 'Если pH = 9, чему равна [H⁺]?',
+            opts: ['10⁻⁹ моль/л', '9 моль/л', '10⁻⁵ моль/л', '10⁹ моль/л'],
+            ans: 0,
+            explain: 'pH = 9, значит [H⁺] = 10⁻ᵖᴴ = <b>10⁻⁹ моль/л</b>.'
+        },
+        {
+            q: 'Чему равно ионное произведение воды Kw при 25°C?',
+            opts: ['10⁻¹⁴', '10⁻⁷', '10⁻¹²', '7'],
+            ans: 0,
+            explain: '<b>Kw = [H⁺] · [OH⁻] = 10⁻¹⁴</b> — константа при 25°C.'
+        },
+        {
+            q: 'В растворе [OH⁻] = 10⁻³ моль/л. Какой pH?',
+            opts: ['11', '3', '10', '7'],
+            ans: 0,
+            explain: 'pOH = −lg(10⁻³) = 3. pH = 14 − pOH = 14 − 3 = <b>11</b>.'
+        },
+        {
+            q: 'Какой раствор более кислый: pH = 2 или pH = 5?',
+            opts: ['pH = 2', 'pH = 5', 'Одинаково', 'Оба щелочные'],
+            ans: 0,
+            explain: 'Чем <b>меньше pH</b>, тем <b>кислее</b> раствор. pH = 2 кислее, чем pH = 5.'
+        },
+        {
+            q: 'Чему равна сумма pH + pOH (при 25°C)?',
+            opts: ['14', '7', '10', '0'],
+            ans: 0,
+            explain: '<b>pH + pOH = 14</b> — это следствие из Kw = 10⁻¹⁴.'
+        },
+        {
+            q: 'Если [H⁺] = 10⁻¹ моль/л, какая среда?',
+            opts: ['Сильнокислая', 'Слабокислая', 'Нейтральная', 'Щелочная'],
+            ans: 0,
+            explain: '[H⁺] = 10⁻¹, pH = 1 — <b>сильнокислая</b> среда (как желудочный сок).'
+        },
+        {
+            q: 'Какой индикатор бесцветен и в кислоте, и в нейтральной среде?',
+            opts: ['Фенолфталеин', 'Лакмус', 'Метилоранж', 'Универсальный'],
+            ans: 0,
+            explain: '<b>Фенолфталеин</b> — бесцветный в кислой и нейтральной среде, малиновый только в щёлочи.'
+        }
+    ],
+    hard: [
+        {
+            q: 'Если pOH = 4, чему равен pH?',
+            opts: ['10', '4', '8', '14'],
+            ans: 0,
+            explain: 'pH = 14 − pOH = 14 − 4 = <b>10</b>.'
+        },
+        {
+            q: 'В растворе [H⁺] = 10⁻¹¹ моль/л. Чему равна [OH⁻]?',
+            opts: ['10⁻³ моль/л', '10⁻¹¹ моль/л', '10⁻⁷ моль/л', '10⁻¹⁴ моль/л'],
+            ans: 0,
+            explain: 'Kw = [H⁺]·[OH⁻] = 10⁻¹⁴. [OH⁻] = 10⁻¹⁴ / 10⁻¹¹ = <b>10⁻³ моль/л</b>.'
+        },
+        {
+            q: 'Раствор с [OH⁻] = 10⁻⁶. Какая среда и почему?',
+            opts: ['Кислая, т.к. [OH⁻] < 10⁻⁷ значит [H⁺] > 10⁻⁷', 'Щелочная, т.к. есть OH⁻', 'Нейтральная', 'Щелочная, т.к. [OH⁻] > 0'],
+            ans: 0,
+            explain: '[OH⁻] = 10⁻⁶ &lt; 10⁻⁷ (нет! 10⁻⁶ &gt; 10⁻⁷). Стоп: 10⁻⁶ = 0.000001, а 10⁻⁷ = 0.0000001. Значит 10⁻⁶ &gt; 10⁻⁷, OH⁻ больше чем в чистой воде — <b>ой, это на самом деле кислая</b>... Перепроверим: [OH⁻] = 10⁻⁶, pOH = 6, pH = 14 − 6 = 8. <b>Щелочная!</b> Подождите — давайте по условию: [OH⁻] = 10⁻⁶ > 10⁻⁷, значит OH⁻ больше нормы, среда <b>щелочная</b>, pH = 8. Но в ответе написано «кислая»... Ответ: <b>Кислая — неверно!</b> Правильный ответ: при [OH⁻] = 10⁻⁶ > 10⁻⁷, pOH = 6, pH = 8, среда щелочная.'
+        },
+        {
+            q: 'Kw при 25°C не зависит от:',
+            opts: ['Добавления кислоты или щёлочи', 'Температуры', 'Давления', 'Все ответы верны'],
+            ans: 0,
+            explain: 'Kw = 10⁻¹⁴ — <b>константа при данной температуре</b>. Добавление кислоты/щёлочи не меняет Kw, а лишь сдвигает соотношение [H⁺] и [OH⁻].'
+        },
+        {
+            q: 'Если pH раствора увеличился с 3 до 5, как изменилась [H⁺]?',
+            opts: ['Уменьшилась в 100 раз', 'Увеличилась в 100 раз', 'Уменьшилась в 2 раза', 'Не изменилась'],
+            ans: 0,
+            explain: 'pH 3: [H⁺] = 10⁻³. pH 5: [H⁺] = 10⁻⁵. Отношение: 10⁻³/10⁻⁵ = 10² = 100. <b>Уменьшилась в 100 раз</b>.'
+        },
+        {
+            q: 'В растворе pH = 2. Чему равна [OH⁻]?',
+            opts: ['10⁻¹² моль/л', '10⁻² моль/л', '10⁻⁷ моль/л', '12 моль/л'],
+            ans: 0,
+            explain: 'pH = 2, значит [H⁺] = 10⁻². [OH⁻] = Kw / [H⁺] = 10⁻¹⁴ / 10⁻² = <b>10⁻¹² моль/л</b>.'
+        }
+    ]
+};
+
+// Fix hard question 3 — let me rebuild it properly
+quizData.hard[2] = {
+    q: 'В растворе [OH⁻] = 10⁻¹⁰ моль/л. Какая среда?',
+    opts: ['Кислая (pH = 4)', 'Щелочная (pH = 10)', 'Нейтральная (pH = 7)', 'Кислая (pH = 10)'],
+    ans: 0,
+    explain: '[OH⁻] = 10⁻¹⁰, pOH = 10, pH = 14 − 10 = <b>4</b>. Так как pH &lt; 7, среда <b>кислая</b>. [OH⁻] &lt; 10⁻⁷ — гидроксид-ионов меньше нормы.'
+};
+
+// ===================== QUIZ ENGINE =====================
+let quizQuestions = [], quizIndex = 0, quizCorrect = 0, quizAnswered = false;
+let quizErrors = [], quizTotalAsked = 0;
+
+function startQuiz() {
+    const easy = shuffle(quizData.easy).slice(0, 4);
+    const medium = shuffle(quizData.medium).slice(0, 4);
+    const hard = shuffle(quizData.hard).slice(0, 4);
+    easy.forEach(q => q._diff = 'easy');
+    medium.forEach(q => q._diff = 'medium');
+    hard.forEach(q => q._diff = 'hard');
+    quizQuestions = [...easy, ...medium, ...hard];
+    quizIndex = 0; quizCorrect = 0; quizErrors = []; quizTotalAsked = 0;
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('quizStartCard').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    const q = quizQuestions[quizIndex];
+    quizAnswered = false;
+    const diffNames = {easy: 'Лёгкий', medium: 'Средний', hard: 'Сложный'};
+    const diffTags = {easy: 'tag-easy', medium: 'tag-medium', hard: 'tag-hard'};
+    document.getElementById('quizTag').innerHTML = '<span class="topic-tag ' + diffTags[q._diff] + '">' + diffNames[q._diff] + '</span>';
+    document.getElementById('quizQuestion').textContent = q.q;
+    document.getElementById('quizProgress').textContent = 'Вопрос ' + (quizIndex + 1) + ' / ' + quizQuestions.length;
+    document.getElementById('quizScore').textContent = quizCorrect + ' правильных';
+    document.getElementById('quizBar').style.width = ((quizIndex) / quizQuestions.length * 100) + '%';
+    document.getElementById('quizExplain').style.display = 'none';
+    document.getElementById('quizNextWrap').style.display = 'none';
+
+    var optsDiv = document.getElementById('quizOptions');
+    optsDiv.innerHTML = '';
+    var indices = shuffle(Array.from({length: q.opts.length}, function(_, i) { return i; }));
+    indices.forEach(function(i) {
+        var btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = q.opts[i];
+        btn.dataset.idx = i;
+        btn.onclick = function() { selectQuizOption(i, btn); };
+        optsDiv.appendChild(btn);
+    });
+}
+
+function selectQuizOption(idx, btn) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    var q = quizQuestions[quizIndex];
+    var allBtns = document.querySelectorAll('#quizOptions .quiz-option');
+    allBtns.forEach(function(b) {
+        b.style.pointerEvents = 'none';
+        if (parseInt(b.dataset.idx) === q.ans) b.classList.add('correct');
+    });
+    if (idx === q.ans) {
+        quizCorrect++;
+        btn.classList.add('correct');
+    } else {
+        btn.classList.add('wrong');
+        quizErrors.push({ q: q.q, correctAns: q.opts[q.ans], full: q });
+    }
+    document.getElementById('quizExplain').innerHTML = q.explain;
+    document.getElementById('quizExplain').style.display = 'block';
+    document.getElementById('quizNextWrap').style.display = 'flex';
+    document.getElementById('quizScore').textContent = quizCorrect + ' правильных';
+}
+
+function nextQuizQuestion() {
+    quizIndex++;
+    if (quizIndex >= quizQuestions.length) {
+        showQuizResults();
+    } else {
+        renderQuizQuestion();
+    }
+}
+
+function showQuizResults() {
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('quizResults').style.display = 'block';
+    if (!quizTotalAsked) quizTotalAsked = quizQuestions.length;
+    var pct = Math.round(quizCorrect / quizTotalAsked * 100);
+    document.getElementById('quizResultScore').textContent = quizCorrect + ' / ' + quizTotalAsked + ' (' + pct + '%)';
+    var text = pct === 100 ? 'Молодец! Всё верно!' : pct >= 75 ? 'Хороший результат!' : pct >= 50 ? 'Неплохо, но стоит повторить.' : 'Нужно ещё раз перечитать теорию.';
+    document.getElementById('quizResultText').textContent = text;
+
+    var errDiv = document.getElementById('quizErrors');
+    errDiv.innerHTML = '';
+    var btnsDiv = document.getElementById('quizResultBtns');
+
+    if (quizErrors.length > 0) {
+        errDiv.innerHTML = '<h3 style="color:#ef4444;margin-bottom:10px;">Ошибки:</h3>';
+        quizErrors.forEach(function(e) {
+            errDiv.innerHTML += '<div class="error-item"><div class="err-q">' + e.q + '</div><div class="err-a">Правильный ответ: ' + e.correctAns + '</div></div>';
+        });
+        btnsDiv.innerHTML = '<button class="btn btn-primary" onclick="retryQuizErrors()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;">Повторить ошибки (' + quizErrors.length + ')</button>' +
+            '<button class="btn btn-secondary" onclick="showScreen(\'menuScreen\')">&#8592; Меню</button>';
+    } else {
+        btnsDiv.innerHTML = '<button class="btn btn-secondary" onclick="showScreen(\'menuScreen\')">&#8592; Меню</button>' +
+            '<button class="btn btn-primary" onclick="startQuiz()">Пройти заново</button>';
+    }
+}
+
+function retryQuizErrors() {
+    quizQuestions = shuffle(quizErrors.map(function(e) { return e.full; }));
+    quizIndex = 0;
+    quizErrors = [];
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('formalNav').style.display = 'none';
+    renderQuizQuestion();
+}
+
+// ===================== TRAINER DATA =====================
+var trainTasks = [
+    // TYPE 1: "Какая среда?" — given pH, determine environment (10 tasks)
+    { type: 'env', display: 'pH = 1', question: 'Какая среда?', answer: 'Кислая', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 1 &lt; 7 — <b>кислая среда</b> (сильнокислая, как желудочный сок).' },
+    { type: 'env', display: 'pH = 3', question: 'Какая среда?', answer: 'Кислая', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 3 &lt; 7 — <b>кислая среда</b> (как лимонный сок).' },
+    { type: 'env', display: 'pH = 5', question: 'Какая среда?', answer: 'Кислая', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 5 &lt; 7 — <b>кислая среда</b> (слабокислая, как кофе).' },
+    { type: 'env', display: 'pH = 7', question: 'Какая среда?', answer: 'Нейтральная', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 7 — <b>нейтральная среда</b> (чистая вода).' },
+    { type: 'env', display: 'pH = 9', question: 'Какая среда?', answer: 'Щелочная', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 9 &gt; 7 — <b>щелочная среда</b> (как мыльный раствор).' },
+    { type: 'env', display: 'pH = 12', question: 'Какая среда?', answer: 'Щелочная', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 12 &gt; 7 — <b>щелочная среда</b> (сильнощелочная, как отбеливатель).' },
+    { type: 'env', display: 'pH = 2', question: 'Какая среда?', answer: 'Кислая', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 2 &lt; 7 — <b>кислая среда</b> (как уксус).' },
+    { type: 'env', display: 'pH = 6', question: 'Какая среда?', answer: 'Кислая', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 6 &lt; 7 — <b>кислая среда</b> (слабокислая, как молоко).' },
+    { type: 'env', display: 'pH = 8', question: 'Какая среда?', answer: 'Щелочная', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 8 &gt; 7 — <b>щелочная среда</b> (как морская вода).' },
+    { type: 'env', display: 'pH = 14', question: 'Какая среда?', answer: 'Щелочная', options: ['Кислая', 'Нейтральная', 'Щелочная'],
+      explanation: 'pH = 14 &gt; 7 — <b>щелочная среда</b> (концентрированная щёлочь NaOH).' },
+
+    // TYPE 2: "Найди pH" — given [H⁺] = 10⁻ˣ, find pH (8 tasks)
+    { type: 'findph', display: '[H⁺] = 10⁻² моль/л', question: 'Чему равен pH?', answer: '2', options: ['2', '12', '7', '0.01'],
+      explanation: 'pH = −lg(10⁻²) = <b>2</b>.' },
+    { type: 'findph', display: '[H⁺] = 10⁻⁵ моль/л', question: 'Чему равен pH?', answer: '5', options: ['5', '9', '7', '0.00001'],
+      explanation: 'pH = −lg(10⁻⁵) = <b>5</b>.' },
+    { type: 'findph', display: '[H⁺] = 10⁻⁷ моль/л', question: 'Чему равен pH?', answer: '7', options: ['7', '14', '0', '1'],
+      explanation: 'pH = −lg(10⁻⁷) = <b>7</b> (нейтральная среда, чистая вода).' },
+    { type: 'findph', display: '[H⁺] = 10⁻¹ моль/л', question: 'Чему равен pH?', answer: '1', options: ['1', '13', '7', '10'],
+      explanation: 'pH = −lg(10⁻¹) = <b>1</b> (сильнокислая среда).' },
+    { type: 'findph', display: '[H⁺] = 10⁻⁹ моль/л', question: 'Чему равен pH?', answer: '9', options: ['9', '5', '14', '0.000000001'],
+      explanation: 'pH = −lg(10⁻⁹) = <b>9</b> (щелочная среда).' },
+    { type: 'findph', display: '[H⁺] = 10⁻¹¹ моль/л', question: 'Чему равен pH?', answer: '11', options: ['11', '3', '14', '7'],
+      explanation: 'pH = −lg(10⁻¹¹) = <b>11</b> (щелочная среда).' },
+    { type: 'findph', display: '[H⁺] = 10⁻⁴ моль/л', question: 'Чему равен pH?', answer: '4', options: ['4', '10', '7', '0.0001'],
+      explanation: 'pH = −lg(10⁻⁴) = <b>4</b>.' },
+    { type: 'findph', display: '[H⁺] = 10⁻¹³ моль/л', question: 'Чему равен pH?', answer: '13', options: ['13', '1', '7', '14'],
+      explanation: 'pH = −lg(10⁻¹³) = <b>13</b> (сильнощелочная среда).' },
+
+    // TYPE 3: "[H⁺] по pH" — given pH, find [H⁺] (6 tasks)
+    { type: 'findh', display: 'pH = 3', question: 'Чему равна [H⁺]?', answer: '10⁻³ моль/л', options: ['10⁻³ моль/л', '10⁻¹¹ моль/л', '3 моль/л', '10³ моль/л'],
+      explanation: '[H⁺] = 10⁻ᵖᴴ = 10⁻³ = <b>10⁻³ моль/л</b> = 0.001 моль/л.' },
+    { type: 'findh', display: 'pH = 6', question: 'Чему равна [H⁺]?', answer: '10⁻⁶ моль/л', options: ['10⁻⁶ моль/л', '10⁻⁸ моль/л', '6 моль/л', '10⁶ моль/л'],
+      explanation: '[H⁺] = 10⁻⁶ = <b>10⁻⁶ моль/л</b>.' },
+    { type: 'findh', display: 'pH = 10', question: 'Чему равна [H⁺]?', answer: '10⁻¹⁰ моль/л', options: ['10⁻¹⁰ моль/л', '10⁻⁴ моль/л', '10 моль/л', '10⁻⁷ моль/л'],
+      explanation: '[H⁺] = 10⁻¹⁰ = <b>10⁻¹⁰ моль/л</b>.' },
+    { type: 'findh', display: 'pH = 1', question: 'Чему равна [H⁺]?', answer: '10⁻¹ моль/л', options: ['10⁻¹ моль/л', '10⁻¹³ моль/л', '1 моль/л', '10⁻⁷ моль/л'],
+      explanation: '[H⁺] = 10⁻¹ = <b>0.1 моль/л</b>.' },
+    { type: 'findh', display: 'pH = 12', question: 'Чему равна [H⁺]?', answer: '10⁻¹² моль/л', options: ['10⁻¹² моль/л', '10⁻² моль/л', '12 моль/л', '10⁻⁷ моль/л'],
+      explanation: '[H⁺] = 10⁻¹² = <b>10⁻¹² моль/л</b>.' },
+    { type: 'findh', display: 'pH = 8', question: 'Чему равна [H⁺]?', answer: '10⁻⁸ моль/л', options: ['10⁻⁸ моль/л', '10⁻⁶ моль/л', '8 моль/л', '10⁸ моль/л'],
+      explanation: '[H⁺] = 10⁻⁸ = <b>10⁻⁸ моль/л</b>.' },
+
+    // TYPE 4: "pH + pOH = 14" — given pOH, find pH (or vice versa) (6 tasks)
+    { type: 'pohph', display: 'pOH = 3', question: 'Чему равен pH?', answer: '11', options: ['11', '3', '7', '14'],
+      explanation: 'pH = 14 − pOH = 14 − 3 = <b>11</b>.' },
+    { type: 'pohph', display: 'pOH = 9', question: 'Чему равен pH?', answer: '5', options: ['5', '9', '7', '14'],
+      explanation: 'pH = 14 − pOH = 14 − 9 = <b>5</b>.' },
+    { type: 'pohph', display: 'pH = 4', question: 'Чему равен pOH?', answer: '10', options: ['10', '4', '7', '14'],
+      explanation: 'pOH = 14 − pH = 14 − 4 = <b>10</b>.' },
+    { type: 'pohph', display: 'pOH = 1', question: 'Чему равен pH?', answer: '13', options: ['13', '1', '7', '0'],
+      explanation: 'pH = 14 − pOH = 14 − 1 = <b>13</b>.' },
+    { type: 'pohph', display: 'pH = 11', question: 'Чему равен pOH?', answer: '3', options: ['3', '11', '7', '14'],
+      explanation: 'pOH = 14 − pH = 14 − 11 = <b>3</b>.' },
+    { type: 'pohph', display: 'pOH = 7', question: 'Чему равен pH?', answer: '7', options: ['7', '14', '0', '1'],
+      explanation: 'pH = 14 − pOH = 14 − 7 = <b>7</b> (нейтральная среда).' },
+
+    // TYPE 5: "Индикатор" — what color will indicator be in this solution? (6 tasks)
+    { type: 'indicator', display: 'Лакмус в растворе HCl (pH = 1)', question: 'Какой цвет лакмуса?', answer: 'Красный', options: ['Красный', 'Синий', 'Фиолетовый', 'Бесцветный'],
+      explanation: 'HCl — кислота. <b>Лакмус в кислоте — красный</b>.' },
+    { type: 'indicator', display: 'Фенолфталеин в растворе NaOH (pH = 13)', question: 'Какой цвет фенолфталеина?', answer: 'Малиновый', options: ['Малиновый', 'Бесцветный', 'Красный', 'Жёлтый'],
+      explanation: 'NaOH — щёлочь. <b>Фенолфталеин в щёлочи — малиновый</b>.' },
+    { type: 'indicator', display: 'Метилоранж в растворе H₂SO₄ (pH = 2)', question: 'Какой цвет метилоранжа?', answer: 'Красный/розовый', options: ['Красный/розовый', 'Жёлтый', 'Оранжевый', 'Малиновый'],
+      explanation: 'H₂SO₄ — кислота. <b>Метилоранж в кислоте — красный/розовый</b>.' },
+    { type: 'indicator', display: 'Фенолфталеин в растворе HCl (pH = 1)', question: 'Какой цвет фенолфталеина?', answer: 'Бесцветный', options: ['Бесцветный', 'Малиновый', 'Красный', 'Синий'],
+      explanation: 'HCl — кислота. <b>Фенолфталеин в кислоте — бесцветный</b> (он окрашивается только в щёлочи).' },
+    { type: 'indicator', display: 'Лакмус в растворе KOH (pH = 12)', question: 'Какой цвет лакмуса?', answer: 'Синий', options: ['Синий', 'Красный', 'Фиолетовый', 'Бесцветный'],
+      explanation: 'KOH — щёлочь. <b>Лакмус в щёлочи — синий</b>.' },
+    { type: 'indicator', display: 'Метилоранж в растворе NaOH (pH = 13)', question: 'Какой цвет метилоранжа?', answer: 'Жёлтый', options: ['Жёлтый', 'Красный/розовый', 'Оранжевый', 'Малиновый'],
+      explanation: 'NaOH — щёлочь. <b>Метилоранж в щёлочи — жёлтый</b>.' }
+];
+
+// ===================== TRAINER ENGINE =====================
+var trainList = [], trainIndex = 0, trainCorrectCount = 0, trainAnswered = false;
+var trainErrors = [], trainRetryMode = false, trainTotalTasks = 0;
+
+function startTrainer() {
+    trainList = shuffle(trainTasks);
+    trainIndex = 0;
+    trainCorrectCount = 0;
+    trainAnswered = false;
+    trainErrors = [];
+    trainRetryMode = false;
+    trainTotalTasks = trainList.length;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+function renderTrainTask() {
+    if (trainIndex >= trainList.length) {
+        if (trainErrors.length > 0) {
+            trainRetryMode = true;
+            trainList = shuffle([].concat(trainErrors));
+            trainErrors = [];
+            trainIndex = 0;
+            renderTrainTask();
+            return;
+        }
+        showTrainResults();
+        return;
+    }
+
+    trainAnswered = false;
+    var task = trainList[trainIndex];
+
+    document.getElementById('trainRetryBadge').innerHTML = trainRetryMode ? '<span class="retry-badge">&#10227; Повтор ошибок</span>' : '';
+
+    document.getElementById('trainReaction').innerHTML = task.display;
+    document.getElementById('trainChange').innerHTML = task.question;
+
+    var label = trainRetryMode ? '&#10227; Повтор ' + (trainIndex + 1) + ' / ' + trainList.length : 'Задание ' + (trainIndex + 1) + ' / ' + trainList.length;
+    document.getElementById('trainProgress').innerHTML = label;
+    document.getElementById('trainScore').textContent = trainCorrectCount + ' правильных';
+
+    var pct = (trainIndex) / trainList.length * 100;
+    document.getElementById('trainBar').style.width = pct + '%';
+
+    var btnsDiv = document.getElementById('trainButtons');
+    btnsDiv.innerHTML = '';
+    var shuffledOpts = shuffle(task.options);
+    shuffledOpts.forEach(function(opt) {
+        var btn = document.createElement('button');
+        btn.className = 'dir-btn';
+        btn.innerHTML = opt;
+        btn.onclick = function() { answerTrain(opt, btn); };
+        btnsDiv.appendChild(btn);
+    });
+
+    document.getElementById('trainExplain').className = 'train-explain';
+    document.getElementById('trainExplain').style.display = 'none';
+    document.getElementById('trainNextWrap').style.display = 'none';
+}
+
+function answerTrain(choice, clickedBtn) {
+    if (trainAnswered) return;
+    trainAnswered = true;
+
+    var task = trainList[trainIndex];
+    var isCorrect = choice === task.answer;
+
+    var btns = document.querySelectorAll('#trainButtons .dir-btn');
+    btns.forEach(function(b) {
+        b.style.pointerEvents = 'none';
+        if (b.innerHTML === task.answer) b.classList.add('correct');
+        if (b === clickedBtn && !isCorrect) b.classList.add('wrong');
+    });
+
+    if (isCorrect) {
+        trainCorrectCount++;
+    } else {
+        trainErrors.push(task);
+    }
+
+    var el = document.getElementById('trainExplain');
+    el.innerHTML = (isCorrect ? '&#10003; Верно! ' : '&#10007; Неверно. ') + task.explanation;
+    el.className = 'train-explain ' + (isCorrect ? 'show-correct' : 'show-wrong');
+    el.style.display = 'block';
+
+    document.getElementById('trainScore').textContent = trainCorrectCount + ' правильных';
+    document.getElementById('trainNextWrap').style.display = 'flex';
+}
+
+function nextTrainTask() {
+    trainIndex++;
+    renderTrainTask();
+}
+
+function showTrainResults() {
+    showScreen('trainResults');
+    var pct = Math.round(trainCorrectCount / trainTotalTasks * 100);
+    document.getElementById('trainResultScore').textContent = trainCorrectCount + ' / ' + trainTotalTasks + ' (' + pct + '%)';
+    var text;
+    if (pct === 100) text = 'Молодец! Всё верно!';
+    else if (pct >= 80) text = 'Отличный результат!';
+    else if (pct >= 60) text = 'Неплохо, но стоит повторить ошибки.';
+    else text = 'Нужно перечитать теорию и попробовать снова.';
+    document.getElementById('trainResultText').textContent = text;
+}
+</script>
+</body>
+</html>
