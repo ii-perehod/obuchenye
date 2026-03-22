@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Химия — Квиз: Темы 1-2</title>
+    <title>Химия — Квиз: Тема 1</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -63,10 +63,8 @@
             display: inline-block; padding: 3px 12px; border-radius: 20px;
             font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
         }
-        .tag-б1 { background: rgba(0,210,255,0.2); color: #00d2ff; }
-        .tag-б2 { background: rgba(123,47,247,0.2); color: #b57bff; }
-        .tag-б3 { background: rgba(74,222,128,0.2); color: #4ade80; }
-        .tag-б4 { background: rgba(251,146,60,0.2); color: #fb923c; }
+        .tag-т1 { background: rgba(0,210,255,0.2); color: #00d2ff; }
+        .tag-т2 { background: rgba(74,222,128,0.2); color: #4ade80; }
 
         .round-badge {
             display: inline-block; padding: 3px 12px; border-radius: 20px;
@@ -116,10 +114,142 @@
         }
         .btn-row { text-align: center; margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-        /* Theory */
-        .theory-title { font-size: 1.15em; font-weight: 700; margin-bottom: 16px; color: #7b2ff7; }
-        .theory-content { font-size: 0.92em; line-height: 1.65; }
-        .theory-content p { margin-bottom: 12px; }
+        /* ═══════════════════════════════════════════
+           THEORY — BEAUTIFUL STYLING
+           ═══════════════════════════════════════════ */
+        .theory-title { font-size: 1.25em; font-weight: 700; margin-bottom: 18px; color: #7b2ff7; text-align: center; }
+        .theory-content { font-size: 0.93em; line-height: 1.7; }
+        .theory-content p { margin-bottom: 14px; }
+
+        /* Section headers inside theory */
+        .th-section {
+            font-size: 1.05em; font-weight: 700; margin: 28px 0 14px;
+            padding-bottom: 8px; border-bottom: 2px solid rgba(123,47,247,0.3);
+        }
+        .th-section:first-child { margin-top: 0; }
+        .th-section .th-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+            color: #fff; font-size: 0.75em; font-weight: 800;
+            margin-right: 10px; vertical-align: middle;
+        }
+
+        /* Key term highlighting */
+        .key { color: #00d2ff; font-weight: 700; }
+        .key-green { color: #4ade80; font-weight: 700; }
+        .key-orange { color: #fb923c; font-weight: 700; }
+        .key-pink { color: #f472b6; font-weight: 700; }
+        .key-yellow { color: #fbbf24; font-weight: 700; }
+
+        /* Beautiful fraction */
+        .frac {
+            display: inline-flex; flex-direction: column; align-items: center;
+            vertical-align: middle; margin: 0 4px; line-height: 1.2;
+        }
+        .frac-top {
+            padding: 2px 10px 4px;
+            border-bottom: 2px solid #00d2ff;
+        }
+        .frac-bot {
+            padding: 4px 10px 2px;
+        }
+
+        /* Big formula box */
+        .formula-box {
+            background: rgba(123,47,247,0.12);
+            border: 1px solid rgba(123,47,247,0.35);
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 1.15em;
+            line-height: 2;
+        }
+
+        /* Law card */
+        .law-card {
+            background: rgba(0,210,255,0.06);
+            border-left: 4px solid #00d2ff;
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin: 14px 0;
+        }
+        .law-card.law-green { border-left-color: #4ade80; background: rgba(74,222,128,0.06); }
+        .law-card.law-orange { border-left-color: #fb923c; background: rgba(251,146,60,0.06); }
+        .law-card.law-pink { border-left-color: #f472b6; background: rgba(244,114,182,0.06); }
+        .law-card.law-yellow { border-left-color: #fbbf24; background: rgba(251,191,36,0.06); }
+
+        .law-card .law-name {
+            font-weight: 700; font-size: 1em; margin-bottom: 6px;
+        }
+        .law-card .law-year {
+            display: inline-block; padding: 2px 10px; border-radius: 10px;
+            font-size: 0.72em; font-weight: 700; margin-left: 8px;
+            background: rgba(255,255,255,0.1); color: #aaa;
+        }
+        .law-card .law-text {
+            font-size: 0.9em; color: #ccc; line-height: 1.65;
+        }
+
+        /* Trainer link */
+        .trainer-link {
+            display: inline-block; margin-top: 8px;
+            padding: 5px 14px; border-radius: 20px;
+            background: rgba(123,47,247,0.2); border: 1px solid rgba(123,47,247,0.4);
+            color: #b57bff; font-size: 0.78em; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .trainer-link:hover { background: rgba(123,47,247,0.35); }
+
+        /* Equivalents table */
+        .eq-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            margin: 14px 0; border-radius: 12px; overflow: hidden;
+        }
+        .eq-table th {
+            background: rgba(74,222,128,0.15);
+            color: #4ade80; padding: 10px 14px;
+            text-align: left; font-size: 0.85em; font-weight: 700;
+        }
+        .eq-table td {
+            padding: 12px 14px; border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.88em; line-height: 1.7; vertical-align: middle;
+        }
+        .eq-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+        /* Theory page navigation */
+        .theory-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 20px; padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .page-dots {
+            display: flex; gap: 8px; justify-content: center; flex: 1;
+        }
+        .page-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); transition: all 0.3s;
+        }
+        .page-dot.active { background: #7b2ff7; transform: scale(1.2); }
+
+        /* Image styling */
+        .theory-img {
+            max-width: 100%; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin: 10px 0;
+        }
+
+        /* Note box */
+        .note-box {
+            background: rgba(251,191,36,0.08);
+            border: 1px solid rgba(251,191,36,0.25);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 14px 0;
+            font-size: 0.88em; line-height: 1.65;
+        }
+        .note-box .note-icon { font-size: 1.1em; margin-right: 6px; }
 
         /* Results */
         .results-head { text-align: center; margin-bottom: 20px; }
@@ -151,6 +281,8 @@
 
         @media (max-width: 500px) {
             .ts-label { flex: 0 0 110px; font-size: 0.78em; }
+            .formula-box { font-size: 1em; padding: 14px 16px; }
+            .eq-table td, .eq-table th { padding: 8px 10px; font-size: 0.82em; }
         }
 
         sub { font-size: 0.75em; }
@@ -158,59 +290,52 @@
 </head>
 <body>
 <div class="container">
-    <h1>Химия: Основы</h1>
-    <div class="subtitle">Темы 1-2: Основные понятия + Строение атома</div>
+    <h1>Химия: Тема 1</h1>
+    <div class="subtitle">Основные понятия, стехиометрические законы, эквиваленты</div>
 
     <!-- ── MENU ── -->
     <div class="screen active" id="screenSetup">
         <div class="card">
-            <div style="font-size:1.05em; font-weight:700; margin-bottom:18px; color:#7b2ff7;">Выбери блок:</div>
-            <button class="topic-btn" onclick="startQuiz('б1')">
-                <span class="t-label" style="color:#00d2ff">БЛОК 1 — 5 вопросов</span>
-                <span class="t-desc">Базовые понятия: атом, молекула, простое/сложное вещество, аллотропия</span>
+            <div style="font-size:1.05em; font-weight:700; margin-bottom:18px; color:#7b2ff7;">Выбери раздел:</div>
+            <button class="topic-btn" onclick="startQuiz('т1')">
+                <span class="t-label" style="color:#00d2ff">ОСНОВНЫЕ ПОНЯТИЯ И ЗАКОНЫ — 9 вопросов</span>
+                <span class="t-desc">Атом, молекула, моль, массы, число Авогадро, 5 стехиометрических законов</span>
             </button>
-            <button class="topic-btn" onclick="startQuiz('б2')">
-                <span class="t-label" style="color:#b57bff">БЛОК 2 — 4 вопроса</span>
-                <span class="t-desc">Количественные отношения: моль, Авогадро, молярная масса, молярный объём</span>
-            </button>
-            <button class="topic-btn" onclick="startQuiz('б3')">
-                <span class="t-label" style="color:#4ade80">БЛОК 3 — 1 вопрос</span>
-                <span class="t-desc">Эквиваленты: эквивалент кислоты</span>
-            </button>
-            <button class="topic-btn" onclick="startQuiz('б4')">
-                <span class="t-label" style="color:#fb923c">БЛОК 4 — 10 вопросов</span>
-                <span class="t-desc">Строение атома: ядро, изотопы, орбитали, квантовые числа, Паули, Клечковский</span>
+            <button class="topic-btn" onclick="startQuiz('т2')">
+                <span class="t-label" style="color:#4ade80">ЭКВИВАЛЕНТЫ — 8 вопросов</span>
+                <span class="t-desc">Закон эквивалентов, формулы для кислот, оснований, солей, простых веществ</span>
             </button>
             <button class="topic-btn" onclick="startQuiz('all')" style="margin-top:12px;border-color:rgba(0,210,255,0.4);">
-                <span class="t-label" style="color:#00d2ff">ВСЕ ТЕМЫ — 20 вопросов</span>
-                <span class="t-desc">Общий зачёт: все блоки вперемешку. 1-й круг без теории, ошибки — с теорией</span>
+                <span class="t-label" style="color:#00d2ff">ВСЕ ТЕМЫ — 17 вопросов</span>
+                <span class="t-desc">Общий зачёт: всё вперемешку. 1-й круг без теории, ошибки — с теорией</span>
             </button>
         </div>
     </div>
 
-    <!-- ── THEORY FLASH ── -->
+    <!-- ── THEORY ── -->
     <div class="screen" id="screenTheory">
         <div style="text-align:right; margin-bottom:10px">
-            <button class="btn btn-outline" onclick="goSetup()" style="padding:7px 16px;font-size:0.82em">← Выбор блока</button>
+            <button class="btn btn-outline" onclick="goSetup()" style="padding:7px 16px;font-size:0.82em">← Выбор раздела</button>
         </div>
         <div class="card">
             <div class="theory-title" id="theoryTitle"></div>
             <div class="theory-content" id="theoryContent"></div>
-        </div>
-        <div class="btn-row">
-            <button class="btn btn-outline" onclick="skipTheory()">Пропустить →</button>
-            <button class="btn btn-primary" onclick="skipTheory()">Понял, вперёд!</button>
+            <div class="theory-nav">
+                <button class="btn btn-outline" id="thPrev" onclick="theoryPrev()" style="padding:8px 18px;font-size:0.88em">← Назад</button>
+                <div class="page-dots" id="pageDots"></div>
+                <button class="btn btn-primary" id="thNext" onclick="theoryNext()" style="padding:8px 18px;font-size:0.88em">Далее →</button>
+            </div>
         </div>
     </div>
 
     <!-- ── QUIZ ── -->
     <div class="screen" id="screenQuiz">
         <div style="text-align:right; margin-bottom:8px">
-            <button class="btn btn-outline" onclick="goSetup()" style="padding:7px 16px;font-size:0.82em">← Выбор блока</button>
+            <button class="btn btn-outline" onclick="goSetup()" style="padding:7px 16px;font-size:0.82em">← Выбор раздела</button>
         </div>
         <div class="prog-wrap">
             <div class="prog-info">
-                <span id="progLabel">Вопрос 1 из 20</span>
+                <span id="progLabel">Вопрос 1 из 17</span>
                 <span id="progScore">✓ 0 · ✗ 0</span>
             </div>
             <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
@@ -237,7 +362,7 @@
             </div>
             <div class="topic-stats" id="topicStats"></div>
             <div class="btn-row">
-                <button class="btn btn-outline" onclick="goSetup()">← Выбор блока</button>
+                <button class="btn btn-outline" onclick="goSetup()">← Выбор раздела</button>
                 <button class="btn btn-primary" onclick="restartSame()">Пройти заново</button>
                 <button class="btn btn-repeat" id="btnRepeat" style="display:none" onclick="startRepeat()">Повторить ошибки (<span id="wrongCount">0</span>)</button>
             </div>
@@ -246,273 +371,406 @@
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────
-// THEORY DATA
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+// THEORY DATA — PAGINATED
+// ═══════════════════════════════════════════════════════════════════
 const THEORY = {
-  'б1': {
-    title: 'Базовые понятия',
-    html: `
-      <p><b>1. Атом</b> — это мельчайшая частица вещества (элемента, если точнее). Атомы невидимые, меньше не бывает (в химии). У каждого атома своя «начинка» — ядро с протонами и нейтронами, и электронное облако.</p>
-      <p><b>2. Молекула</b> — это группа из двух или более атомов, прочно связанных друг с другом. Можно представить как конструктор LEGO — атомы соединяются в разные фигуры.</p>
-      <p><b>3. Простое вещество</b> — состоит из атомов ОДНОГО элемента.<br>
-      Пример: Кислород (O₂) — два атома кислорода. Железо (Fe) — куча одинаковых атомов.</p>
-      <p><b>4. Сложное вещество</b> — состоит из атомов РАЗНЫХ элементов.<br>
-      Пример: Вода (H₂O) — два атома водорода и один кислород.</p>
-      <p><b>5. Аллотропия</b> — это когда из одного и того же элемента можно получить разные вещества.<br>
-      Пример: Из атомов углерода можно собрать алмаз (самый твёрдый), а можно — графит (мягкий, в карандашах). Разные формы, а элемент один.</p>
-    `
+  'т1': {
+    title: 'Основные понятия и стехиометрические законы',
+    pages: [
+      // ─── PAGE 1: Атом, молекула, простое/сложное ───
+      `<div class="th-section"><span class="th-num">1</span>Из чего состоит вещество?</div>
+       <p><span class="key">Атом</span> — мельчайшая частица <em>химического элемента</em>. Атомы — это «кирпичики», из которых построено всё вокруг.</p>
+       <p><span class="key">Молекула</span> — группа из двух или более атомов, прочно связанных друг с другом. Молекула — это уже <em>вещество</em>, которое сохраняет его химические свойства.</p>
+       <p style="text-align:center"><img src="atom-molecule.png" alt="Атом vs Молекула" class="theory-img"></p>
+       <p><span class="key-green">Простое вещество</span> — состоит из атомов <b>одного</b> элемента.<br>
+       Примеры: O<sub>2</sub> (кислород), Fe (железо), N<sub>2</sub> (азот).</p>
+       <p><span class="key-pink">Сложное вещество</span> — состоит из атомов <b>разных</b> элементов.<br>
+       Примеры: H<sub>2</sub>O (вода), NaCl (соль), CO<sub>2</sub> (углекислый газ).</p>
+       <p style="text-align:center"><img src="element-compound.png" alt="Простое vs Сложное вещество" class="theory-img"></p>
+       <p><span class="key-orange">Аллотропия</span> — когда из атомов <b>одного и того же</b> элемента можно собрать <b>разные</b> вещества. Углерод → алмаз (твёрдый) и графит (мягкий). Кислород → O<sub>2</sub> и озон O<sub>3</sub>.</p>
+       <p style="text-align:center"><img src="allotropy.png" alt="Аллотропия: графит и алмаз" class="theory-img"></p>`,
+
+      // ─── PAGE 2: Массы, моль, Авогадро ───
+      `<div class="th-section"><span class="th-num">2</span>Массы: атомная, молекулярная, молярная</div>
+       <p><span class="key">Атомная масса A<sub>r</sub></span> — масса одного атома в <em>атомных единицах массы</em> (а.е.м.). Берётся из таблицы Менделеева. Это <b>относительная</b> масса — относительно 1/12 массы атома углерода.</p>
+
+       <div class="formula-box">
+         A<sub>r</sub>(O) = 16 а.е.м. &nbsp;&nbsp;&nbsp; A<sub>r</sub>(Fe) = 56 а.е.м. &nbsp;&nbsp;&nbsp; A<sub>r</sub>(H) = 1 а.е.м.
+       </div>
+
+       <p><span class="key">Молекулярная масса M<sub>r</sub></span> — сумма атомных масс всех атомов в молекуле:</p>
+
+       <div class="formula-box">
+         M<sub>r</sub>(H<sub>2</sub>O) = 2 · A<sub>r</sub>(H) + A<sub>r</sub>(O) = 2·1 + 16 = <span class="key">18 а.е.м.</span>
+       </div>
+
+       <div class="th-section"><span class="th-num">3</span>Моль и число Авогадро</div>
+       <p><span class="key-green">Моль</span> — порция вещества. Как «дюжина» = 12 штук, так «моль» = 6,02 · 10<sup>23</sup> штук.</p>
+       <p><span class="key-green">Число Авогадро N<sub>A</sub> = 6,02 · 10<sup>23</sup></span> — столько частиц в одном моле <b>любого</b> вещества. Число огромное, потому что атомы крошечные.</p>
+       <p style="text-align:center"><img src="avogadro-number.png" alt="Число Авогадро — 6,02·10²³ частиц в 1 моле" class="theory-img"></p>
+
+       <div class="formula-box">
+         N = n · N<sub>A</sub><br>
+         <span style="font-size:0.8em;color:#aaa;">N — число молекул, &nbsp; n — количество моль, &nbsp; N<sub>A</sub> = 6,02·10<sup>23</sup></span>
+       </div>`,
+
+      // ─── PAGE 3: Молярная масса — «магия» ───
+      `<div class="th-section"><span class="th-num">4</span>Молярная масса M — магия таблицы Менделеева</div>
+       <p><span class="key">Молярная масса M</span> — масса <b>одного моля</b> вещества в граммах (г/моль).</p>
+
+       <p style="text-align:center"><img src="Молярная масса.png" alt="Молярная масса — вес одного моля" class="theory-img"></p>
+
+       <div class="note-box">
+         <span class="note-icon">✨</span> <b>Главный секрет:</b> число в таблице Менделеева — это <span class="key">одновременно</span> и масса одного атома (в а.е.м.), и масса целого моля (в граммах)!
+       </div>
+
+       <p>Число в таблице (например, <b>16</b> у Кислорода) отвечает на <b>два вопроса</b> сразу:</p>
+
+       <div class="law-card">
+         <div class="law-name" style="color:#00d2ff">Для 1 штуки (атома):</div>
+         <div class="law-text">Один атом кислорода весит <b>16 а.е.м.</b> — настолько крошечно, что на весах не увидеть.</div>
+       </div>
+
+       <div class="law-card law-green">
+         <div class="law-name" style="color:#4ade80">Для 1 моля (целой «коробки» из 6,02·10²³ штук):</div>
+         <div class="law-text">Моль атомов кислорода весит ровно <b>16 граммов</b>. Это уже можно взвесить!</div>
+       </div>
+
+       <p><b>Почему числа совпадают?</b> Учёные <em>специально</em> подобрали количество штук в моле (6,02·10<sup>23</sup>) так, чтобы масса моля <b>в граммах</b> была равна числу из таблицы.</p>
+
+       <div class="formula-box">
+         В таблице у Fe стоит 56 →<br>
+         берём «коробку» из 6,02·10<sup>23</sup> атомов Fe,<br>
+         ставим на весы → ровно <span class="key">56 граммов</span><br><br>
+         Это и есть <span class="key">M(Fe) = 56 г/моль</span>
+       </div>
+
+       <div class="note-box">
+         <span class="note-icon">⚖️</span> <b>Представь два одинаковых прозрачных контейнера.</b><br>
+         В первом лежат <span class="key-green">горошины</span> (атомы Водорода). Контейнер лёгкий — <b>1 грамм</b>.<br>
+         Во втором лежат <span class="key-orange">арбузы</span> (атомы Золота). Штук <em>столько же</em>, но контейнер весит <b>197 граммов</b>.<br><br>
+         <p style="text-align:center"><img src="goroh-arbuzy.png" alt="Горошины vs Арбузы — одинаковое число, разная масса" class="theory-img"></p>
+         <span class="key">Главный вывод:</span> число в таблице — это «индивидуальный вес» одной стандартной порции (моля) каждого элемента. Порции одинаковые по количеству штук, но разные по массе!
+       </div>
+
+       <p><span class="key-orange">Молярный объём газа V<sub>m</sub> = 22,4 л/моль</span> — любой газ при нормальных условиях: 1 моль = 22,4 литра. Хоть водород, хоть хлор — объём одинаковый.</p>
+
+       <div class="formula-box">
+         n = <span class="frac"><span class="frac-top">m</span><span class="frac-bot">M</span></span>
+         &nbsp;&nbsp;&nbsp;&nbsp;
+         n = <span class="frac"><span class="frac-top">V</span><span class="frac-bot">V<sub>m</sub></span></span>
+         &nbsp;&nbsp;&nbsp;&nbsp;
+         n = <span class="frac"><span class="frac-top">N</span><span class="frac-bot">N<sub>A</sub></span></span>
+         <br><br>
+         <span style="font-size:0.78em;color:#aaa;">n — моль, &nbsp; m — масса (г), &nbsp; M — молярная масса (г/моль)<br>
+         V — объём газа (л), &nbsp; V<sub>m</sub> = 22,4 л/моль, &nbsp; N — число частиц</span>
+       </div>
+
+       <a href="molar-mass-trainer.html" class="trainer-link">🔬 Тренажёр молярной массы →</a>`,
+
+      // ─── PAGE 4: Стехиометрические законы ───
+      `<div class="th-section"><span class="th-num">5</span>Стехиометрические законы</div>
+       <p>Слово <span class="key">«стехиометрия»</span> — от греч. <em>stoicheion</em> (элемент) + <em>metron</em> (мера). Буквально: <b>«измерение элементов»</b>. Это законы о том, <em>в каких количествах</em> вещества вступают в реакции и образуются.</p>
+
+       <div class="law-card">
+         <div class="law-name" style="color:#00d2ff">Закон №1 — Сохранение масс <span class="law-year">Ломоносов, 1748</span></div>
+         <div class="law-text">
+           Масса веществ, <b>вступивших</b> в реакцию, <span class="key">равна</span> массе веществ, <b>образовавшихся</b> в результате реакции.<br>
+           <em>Является основным законом химии. Атомы не исчезают и не появляются — они просто пересоединяются.</em>
+         </div>
+       </div>
+
+       <div class="law-card law-green">
+         <div class="law-name" style="color:#4ade80">Закон №2 — Сохранение энергии</div>
+         <div class="law-text">
+           Энергия не возникает из ничего и не исчезает бесследно — она <span class="key-green">переходит из одной формы в другую</span>.<br>
+           <em>Аналогичен закону сохранения масс, но для энергии.</em>
+         </div>
+       </div>
+
+       <div class="law-card law-orange">
+         <div class="law-name" style="color:#fb923c">Закон №3 — Постоянство состава <span class="law-year">Пруст, 1799</span></div>
+         <div class="law-text">
+           Каждое химическое соединение имеет <span class="key-orange">постоянный</span> качественный и количественный состав <b>независимо</b> от способов его получения.<br>
+           <em>Вода всегда H<sub>2</sub>O — откуда бы её ни получили.</em><br>
+           <span style="color:#888;font-size:0.88em;">Исключение: бертоллиды — вещества переменного состава (немолекулярное строение).</span>
+         </div>
+       </div>
+
+       <div class="law-card law-pink">
+         <div class="law-name" style="color:#f472b6">Закон №4 — Авогадро <span class="law-year">1811</span></div>
+         <div class="law-text">
+           В <b>равных объёмах</b> любых газов при одинаковых условиях (T и P) содержится <span class="key-pink">одинаковое число молекул</span>.<br>
+           <em>Следствие: 1 моль любого газа при н.у. = 22,4 л.</em>
+         </div>
+       </div>
+
+       <div class="law-card law-yellow">
+         <div class="law-name" style="color:#fbbf24">Закон №5 — Эквивалентов <span class="law-year">Рихтер, 1792</span></div>
+         <div class="law-text">
+           Вещества реагируют друг с другом в количествах, <span class="key-yellow">пропорциональных их эквивалентам</span>.<br>
+           <em>Подробнее — в разделе «Эквиваленты».</em>
+         </div>
+       </div>
+
+       <a href="molar-mass-trainer.html" class="trainer-link">🔬 Тренажёр: считаем массы, концентрации, растворы →</a>`
+    ]
   },
-  'б2': {
-    title: 'Количественные отношения',
-    html: `
-      <p><b>6. Моль</b> — это просто порция вещества. Как дюжина (12 штук) или сотня (100 штук). Химики придумали считать атомы не по одному (слишком мелкие), поэтому они работают с порциями — молями.</p>
-      <p><b>7. Число Авогадро (6,02 · 10²³)</b> — это количество штук в одном моле. Число гигантское, потому что атомы крошечные. В 1 моле любого вещества ровно столько частиц.</p>
-      <p><b>8. Молярная масса (M)</b> — это вес одного моля (целой порции).<br>
-      Подсказка: число в таблице Менделеева — это и есть молярная масса в г/моль.<br>
-      Углерод (C): в таблице 12 → 1 моль весит 12 г.<br>
-      Золото (Au): в таблице 197 → 1 моль весит 197 г.<br>
-      Фишка: в обоих случаях (и в 12 г угля, и в 197 г золота) одинаковое КОЛИЧЕСТВО атомов — число Авогадро.</p>
-      <p><b>9. Молярный объём газа (22,4 л)</b> — универсальная константа: любой газ (хоть водород, хоть хлор) при нормальных условиях занимает одинаковый объём.<br>
-      1 моль любого газа = 22,4 литра.</p>
-    `
-  },
-  'б3': {
+
+  'т2': {
     title: 'Эквиваленты',
-    html: `
-      <p><b>Эквивалент</b> — это «обменная монета» в химии. Показывает, какая порция вещества может заместить или присоединить столько же, сколько 1 моль водорода.</p>
-      <p><b>10. Эквивалент кислоты</b> — делим молярную массу на количество H⁺, которое кислота может отдать.<br>
-      Как считать: M делим на количество H.<br>
-      HCl — один водород → эквивалент равен молярной массе целиком.<br>
-      H₂SO₄ — два водорода → эквивалент = M / 2.</p>
-      <p><b>11. Эквивалент основания</b> — делим на количество групп OH⁻.<br>
-      NaOH — одна группа OH → эквивалент равен молярной массе целиком.</p>
-      <p><b>12. Эквивалент соли</b> — делим на (заряд металла × число атомов металла).</p>
-    `
-  },
-  'б4': {
-    title: 'Строение атома',
-    html: `
-      <p><b>Ядро:</b> протоны (заряд +) и нейтроны (без заряда). Число протонов = порядковый номер элемента.</p>
-      <p><b>Изотопы</b> — атомы одного элемента с разным числом нейтронов. Протонов столько же, а нейтронов больше или меньше. Как братья-близнецы разного веса.</p>
-      <p><b>Атомная орбиталь</b> — область пространства, где вероятнее всего находится электрон. Не орбита (не летает по кругу!), а облако.</p>
-      <p><b>Формы орбиталей:</b><br>
-      • s — сфера (шарик)<br>
-      • p — гантель (два шарика)<br>
-      • d — сложная форма (четырёхлепестковый клевер)</p>
-      <p><b>4 квантовых числа</b> описывают каждый электрон:<br>
-      • n (главное) — номер этажа (1, 2, 3...)<br>
-      • l (орбитальное) — форма комнаты (0=s, 1=p, 2=d, 3=f)<br>
-      • m<sub>l</sub> (магнитное) — ориентация комнаты в пространстве<br>
-      • m<sub>s</sub> (спиновое) — направление вращения (+½ или −½)</p>
-      <p><b>Принцип Паули:</b> в одной комнате (орбитали) максимум 2 электрона, и они должны вращаться в разные стороны.</p>
-      <p><b>Правило Клечковского:</b> электроны заполняют орбитали в порядке возрастания суммы (n + l). При одинаковой сумме — сначала меньшее n.<br>
-      Порядок: 1s → 2s → 2p → 3s → 3p → 4s → 3d → 4p → 5s → 4d...<br>
-      Поэтому 4s заполняется РАНЬШЕ 3d!</p>
-      <p><b>Правило Хунда:</b> электроны сначала расселяются по одному в каждую орбиталь подуровня (как люди в автобусе — сначала по одному на каждое сиденье), и только потом подсаживаются вторые.</p>
-    `
+    pages: [
+      // ─── PAGE 1: Что такое эквивалент ───
+      `<div class="th-section"><span class="th-num">1</span>Что такое эквивалент?</div>
+       <p><span class="key">Эквивалент</span> — это «обменная монета» в химии. Показывает, какая порция вещества может <b>присоединить</b> или <b>заместить</b> 1 моль атомов водорода.</p>
+
+       <div class="note-box">
+         <span class="note-icon">💡</span> Зачем это нужно? Чтобы быстро понять, <em>сколько</em> одного вещества нужно для реакции с другим — без расстановки коэффициентов.
+       </div>
+
+       <p><span class="key-green">Молярная масса эквивалента M<sub>э</sub></span> — масса одного эквивалента в граммах. Считается по формулам, которые зависят от <b>типа вещества</b>.</p>
+
+       <p><b>Закон эквивалентов:</b></p>
+       <div class="formula-box">
+         <span class="frac"><span class="frac-top">m<sub>1</sub></span><span class="frac-bot">M<sub>э1</sub></span></span>
+         &nbsp;=&nbsp;
+         <span class="frac"><span class="frac-top">m<sub>2</sub></span><span class="frac-bot">M<sub>э2</sub></span></span>
+         <br><br>
+         <span style="font-size:0.82em;color:#aaa;">Вещества реагируют в количествах, пропорциональных их эквивалентам</span>
+       </div>`,
+
+      // ─── PAGE 2: 4 формулы ───
+      `<div class="th-section"><span class="th-num">2</span>Четыре формулы — для каждого типа вещества</div>
+
+       <div class="law-card">
+         <div class="law-name" style="color:#00d2ff">① Простые вещества</div>
+         <div class="law-text">
+           <div class="formula-box" style="text-align:center">
+             M<sub>э</sub> = <span class="frac"><span class="frac-top">M</span><span class="frac-bot">валентность</span></span>
+           </div>
+           <b>Пример:</b> Fe (валентность III):<br>
+           M<sub>э</sub>(Fe) = <span class="frac"><span class="frac-top">56</span><span class="frac-bot">3</span></span> = 18,67 г/моль
+         </div>
+       </div>
+
+       <div class="law-card law-green">
+         <div class="law-name" style="color:#4ade80">② Кислоты</div>
+         <div class="law-text">
+           <div class="formula-box" style="text-align:center">
+             M<sub>э</sub> = <span class="frac"><span class="frac-top">M<sub>кислоты</sub></span><span class="frac-bot">основность (число H⁺)</span></span>
+           </div>
+           <b>Основность</b> — сколько H⁺ кислота может отдать.<br><br>
+           <b>Примеры:</b><br>
+           HCl: один H⁺ → M<sub>э</sub> = <span class="frac"><span class="frac-top">36,5</span><span class="frac-bot">1</span></span> = 36,5 г/моль<br><br>
+           H<sub>2</sub>SO<sub>4</sub>: два H⁺ → M<sub>э</sub> = <span class="frac"><span class="frac-top">98</span><span class="frac-bot">2</span></span> = 49 г/моль<br><br>
+           H<sub>3</sub>PO<sub>4</sub>: три H⁺ → M<sub>э</sub> = <span class="frac"><span class="frac-top">98</span><span class="frac-bot">3</span></span> = 32,67 г/моль
+         </div>
+       </div>
+
+       <div class="law-card law-orange">
+         <div class="law-name" style="color:#fb923c">③ Основания</div>
+         <div class="law-text">
+           <div class="formula-box" style="text-align:center">
+             M<sub>э</sub> = <span class="frac"><span class="frac-top">M<sub>основания</sub></span><span class="frac-bot">кислотность (число OH⁻)</span></span>
+           </div>
+           <b>Кислотность</b> — сколько групп OH⁻ в основании.<br><br>
+           <b>Примеры:</b><br>
+           NaOH: одна OH⁻ → M<sub>э</sub> = <span class="frac"><span class="frac-top">40</span><span class="frac-bot">1</span></span> = 40 г/моль<br><br>
+           Ca(OH)<sub>2</sub>: две OH⁻ → M<sub>э</sub> = <span class="frac"><span class="frac-top">74</span><span class="frac-bot">2</span></span> = 37 г/моль<br><br>
+           Al(OH)<sub>3</sub>: три OH⁻ → M<sub>э</sub> = <span class="frac"><span class="frac-top">78</span><span class="frac-bot">3</span></span> = 26 г/моль
+         </div>
+       </div>
+
+       <div class="law-card law-pink">
+         <div class="law-name" style="color:#f472b6">④ Соли</div>
+         <div class="law-text">
+           <div class="formula-box" style="text-align:center">
+             M<sub>э</sub> = <span class="frac"><span class="frac-top">M<sub>соли</sub></span><span class="frac-bot">заряд металла × число атомов металла</span></span>
+           </div>
+           <b>Примеры:</b><br>
+           NaCl: Na<sup>+1</sup>, 1 атом → M<sub>э</sub> = <span class="frac"><span class="frac-top">58,5</span><span class="frac-bot">1 × 1</span></span> = 58,5 г/моль<br><br>
+           CaCl<sub>2</sub>: Ca<sup>+2</sup>, 1 атом → M<sub>э</sub> = <span class="frac"><span class="frac-top">111</span><span class="frac-bot">2 × 1</span></span> = 55,5 г/моль<br><br>
+           Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub>: Al<sup>+3</sup>, 2 атома → M<sub>э</sub> = <span class="frac"><span class="frac-top">342</span><span class="frac-bot">3 × 2</span></span> = 57 г/моль
+         </div>
+       </div>
+
+       <a href="molar-mass-trainer.html" class="trainer-link">🔬 Тренажёр: вкладка «Эквиваленты» →</a>`
+    ]
   }
 };
 
-// ─────────────────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════════════════
 // QUESTIONS DATA
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 const ALL_Q = [
-  // ── БЛОК 1: Базовые понятия (5 вопросов) ──────────────────────
-  { t:'б1',
+  // ── ТЕМА 1: Основные понятия и законы (9 вопросов) ────────────
+  { t:'т1',
     q:'Что изучает химия?',
     o:['Движение и взаимодействие тел',
        'Состав, строение, свойства и превращения веществ',
        'Строение и развитие Земли',
        'Наследственность и изменчивость организмов'],
     c:1,
-    e:'Химия — наука о составе, строении, свойствах, превращениях веществ и элементов, их окружающих.' },
+    e:'Химия — наука о составе, строении, свойствах и превращениях веществ.' },
 
-  { t:'б1',
-    q:'Что такое молекула?',
-    o:['Наименьшая частица химического элемента',
-       'Наименьшая частица вещества, сохраняющая его химические свойства',
-       'Совокупность атомов одного элемента',
-       'Заряженная частица, образованная из атома'],
-    c:1,
-    e:'Молекула — наименьшая частица вещества, сохраняющая его химические свойства.' },
-
-  { t:'б1',
-    q:'Что такое атом?',
-    o:['Наименьшая частица вещества, сохраняющая его химические свойства',
-       'Наименьшая частица химического элемента, входящая в состав молекул',
-       'Совокупность атомов одного элемента',
-       'Электронейтральная частица, состоящая из ядра'],
-    c:1,
-    e:'Атом — наименьшая частица химического элемента, входящая в состав молекул.' },
-
-  { t:'б1',
+  { t:'т1',
     q:'Чем простое вещество отличается от сложного?',
     o:['Простое имеет меньшую молярную массу',
        'Простое состоит из атомов одного элемента, сложное — из разных',
        'Простое всегда газообразное',
        'Простое не вступает в реакции'],
     c:1,
-    e:'Простое вещество — совокупность атомов одного элемента (H\u2082, O\u2082, N\u2082). Сложное — совокупность атомов разных элементов (H\u2082O).' },
+    e:'Простое вещество — атомы одного элемента (O₂, Fe). Сложное — атомы разных элементов (H₂O, NaCl).' },
 
-  { t:'б1',
+  { t:'т1',
     q:'Что такое аллотропия?',
     o:['Способность атомов образовывать ионы',
        'Существование элемента в виде нескольких простых веществ',
        'Изменение агрегатного состояния вещества',
        'Способность вещества растворяться в воде'],
     c:1,
-    e:'Аллотропия — существование элемента в виде нескольких простых веществ. Например, углерод: алмаз, графит. Кислород: O\u2082 и O\u2083 (озон).' },
+    e:'Аллотропия — существование элемента в виде нескольких простых веществ. Углерод: алмаз и графит. Кислород: O₂ и O₃ (озон).' },
 
-  // ── БЛОК 2: Количественные отношения (4 вопроса) ──────────────
-  { t:'б2',
+  { t:'т1',
     q:'Чему равна молекулярная масса M<sub>r</sub>(H<sub>2</sub>O)?',
     o:['16 а.е.м.',
        '18 а.е.м.',
        '20 а.е.м.',
        '17 а.е.м.'],
     c:1,
-    e:'M\u1d63(H\u2082O) = 2\u00b7A\u1d63(H) + A\u1d63(O) = 2\u00b71 + 16 = 18 а.е.м.' },
+    e:'M꜀(H₂O) = 2·A꜀(H) + A꜀(O) = 2·1 + 16 = 18 а.е.м.' },
 
-  { t:'б2',
+  { t:'т1',
     q:'Что такое моль?',
     o:['Масса одной молекулы вещества',
-       'Единица измерения количества вещества',
+       'Единица измерения количества вещества, содержащая 6,02·10²³ частиц',
        'Объём газа при нормальных условиях',
        'Число электронов в атоме'],
     c:1,
-    e:'Моль — единица количества вещества. 1 моль любого вещества численно равен его молярной массе.' },
+    e:'Моль — порция вещества, содержащая 6,02·10²³ частиц (число Авогадро).' },
 
-  { t:'б2',
+  { t:'т1',
+    q:'Почему молярная масса железа = 56 г/моль, если в таблице Менделеева стоит 56?',
+    o:['Это совпадение',
+       'Число Авогадро специально подобрано так, чтобы масса моля в граммах равнялась числу из таблицы',
+       'Потому что один атом железа весит 56 граммов',
+       'Это округление, на самом деле масса другая'],
+    c:1,
+    e:'Учёные специально подобрали число Авогадро (6,02·10²³) так, чтобы масса моля в граммах численно совпадала с относительной атомной массой из таблицы Менделеева.' },
+
+  { t:'т1',
     q:'Что гласит закон сохранения масс?',
     o:['Масса ядра равна сумме масс протонов и нейтронов',
        'Масса веществ, вступивших в реакцию, равна массе продуктов реакции',
        'Масса газа пропорциональна его объёму',
        'Масса молекулы равна сумме масс составляющих её атомов'],
     c:1,
-    e:'Закон сохранения масс: масса веществ, вступивших в реакцию, равна массе веществ, образовавшихся в результате реакции.' },
+    e:'Закон сохранения масс (Ломоносов, 1748): масса реагентов = масса продуктов. Основной закон химии.' },
 
-  { t:'б2',
-    q:'Какой объём занимает 1 моль любого газа при н.у. (T=273K, P=1атм)?',
+  { t:'т1',
+    q:'Какой объём занимает 1 моль любого газа при н.у.?',
     o:['11,2 л',
        '44,8 л',
        '22,4 л',
        '33,6 л'],
     c:2,
-    e:'По закону Авогадро, 1 моль любого газа при нормальных условиях занимает объём 22,4 л.' },
+    e:'По закону Авогадро, 1 моль любого газа при нормальных условиях занимает 22,4 л.' },
 
-  // ── БЛОК 3: Эквиваленты (1 вопрос) ───────────────────────────
-  { t:'б3',
-    q:'Как вычислить эквивалент кислоты?',
-    o:['Молярная масса / число атомов кислорода',
-       'Молярная масса / число атомов водорода',
-       'Молярная масса / заряд металла',
-       'Молярная масса / валентность'],
+  { t:'т1',
+    q:'Что означает слово «стехиометрия»?',
+    o:['Превращение элементов',
+       'Измерение элементов — законы о количественных соотношениях в реакциях',
+       'Изучение структуры атома',
+       'Разделение веществ на составляющие'],
     c:1,
-    e:'Эквивалент кислоты = молярная масса кислоты / число атомов водорода. Например, Э(H\u2082SO\u2084) = 98/2 = 49 г/моль.' },
+    e:'Стехиометрия (греч. stoicheion — элемент, metron — мера) — наука о количественных соотношениях веществ в химических реакциях.' },
 
-  // ── БЛОК 4: Строение атома (10 вопросов) ──────────────────────
-  { t:'б4',
-    q:'Из чего состоит ядро атома?',
-    o:['Из электронов и протонов',
-       'Из протонов и нейтронов',
-       'Из нейтронов и электронов',
-       'Только из протонов'],
+  // ── ТЕМА 2: Эквиваленты (8 вопросов) ─────────────────────────
+  { t:'т2',
+    q:'Что такое эквивалент вещества?',
+    o:['Масса одного моля вещества',
+       'Порция вещества, способная присоединить или заместить 1 моль атомов водорода',
+       'Количество вещества в 1 литре раствора',
+       'Число молекул в единице объёма'],
     c:1,
-    e:'Ядро состоит из положительно заряженных протонов (заряд +1) и нейтральных нейтронов (заряд \u22480).' },
+    e:'Эквивалент — порция вещества, которая присоединяет или замещает 1 моль атомов водорода.' },
 
-  { t:'б4',
-    q:'Что такое изотопы?',
-    o:['Атомы разных элементов с одинаковой массой',
-       'Атомы одного элемента с одинаковым зарядом ядра, но разным массовым числом',
-       'Атомы с одинаковым числом нейтронов',
-       'Молекулы одного вещества разного размера'],
+  { t:'т2',
+    q:'Как вычислить эквивалент <b>кислоты</b>?',
+    o:['M / число атомов кислорода',
+       'M / основность (число H⁺)',
+       'M / заряд металла',
+       'M / валентность'],
     c:1,
-    e:'Изотопы — атомы одного и того же химического элемента, имеющие одинаковый заряд ядра, но разные массовые числа (разное число нейтронов). Например, \u00b9\u2075Cl и \u00b3\u2077Cl.' },
+    e:'Эквивалент кислоты = M / основность. Основность = число H⁺, которые кислота отдаёт. H₂SO₄: M/2 = 98/2 = 49 г/моль.' },
 
-  { t:'б4',
-    q:'На чём основано современное представление о строении атома?',
-    o:['На планетарной модели',
-       'На квантово-механической модели',
-       'На модели «пудинг с изюмом»',
-       'На классической механике Ньютона'],
+  { t:'т2',
+    q:'Как вычислить эквивалент <b>основания</b>?',
+    o:['M / число атомов металла',
+       'M / кислотность (число OH⁻)',
+       'M / число атомов кислорода',
+       'M / основность'],
     c:1,
-    e:'Современные представления о строении атома базируются на квантово-механической модели. Электрон ведёт себя и как частица, и как волна.' },
+    e:'Эквивалент основания = M / кислотность. Кислотность = число групп OH⁻. Ca(OH)₂: M/2 = 74/2 = 37 г/моль.' },
 
-  { t:'б4',
-    q:'Что такое атомная орбиталь?',
-    o:['Траектория движения электрона вокруг ядра',
-       'Область пространства, в которой наиболее вероятно нахождение электрона',
-       'Расстояние от ядра до электрона',
-       'Энергия электрона на данном уровне'],
+  { t:'т2',
+    q:'Как вычислить эквивалент <b>соли</b>?',
+    o:['M / число анионов',
+       'M / (заряд металла × число атомов металла)',
+       'M / число атомов кислорода',
+       'M / молярный объём'],
     c:1,
-    e:'Атомная орбиталь — область пространства, в которой наиболее вероятно нахождение электрона. Описывается волновой функцией (уравнение Шрёдингера, 1924).' },
+    e:'Эквивалент соли = M / (заряд металла × число атомов металла). Al₂(SO₄)₃: M / (3×2) = 342/6 = 57 г/моль.' },
 
-  { t:'б4',
-    q:'Сколько квантовых чисел характеризуют состояние электрона в атоме?',
-    o:['2',
-       '3',
-       '4',
-       '5'],
+  { t:'т2',
+    q:'Как вычислить эквивалент <b>простого вещества</b>?',
+    o:['M / число атомов в молекуле',
+       'M / валентность элемента',
+       'M / число электронов',
+       'M / порядковый номер'],
+    c:1,
+    e:'Эквивалент простого вещества = M / валентность. Fe(III): M/3 = 56/3 = 18,67 г/моль.' },
+
+  { t:'т2',
+    q:'Чему равен эквивалент H<sub>2</sub>SO<sub>4</sub>?',
+    o:['98 г/моль',
+       '49 г/моль',
+       '32,67 г/моль',
+       '196 г/моль'],
+    c:1,
+    e:'H₂SO₄: основность = 2 (два H⁺). M = 98 г/моль. Эквивалент = 98/2 = 49 г/моль.' },
+
+  { t:'т2',
+    q:'Чему равен эквивалент Al(OH)<sub>3</sub>?',
+    o:['78 г/моль',
+       '39 г/моль',
+       '26 г/моль',
+       '13 г/моль'],
     c:2,
-    e:'4 квантовых числа: главное (n), орбитальное (l), магнитное (m\u2097) и спиновое (m\u209b).' },
+    e:'Al(OH)₃: кислотность = 3 (три группы OH⁻). M = 78 г/моль. Эквивалент = 78/3 = 26 г/моль.' },
 
-  { t:'б4',
-    q:'Какие формы имеют s- и p-орбитали?',
-    o:['s — сфера, p — гантель (восьмёрка)',
-       's — гантель, p — сфера',
-       'Обе сферические',
-       's — куб, p — сфера'],
-    c:0,
-    e:'s-орбиталь имеет сферическую форму, p-орбиталь — форму гантели (восьмёрки).' },
-
-  { t:'б4',
-    q:'Сколько электронов максимально вмещает d-подуровень?',
-    o:['2',
-       '6',
-       '10',
-       '14'],
-    c:2,
-    e:'Электронная ёмкость подуровней: s = 2, p = 6, d = 10, f = 14. Формула ёмкости: 2(2l+1).' },
-
-  { t:'б4',
-    q:'Что гласит принцип Паули?',
-    o:['Электроны заполняют орбитали с наименьшей энергией',
-       'В атоме не может быть двух электронов с одинаковыми значениями всех четырёх квантовых чисел',
-       'Электроны сначала заполняют орбитали по одному',
-       'Электроны всегда движутся по круговым орбитам'],
+  { t:'т2',
+    q:'Чему равен эквивалент CaCl<sub>2</sub>?',
+    o:['111 г/моль',
+       '55,5 г/моль',
+       '37 г/моль',
+       '74 г/моль'],
     c:1,
-    e:'Принцип Паули: в атоме не может быть 2-х электронов с одинаковыми значениями всех четырёх квантовых чисел. Поэтому на одной орбитали максимум 2 электрона с противоположными спинами.' },
-
-  { t:'б4',
-    q:'По правилу Клечковского, что заполняется раньше — 3d или 4s?',
-    o:['3d, потому что n меньше',
-       '4s, потому что сумма n+l меньше',
-       'Одновременно',
-       'Зависит от элемента'],
-    c:1,
-    e:'По правилу Клечковского: 4s (n+l = 4+0 = 4) заполняется раньше 3d (n+l = 3+2 = 5), так как сумма n+l меньше. При равных n+l первым заполняется подуровень с меньшим n.' },
-
-  { t:'б4',
-    q:'Какая электронная формула у натрия (Na, Z=11)?',
-    o:['1s\u00b2 2s\u00b2 2p\u2076 3s\u00b9',
-       '1s\u00b2 2s\u00b2 2p\u2076 3p\u00b9',
-       '1s\u00b2 2s\u00b2 2p\u2075 3s\u00b2',
-       '1s\u00b2 2s\u00b2 2p\u2076 3s\u00b2'],
-    c:0,
-    e:'Na (11 электронов): 1s\u00b2 2s\u00b2 2p\u2076 3s\u00b9. Последний электрон находится на 3s-подуровне.' }
+    e:'CaCl₂: Ca²⁺, 1 атом металла. Заряд × число = 2×1 = 2. M = 111 г/моль. Эквивалент = 111/2 = 55,5 г/моль.' }
 ];
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 // CONFIG
-// ─────────────────────────────────────────────────────────────────
-const TAG_NAMES   = { 'б1': 'Базовые понятия', 'б2': 'Количественные отношения', 'б3': 'Эквиваленты', 'б4': 'Строение атома' };
-const TAG_CLASSES = { 'б1': 'tag-б1', 'б2': 'tag-б2', 'б3': 'tag-б3', 'б4': 'tag-б4' };
-const TOPIC_COLORS = { 'б1': '#00d2ff', 'б2': '#b57bff', 'б3': '#4ade80', 'б4': '#fb923c' };
+// ═══════════════════════════════════════════════════════════════════
+const TAG_NAMES   = { 'т1': 'Основы и законы', 'т2': 'Эквиваленты' };
+const TAG_CLASSES = { 'т1': 'tag-т1', 'т2': 'tag-т2' };
+const TOPIC_COLORS = { 'т1': '#00d2ff', 'т2': '#4ade80' };
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 // STATE
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 let queue = [];
 let wrongQ = [];
 let round = 1;
@@ -529,9 +787,14 @@ let isAllMode = false;
 let _opts = [];
 let _correctOrig = 0;
 
-// ─────────────────────────────────────────────────────────────────
+// Theory pagination
+let theoryPages = [];
+let theoryPageIdx = 0;
+let theoryTopicKey = '';
+
+// ═══════════════════════════════════════════════════════════════════
 // UTILS
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -556,15 +819,66 @@ function emojiBurst(emoji) {
   setTimeout(() => el.remove(), 950);
 }
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+// THEORY PAGINATION
+// ═══════════════════════════════════════════════════════════════════
+function showTheoryForTopic(topicKey) {
+  const t = THEORY[topicKey];
+  if (!t) return false;
+  theoryTopicKey = topicKey;
+  theoryPages = t.pages;
+  theoryPageIdx = 0;
+  document.getElementById('theoryTitle').textContent = t.title;
+  renderTheoryPage();
+  showScreen('screenTheory');
+  return true;
+}
+
+function renderTheoryPage() {
+  document.getElementById('theoryContent').innerHTML = theoryPages[theoryPageIdx];
+  // Dots
+  const dotsDiv = document.getElementById('pageDots');
+  dotsDiv.innerHTML = theoryPages.map((_, i) =>
+    `<div class="page-dot${i === theoryPageIdx ? ' active' : ''}"></div>`
+  ).join('');
+  // Buttons
+  document.getElementById('thPrev').style.visibility = theoryPageIdx === 0 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('thNext');
+  if (theoryPageIdx === theoryPages.length - 1) {
+    nextBtn.textContent = 'Понял, к вопросам →';
+  } else {
+    nextBtn.textContent = 'Далее →';
+  }
+}
+
+function theoryPrev() {
+  if (theoryPageIdx > 0) {
+    theoryPageIdx--;
+    renderTheoryPage();
+    window.scrollTo(0, 0);
+  }
+}
+
+function theoryNext() {
+  if (theoryPageIdx < theoryPages.length - 1) {
+    theoryPageIdx++;
+    renderTheoryPage();
+    window.scrollTo(0, 0);
+  } else {
+    // Done with theory — go to quiz
+    skipTheory();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // NAVIGATION
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 function goSetup() { showScreen('screenSetup'); }
 
 function startQuiz(topicKey) {
   isAllMode = (topicKey === 'all');
   if (topicKey === 'all') {
-    selectedTopics = ['б1', 'б2', 'б3', 'б4'];
+    selectedTopics = ['т1', 'т2'];
     queue = shuffle(ALL_Q);
   } else {
     selectedTopics = [topicKey];
@@ -583,7 +897,6 @@ function startQuiz(topicKey) {
 }
 
 function startRepeat() {
-  // Show theory again for topics that had wrong answers
   const wrongTopics = new Set(wrongQ.map(q => q.t));
   wrongTopics.forEach(t => shownTheory.delete(t));
 
@@ -601,9 +914,9 @@ function restartSame() {
   else startQuiz(selectedTopics[0]);
 }
 
-// ─────────────────────────────────────────────────────────────────
-// THEORY FLASH
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+// THEORY FLASH BEFORE QUIZ
+// ═══════════════════════════════════════════════════════════════════
 function showNextQuestion() {
   if (idx >= queue.length) {
     showResults();
@@ -615,19 +928,15 @@ function showNextQuestion() {
     // "Все темы": round 1 — без теории; повтор ошибок — теория перед каждым вопросом
     if (round > 1 && THEORY[q.t]) {
       pendingQ = q;
-      document.getElementById('theoryTitle').textContent = THEORY[q.t].title;
-      document.getElementById('theoryContent').innerHTML = THEORY[q.t].html;
-      showScreen('screenTheory');
+      showTheoryForTopic(q.t);
       return;
     }
   } else {
-    // Отдельная тема: теория один раз в начале
+    // Отдельная тема: теория один раз в начале (paginated)
     if (!shownTheory.has(q.t) && THEORY[q.t]) {
       shownTheory.add(q.t);
       pendingQ = q;
-      document.getElementById('theoryTitle').textContent = THEORY[q.t].title;
-      document.getElementById('theoryContent').innerHTML = THEORY[q.t].html;
-      showScreen('screenTheory');
+      showTheoryForTopic(q.t);
       return;
     }
   }
@@ -639,21 +948,19 @@ function skipTheory() {
   renderQuestion(pendingQ, false);
 }
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 // QUIZ
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 function renderQuestion(q, isRetry) {
   _currentQ = q;
   _isRetry = !!isRetry;
   showScreen('screenQuiz');
 
-  // Progress bar
   const pct = Math.round(idx / queueSize * 100);
   document.getElementById('progLabel').textContent = `Вопрос ${idx + 1} из ${queueSize}`;
   document.getElementById('progScore').textContent = `\u2713 ${roundCorrect} \u00b7 \u2717 ${idx - roundCorrect}`;
   document.getElementById('progFill').style.width = pct + '%';
 
-  // Tags
   const tag = document.getElementById('quizTag');
   tag.textContent = TAG_NAMES[q.t];
   tag.className = 'topic-tag ' + TAG_CLASSES[q.t];
@@ -662,10 +969,8 @@ function renderQuestion(q, isRetry) {
   if (round > 1) { rb.style.display = 'inline-block'; rb.textContent = 'Раунд ' + round; }
   else            { rb.style.display = 'none'; }
 
-  // Question text
   document.getElementById('questionText').innerHTML = q.q;
 
-  // Shuffle options, keep original index mapping
   _opts = shuffle(q.o.map((text, i) => ({ text, orig: i })));
   _correctOrig = q.c;
 
@@ -673,100 +978,89 @@ function renderQuestion(q, isRetry) {
     `<div class="option" id="opt_${i}" onclick="pickAnswer(${i}, ${opt.orig})">${opt.text}</div>`
   ).join('');
 
-  // Reset explanation and next button
   const expl = document.getElementById('explanation');
   expl.style.display = 'none';
   expl.innerHTML = q.e;
   document.getElementById('nextBtnWrap').style.display = 'none';
 
-  // Update next button label
   const isLast = (idx === queueSize - 1);
   document.getElementById('nextBtn').textContent = isLast ? 'Результаты \u2192' : 'Следующий \u2192';
 }
 
 function pickAnswer(displayIdx, origIdx) {
   const q = queue[idx];
-
-  // Disable all options
   document.querySelectorAll('.option').forEach(o => o.classList.add('disabled'));
 
   const isCorrect = (origIdx === _correctOrig);
-  const correctDisplayIdx = _opts.findIndex(o => o.orig === _correctOrig);
+
+  _opts.forEach((opt, i) => {
+    const el = document.getElementById('opt_' + i);
+    if (opt.orig === _correctOrig) el.classList.add('correct');
+    if (i === displayIdx && !isCorrect) el.classList.add('wrong');
+  });
 
   if (isCorrect) {
-    document.getElementById('opt_' + displayIdx).classList.add('correct');
-    if (!_isRetry) {
-      roundCorrect++;
-      if (round === 1 && statsPerTopic[q.t]) statsPerTopic[q.t].c++;
-    }
-    emojiBurst('\u2705');
+    roundCorrect++;
+    if (statsPerTopic[q.t]) statsPerTopic[q.t].c++;
+    emojiBurst(['🎉','✨','🔥','⚡'][Math.floor(Math.random()*4)]);
   } else {
-    document.getElementById('opt_' + displayIdx).classList.add('wrong');
-    document.getElementById('opt_' + correctDisplayIdx).classList.add('correct');
-    if (!_isRetry) wrongQ.push(q);
+    wrongQ.push(q);
   }
-
-  // Update score display immediately
-  document.getElementById('progScore').textContent = `\u2713 ${roundCorrect} \u00b7 \u2717 ${(idx + 1) - roundCorrect}`;
-  document.getElementById('progFill').style.width = Math.round((idx + 1) / queueSize * 100) + '%';
 
   document.getElementById('explanation').style.display = 'block';
   document.getElementById('nextBtnWrap').style.display = 'flex';
-
-  idx++;
 }
 
 function nextQuestion() {
+  idx++;
   showNextQuestion();
 }
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 // RESULTS
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
 function showResults() {
-  const pct = queueSize > 0 ? Math.round(roundCorrect / queueSize * 100) : 0;
+  showScreen('screenResults');
+  const total = queueSize;
+  const correct = roundCorrect;
+  const pct = Math.round(correct / total * 100);
+
   let grade, cls;
-  if (pct >= 80)      { grade = 'Отлично!';       cls = 'score-great'; }
-  else if (pct >= 60) { grade = 'Хорошо!';        cls = 'score-ok'; }
-  else                { grade = 'Нужно повторить'; cls = 'score-bad'; }
+  if (pct >= 80)      { grade = 'Отлично!'; cls = 'score-great'; }
+  else if (pct >= 50) { grade = 'Неплохо!'; cls = 'score-ok'; }
+  else                { grade = 'Надо повторить'; cls = 'score-bad'; }
 
   document.getElementById('resultsGrade').textContent = grade;
   const sc = document.getElementById('scoreCircle');
   sc.textContent = pct + '%';
   sc.className = 'score-circle ' + cls;
+  document.getElementById('resultsSub').textContent = `${correct} из ${total} правильно (раунд ${round})`;
 
-  const roundLabel = round > 1 ? ` (Раунд ${round})` : '';
-  document.getElementById('resultsSub').textContent =
-    `${roundCorrect} из ${queueSize} верно${roundLabel}`;
-
-  // Per-topic stats (from round 1)
-  const statsDiv = document.getElementById('topicStats');
-  statsDiv.innerHTML = Object.entries(statsPerTopic).map(([t, s]) => {
-    const p = s.total > 0 ? Math.round(s.c / s.total * 100) : 0;
-    return `
+  // Topic stats
+  let statsHTML = '';
+  for (const t of selectedTopics) {
+    const s = statsPerTopic[t];
+    if (!s || s.total === 0) continue;
+    const p = Math.round(s.c / s.total * 100);
+    const color = TOPIC_COLORS[t] || '#ccc';
+    statsHTML += `
       <div class="topic-stat">
-        <div class="ts-label">${TAG_NAMES[t]}</div>
-        <div class="ts-bar"><div class="ts-fill" style="width:${p}%; background:${TOPIC_COLORS[t]}"></div></div>
-        <div class="ts-num">${s.c}/${s.total}</div>
+        <span class="ts-label">${TAG_NAMES[t]}</span>
+        <div class="ts-bar"><div class="ts-fill" style="width:${p}%;background:${color}"></div></div>
+        <span class="ts-num">${s.c}/${s.total}</span>
       </div>`;
-  }).join('');
+  }
+  document.getElementById('topicStats').innerHTML = statsHTML;
 
   // Repeat button
-  const btnR = document.getElementById('btnRepeat');
+  const btnRepeat = document.getElementById('btnRepeat');
   if (wrongQ.length > 0) {
-    btnR.style.display = 'inline-block';
+    btnRepeat.style.display = 'inline-block';
     document.getElementById('wrongCount').textContent = wrongQ.length;
   } else {
-    btnR.style.display = 'none';
+    btnRepeat.style.display = 'none';
   }
-
-  showScreen('screenResults');
 }
-
-// ─────────────────────────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────────────────────────
-showScreen('screenSetup');
 </script>
 </body>
 </html>
