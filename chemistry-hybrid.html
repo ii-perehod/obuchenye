@@ -14,6 +14,9 @@
             padding: 20px;
         }
         .container { max-width: 720px; margin: 0 auto; }
+        .nav-links { display: flex; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
+        .nav-links a { color: #00d2ff; text-decoration: none; font-size: 0.95em; opacity: 0.8; transition: opacity 0.2s; }
+        .nav-links a:hover { opacity: 1; }
         h1 {
             text-align: center; font-size: 1.7em; margin-bottom: 6px;
             background: linear-gradient(90deg, #f59e0b, #ef4444);
@@ -242,6 +245,10 @@
 </head>
 <body>
 <div class="container">
+    <div class="nav-links">
+        <a href="chemistry-quiz-2.html">&larr; Вся тема 3</a>
+        <a href="index.html">&larr; На главную</a>
+    </div>
 
     <!-- ═══════ SETUP ═══════ -->
     <div class="screen active" id="screenSetup">
@@ -269,9 +276,6 @@
                 <span class="t-label" style="color:#f59e0b">🔥 ВСЕ — 43 вопроса</span>
                 <span class="t-desc">Всё вместе: от простого к сложному</span>
             </button>
-            <a href="chemistry-quiz-2.html" class="topic-btn" style="display:block;text-decoration:none;margin-top:6px;border-color:rgba(96,165,250,0.35)">
-                <span class="t-label" style="color:#60a5fa">← Назад к квизу по связям</span>
-            </a>
         </div>
     </div>
 

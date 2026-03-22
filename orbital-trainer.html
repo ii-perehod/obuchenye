@@ -13,6 +13,9 @@
             user-select: none; overflow-x: hidden;
         }
         .container { max-width: 1200px; margin: 0 auto; }
+        .nav-links { display: flex; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
+        .nav-links a { color: #00d2ff; text-decoration: none; font-size: 0.95em; opacity: 0.8; transition: opacity 0.2s; }
+        .nav-links a:hover { opacity: 1; }
         h1 { text-align:center;font-size:1.4em;margin-bottom:3px;background:linear-gradient(90deg,#00d2ff,#7b2ff7);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
         .subtitle { text-align:center;color:#888;margin-bottom:8px;font-size:0.8em; }
 
@@ -171,6 +174,10 @@
 </head>
 <body>
 <div class="container">
+    <div class="nav-links">
+        <a href="chemistry-atom.html">&larr; Вся тема 2</a>
+        <a href="index.html">&larr; На главную</a>
+    </div>
     <h1>Заполнение орбиталей</h1>
     <div class="subtitle">Перетащи стрелку в нужную клетку</div>
 
