@@ -694,7 +694,6 @@ function updateSubtitle() {
 }
 
 function renderFormula() {
-    const el = document.getElementById('formula');
     const task = curTask();
     if (!task) return;
 
@@ -717,7 +716,7 @@ function renderFormula() {
             html += ' <span class="f-label">(' + p.v + ')</span>';
         }
     });
-    el.innerHTML = html;
+    // taskFormulaWrap below will recreate #formula with this html
 
     // For two-step modes, update the wrapper text
     const st = ms();
