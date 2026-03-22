@@ -691,8 +691,16 @@ function renderFormula() {
     // For two-step modes, update the wrapper text
     const st = ms();
     if ((currentMode === 'concentration' || currentMode === 'equivalents') && st.step === 2) {
-        // Step 2: show stored M and find formula
-        document.getElementById('taskFormulaWrap').innerHTML = '<span style="font-size:0.6em;color:#888;">' + task.substance + '</span> &nbsp; ' + task.find + ' = ?';
+        // Step 2: show formula with actual numbers (no parentheses needed)
+        if (currentMode === 'concentration') {
+            document.getElementById('taskFormulaWrap').innerHTML =
+                '<span style="font-size:0.55em;color:#888;">' + task.substance + '</span><br>' +
+                '<span style="font-size:0.85em;">C = ' + task.given[0].value + ' / ' + st.storedM + ' / ' + task.given[1].value + ' = ?</span>';
+        } else {
+            document.getElementById('taskFormulaWrap').innerHTML =
+                '<span style="font-size:0.55em;color:#888;">' + task.substance + '</span><br>' +
+                '<span style="font-size:0.85em;">\u042d = ' + st.storedM + ' / ' + task.given[0].value + ' = ?</span>';
+        }
     } else if (currentMode === 'concentration' || currentMode === 'equivalents') {
         // Step 1
         document.getElementById('taskFormulaWrap').innerHTML = 'M<sub>r</sub>(<span id="formula">' + html + '</span>) = ?';
@@ -1104,6 +1112,8 @@ function restart() {
    ── HELPERS ──
    ══════════════════════════════════════════════════════════ */
 function loadTask() {
+    // If all tasks done — show final, don't leave stale formula
+    if (ms().idx >= curTasks().length) { showFinal(); return; }
     updateSubtitle();
     updateTableVisibility();
     updateParenButtons();
@@ -1132,7 +1142,7 @@ function loadTask() {
     if (currentMode === 'solutions') {
         const task = curTask();
         if (task) {
-            document.getElementById('taskFormulaWrap').innerHTML = '<span style="font-size:0.7em;">' + task.find + '</span> = ?';
+            document.getElementById('taskFormulaWrap').innerHTML = '<span style="font-size:0.55em;font-weight:400;">' + task.find + '</span> = <b>?</b>';
         }
     }
 }
