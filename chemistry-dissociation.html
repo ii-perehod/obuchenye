@@ -404,6 +404,53 @@
         </div>
 
         <div class="card">
+            <h2>Константа диссоциации Ka</h2>
+            <p>Степень диссоциации α зависит от концентрации: разбавили раствор — α выросла. Но есть величина, которая характеризует <b>сам электролит</b>, а не конкретный раствор:</p>
+            <div class="formula-box">
+                K<sub>a</sub> = [H⁺] · [A⁻] / [HA]
+                <span class="label">Ka — константа диссоциации. Зависит только от природы электролита и температуры!</span>
+            </div>
+            <div class="analogy">
+                <b>Аналогия:</b> α — это «настроение» кислоты в конкретном растворе (зависит от обстоятельств). Ka — это её «характер» (не меняется, сколько ни разбавляй).
+            </div>
+            <p>Чем больше Ka — тем сильнее кислота. Для сильных кислот Ka огромна (нет смысла считать). Для слабых — маленькое число:</p>
+            <table>
+                <tr><th>Кислота</th><th>Ka</th></tr>
+                <tr><td>HF (плавиковая)</td><td>6,8 · 10⁻⁴</td></tr>
+                <tr><td>HNO₂ (азотистая)</td><td>4,0 · 10⁻⁴</td></tr>
+                <tr><td>CH₃COOH (уксусная)</td><td>1,75 · 10⁻⁵</td></tr>
+                <tr><td>H₂CO₃ (1-я ступень)</td><td>4,3 · 10⁻⁷</td></tr>
+                <tr><td>H₂S (1-я ступень)</td><td>1,0 · 10⁻⁷</td></tr>
+            </table>
+
+            <h3>Закон разбавления Оствальда</h3>
+            <p>Связывает Ka, α и концентрацию C:</p>
+            <div class="formula-box">
+                K<sub>a</sub> = α² · C / (1 − α)
+                <span class="label">Для слабых электролитов (α ≪ 1): Ka ≈ α² · C</span>
+            </div>
+            <p>Отсюда можно найти α, зная Ka и C:</p>
+            <div class="formula-box">
+                α = √(K<sub>a</sub> / C)
+                <span class="label">Чем разбавленнее раствор (меньше C), тем больше α — парадокс разбавления!</span>
+            </div>
+            <div class="warning">
+                <b>Ключевое отличие:</b> Ka — <b>постоянна</b> (при данной T). α — <b>меняется</b> с разбавлением. Если спрашивают «что характеризует силу электролита?» — ответ Ka, не α.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Ступенчатая диссоциация оснований</h2>
+            <p>Не только кислоты, но и <b>многокислотные основания</b> диссоциируют ступенчато:</p>
+            <div class="formula-box">
+                Fe(OH)₃ ⇌ Fe(OH)₂⁺ + OH⁻ <span style="color:#888">(1-я ступень)</span><br>
+                Fe(OH)₂⁺ ⇌ FeOH²⁺ + OH⁻ <span style="color:#888">(2-я ступень)</span><br>
+                FeOH²⁺ ⇌ Fe³⁺ + OH⁻ <span style="color:#888">(3-я ступень)</span>
+                <span class="label">Каждая ступень идёт хуже предыдущей, как у кислот</span>
+            </div>
+        </div>
+
+        <div class="card">
             <h2>Диссоциация кислот, оснований и солей</h2>
             <h3>Кислоты → H⁺ + кислотный остаток</h3>
             <div class="formula-box">
@@ -525,7 +572,7 @@
 
         <div class="card" style="text-align:center">
             <h2>Проверь себя</h2>
-            <p>14 вопросов из 26: лёгкие, средние и сложные</p>
+            <p>14 вопросов из 33: лёгкие, средние и сложные</p>
             <div class="btn-wrap">
                 <button class="btn btn-primary" onclick="startQuiz()">Начать тест</button>
             </div>
@@ -590,6 +637,23 @@
             <div class="btn-wrap" id="trainNextWrap" style="display:none">
                 <button class="btn btn-primary" onclick="nextTrainTask()">Дальше →</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN: THEORY BEFORE RETRY ==================== -->
+    <div id="trainRetryTheory" class="screen">
+        <h1 style="color:#f59e0b;">Разбор ошибок</h1>
+        <p class="subtitle" id="retryTheorySubtitle"></p>
+        <div id="retryTheoryCards"></div>
+        <div id="aiPanel" style="margin-top:20px;text-align:center;">
+            <button id="askAiBtn" class="btn btn-secondary" style="font-size:0.95em;padding:12px 24px;border-color:rgba(96,165,250,0.4);color:#60a5fa;">Спросить ИИ</button>
+            <div id="aiPicker" style="display:none;margin-top:12px;">
+                <div style="color:#4ade80;font-weight:600;margin-bottom:10px;">Промпт скопирован! Открой любой чат:</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:16px;">
+            <button class="btn btn-primary" onclick="continueRetry()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;font-size:1.1em;padding:16px 32px;">Понял, продолжить →</button>
         </div>
     </div>
 
@@ -750,6 +814,24 @@ const quizData = {
             opts: ['HMnO₄ (марганцевая)', 'H₂MnO₄ (марганцовистая)', 'MnO₂ (не кислота)', 'H₂CrO₄ (хромовая)'],
             ans: 0,
             explain: 'MnO₄⁻ — остаток <b>марганцевой кислоты HMnO₄</b>. Соли — перманганаты (например, KMnO₄).'
+        },
+        {
+            q: 'Что такое константа диссоциации Ka?',
+            opts: ['Отношение произведения концентраций ионов к концентрации молекул', 'Доля распавшихся молекул', 'Число ионов в растворе', 'Скорость диссоциации'],
+            ans: 0,
+            explain: '<b>Ka = [H⁺]·[A⁻]/[HA]</b> — отношение произведения концентраций ионов к концентрации недиссоциированных молекул.'
+        },
+        {
+            q: 'Ka НЕ зависит от:',
+            opts: ['Концентрации раствора', 'Природы электролита', 'Температуры', 'Типа растворителя'],
+            ans: 0,
+            explain: 'Ka зависит от природы электролита и температуры, но <b>НЕ зависит от концентрации</b> раствора. В этом её отличие от α.'
+        },
+        {
+            q: 'По закону Оствальда, Ka ≈ α²·C. Если раствор разбавить в 4 раза, α:',
+            opts: ['Увеличится в 2 раза', 'Уменьшится в 2 раза', 'Не изменится', 'Увеличится в 4 раза'],
+            ans: 0,
+            explain: 'Ka = α²·C = const. Если C уменьшить в 4 раза, α² увеличится в 4 раза → <b>α увеличится в 2 раза</b> (√4 = 2).'
         }
     ],
     hard: [
@@ -788,6 +870,24 @@ const quizData = {
             opts: ['H₂CrO₄ (хромовая)', 'H₂Cr₂O₇ (дихромовая)', 'HCl (соляная)', 'HNO₃ (азотная)'],
             ans: 0,
             explain: 'CrO₄²⁻ — остаток <b>хромовой кислоты H₂CrO₄</b>. Соли — хроматы (например, K₂CrO₄).'
+        },
+        {
+            q: 'Ka CH₃COOH = 1,75·10⁻⁵, C = 0,1 M. Чему равна степень диссоциации α?',
+            opts: ['≈ 0,013 (1,3%)', '≈ 0,13 (13%)', '≈ 0,0013 (0,13%)', '≈ 1,75 (175%)'],
+            ans: 0,
+            explain: 'α = √(Ka/C) = √(1,75·10⁻⁵ / 0,1) = √(1,75·10⁻⁴) ≈ <b>0,013</b> (1,3%). Уксусная кислота — слабый электролит!'
+        },
+        {
+            q: 'Fe(OH)₃ диссоциирует ступенчато. Первая ступень:',
+            opts: ['Fe(OH)₃ ⇌ Fe(OH)₂⁺ + OH⁻', 'Fe(OH)₃ ⇌ Fe³⁺ + 3OH⁻', 'Fe(OH)₃ ⇌ FeOH²⁺ + 2OH⁻', 'Fe(OH)₃ → Fe + 3OH'],
+            ans: 0,
+            explain: 'Основания, как и кислоты, диссоциируют ступенчато: <b>Fe(OH)₃ ⇌ Fe(OH)₂⁺ + OH⁻</b>. Каждая ступень отщепляет один OH⁻.'
+        },
+        {
+            q: 'Ka HF = 6,8·10⁻⁴, Ka CH₃COOH = 1,75·10⁻⁵. Какая кислота сильнее?',
+            opts: ['HF (Ka больше)', 'CH₃COOH (Ka меньше)', 'Одинаковы', 'Нельзя сравнить по Ka'],
+            ans: 0,
+            explain: 'Чем <b>больше Ka</b>, тем сильнее кислота. Ka(HF) = 6,8·10⁻⁴ > Ka(CH₃COOH) = 1,75·10⁻⁵ → <b>HF сильнее</b>.'
         }
     ]
 };
@@ -1003,11 +1103,30 @@ const trainTasks = [
       explanation: 'SiO₃²⁻ — силикат-ион, остаток <b>кремниевой кислоты H₂SiO₃</b>. Соли — силикаты.' },
     { type: 'acid_rest', ion: 'Cr₂O₇²⁻', answer: 'H₂Cr₂O₇ (дихромовая)', options: ['H₂Cr₂O₇ (дихромовая)', 'H₂CrO₄ (хромовая)', 'HMnO₄ (марганцевая)', 'K₂Cr₂O₇ (не кислота)'],
       explanation: 'Cr₂O₇²⁻ — бихромат-ион, остаток <b>дихромовой кислоты H₂Cr₂O₇</b>. Соли — бихроматы.' },
+
+    // TYPE 6: Константа диссоциации Ka — расчёты
+    { type: 'ka_calc', question: 'Ka CH₃COOH = 1,75·10⁻⁵, C = 0,1 М.<br>Чему равна α?', answer: '≈ 0,013 (1,3%)', options: ['≈ 0,013 (1,3%)', '≈ 0,13 (13%)', '≈ 0,175 (17,5%)', '≈ 0,0013 (0,13%)'],
+      explanation: 'α = √(Ka/C) = √(1,75·10⁻⁵ / 0,1) = √(1,75·10⁻⁴) ≈ <b>0,013</b>. Уксусная кислота при 0,1 М диссоциирует всего на 1,3%.' },
+    { type: 'ka_calc', question: 'Ka HF = 6,8·10⁻⁴, C = 0,01 М.<br>Чему равна α?', answer: '≈ 0,26 (26%)', options: ['≈ 0,26 (26%)', '≈ 0,068 (6,8%)', '≈ 0,026 (2,6%)', '≈ 0,82 (82%)'],
+      explanation: 'α = √(Ka/C) = √(6,8·10⁻⁴ / 0,01) = √(0,068) ≈ <b>0,26</b>. При разбавлении α растёт!' },
+    { type: 'ka_calc', question: 'α = 0,01, C = 0,2 М.<br>Чему равна Ka?', answer: '2·10⁻⁵', options: ['2·10⁻⁵', '2·10⁻³', '2·10⁻⁷', '0,002'],
+      explanation: 'Ka ≈ α²·C = (0,01)²·0,2 = 10⁻⁴·0,2 = <b>2·10⁻⁵</b>.' },
+    { type: 'ka_calc', question: 'Ka кислоты = 4·10⁻⁶.<br>Раствор разбавили с 0,1 М до 0,025 М. Как изменилась α?', answer: 'Увеличилась в 2 раза', options: ['Увеличилась в 2 раза', 'Уменьшилась в 2 раза', 'Увеличилась в 4 раза', 'Не изменилась'],
+      explanation: 'α = √(Ka/C). C уменьшилась в 4 раза → α увеличилась в √4 = <b>2 раза</b>. Ka не изменилась!' },
+    { type: 'ka_calc', question: 'Что характеризует силу слабого электролита<br>НЕЗАВИСИМО от концентрации?', answer: 'Константа диссоциации Ka', options: ['Константа диссоциации Ka', 'Степень диссоциации α', 'Концентрация ионов', 'Число молекул'],
+      explanation: '<b>Ka</b> — константа, не зависит от C. А α меняется при разбавлении (закон Оствальда).' },
+    { type: 'ka_calc', question: 'Ka(HF) = 6,8·10⁻⁴, Ka(CH₃COOH) = 1,75·10⁻⁵.<br>Какая кислота сильнее?', answer: 'HF (Ka больше)', options: ['HF (Ka больше)', 'CH₃COOH (Ka больше)', 'Одинаковы', 'Обе сильные'],
+      explanation: 'Чем <b>больше Ka</b>, тем сильнее кислота. 6,8·10⁻⁴ > 1,75·10⁻⁵ → <b>HF сильнее CH₃COOH</b>.' },
+    { type: 'ka_calc', question: 'Ka CH₃COOH = 1,75·10⁻⁵, C = 0,1 М.<br>Чему равна [H⁺]?', answer: '≈ 1,3·10⁻³ моль/л', options: ['≈ 1,3·10⁻³ моль/л', '≈ 1,75·10⁻⁵ моль/л', '≈ 0,1 моль/л', '≈ 1,3·10⁻⁵ моль/л'],
+      explanation: '[H⁺] = α·C = √(Ka·C) = √(1,75·10⁻⁵ · 0,1) = √(1,75·10⁻⁶) ≈ <b>1,3·10⁻³</b> моль/л.' },
+    { type: 'ka_calc', question: 'Первая ступень диссоциации Fe(OH)₃:', answer: 'Fe(OH)₃ ⇌ Fe(OH)₂⁺ + OH⁻', options: ['Fe(OH)₃ ⇌ Fe(OH)₂⁺ + OH⁻', 'Fe(OH)₃ ⇌ Fe³⁺ + 3OH⁻', 'Fe(OH)₃ ⇌ FeOH²⁺ + 2OH⁻', 'Fe(OH)₃ → Fe + 3OH⁻'],
+      explanation: 'Основания, как и кислоты, диссоциируют <b>ступенчато</b>. 1-я ступень: Fe(OH)₃ ⇌ <b>Fe(OH)₂⁺ + OH⁻</b>.' },
 ];
 
 // ===================== TRAINER ENGINE =====================
 let trainList = [], trainIndex = 0, trainCorrectCount = 0, trainAnswered = false;
 let trainErrors = [], trainRetryMode = false, trainTotalTasks = 0;
+let firstPassPct = null;
 
 function startTrainer() {
     trainList = shuffle(trainTasks);
@@ -1016,7 +1135,99 @@ function startTrainer() {
     trainAnswered = false;
     trainErrors = [];
     trainRetryMode = false;
+    firstPassPct = null;
+    retryRound = 0;
     trainTotalTasks = trainList.length;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+let retryRound = 0;
+let pendingRetryErrors = [];
+
+function stripHtml(s) { var d = document.createElement('div'); d.innerHTML = s; return d.textContent || ''; }
+
+var AI_SERVICES = [
+    {name: 'ChatGPT',  url: 'https://chat.openai.com/'},
+    {name: 'DeepSeek',  url: 'https://chat.deepseek.com/'},
+    {name: 'Claude',    url: 'https://claude.ai/new'},
+    {name: 'Gemini',    url: 'https://gemini.google.com/app'},
+    {name: 'GigaChat',  url: 'https://giga.chat/'},
+    {name: 'Алиса',     url: 'https://a.ya.ru/'}
+];
+
+function setupAiPanel(errors, topicName) {
+    var aiBtn = document.getElementById('askAiBtn');
+    var picker = document.getElementById('aiPicker');
+    if (!aiBtn || !picker) return;
+
+    // Reset
+    aiBtn.style.display = '';
+    picker.style.display = 'none';
+
+    var prompt = 'Я учу химию, тема «' + topicName + '». Не понимаю вот эти вещи, объясни простыми словами:\n\n';
+    errors.forEach(function(task, i) {
+        prompt += (i+1) + '. ' + stripHtml(task.question || task.substance || task.reaction || task.ion || '') +
+            '\n   Правильный ответ: ' + task.answer +
+            '\n   Объяснение: ' + stripHtml(task.explanation) + '\n\n';
+    });
+    prompt += 'Объясни каждый пункт как для человека, который видит это впервые. Без сложных слов, с примерами из жизни.';
+
+    aiBtn.onclick = function() {
+        navigator.clipboard.writeText(prompt).then(function() {
+            aiBtn.style.display = 'none';
+            picker.style.display = '';
+            // Build service buttons
+            var wrap = picker.querySelector('div:last-child');
+            wrap.innerHTML = '';
+            AI_SERVICES.forEach(function(svc) {
+                var b = document.createElement('a');
+                b.href = svc.url;
+                b.target = '_blank';
+                b.rel = 'noopener';
+                b.textContent = svc.name;
+                b.style.cssText = 'display:inline-block;padding:10px 18px;border-radius:10px;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.3);color:#60a5fa;text-decoration:none;font-weight:600;font-size:0.9em;transition:all 0.2s;';
+                b.onmouseenter = function() { b.style.background = 'rgba(96,165,250,0.25)'; };
+                b.onmouseleave = function() { b.style.background = 'rgba(96,165,250,0.12)'; };
+                wrap.appendChild(b);
+            });
+        });
+    };
+}
+
+function showRetryTheory(errors) {
+    retryRound++;
+    pendingRetryErrors = errors;
+    showScreen('trainRetryTheory');
+    document.getElementById('retryTheorySubtitle').textContent =
+        'Осталось ' + errors.length + ' ' + pluralErr(errors.length) + '. Не страшно! Посмотри, как правильно, и попробуй ещё раз.';
+    let html = '';
+    errors.forEach(function(task, i) {
+        html += '<div class="card" style="margin-bottom:14px;border-left:3px solid #ef4444;padding:18px 20px;">' +
+            '<div style="color:#f59e0b;font-weight:700;margin-bottom:8px;">Ошибка ' + (i+1) + '</div>' +
+            '<div style="color:#aaa;margin-bottom:8px;">' + (task.question || task.substance || task.reaction || task.ion || '') + '</div>' +
+            '<div style="color:#4ade80;font-weight:600;margin-bottom:6px;">Правильный ответ: ' + task.answer + '</div>' +
+            '<div style="color:#ddd;line-height:1.7;">' + task.explanation + '</div>' +
+            '</div>';
+    });
+    document.getElementById('retryTheoryCards').innerHTML = html;
+
+    // AI-помощник
+    setupAiPanel(errors, 'Диссоциация');
+}
+
+function pluralErr(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return 'ошибка';
+    if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'ошибки';
+    return 'ошибок';
+}
+
+function continueRetry() {
+    trainRetryMode = true;
+    trainList = shuffle([...pendingRetryErrors]);
+    pendingRetryErrors = [];
+    trainErrors = [];
+    trainIndex = 0;
     showScreen('trainScreen');
     renderTrainTask();
 }
@@ -1024,11 +1235,10 @@ function startTrainer() {
 function renderTrainTask() {
     if (trainIndex >= trainList.length) {
         if (trainErrors.length > 0) {
-            trainRetryMode = true;
-            trainList = shuffle([...trainErrors]);
-            trainErrors = [];
-            trainIndex = 0;
-            renderTrainTask();
+            if (firstPassPct === null) {
+                firstPassPct = Math.round(trainCorrectCount / trainTotalTasks * 100);
+            }
+            showRetryTheory(trainErrors);
             return;
         }
         showTrainResults();
@@ -1058,6 +1268,9 @@ function renderTrainTask() {
     } else if (task.type === 'acid_rest') {
         reactionHTML = task.ion;
         questionHTML = 'Какой кислоте принадлежит этот остаток?';
+    } else if (task.type === 'ka_calc') {
+        reactionHTML = '';
+        questionHTML = task.question;
     }
 
     document.getElementById('trainReaction').innerHTML = reactionHTML;
@@ -1122,14 +1335,28 @@ function nextTrainTask() {
 
 function showTrainResults() {
     showScreen('trainResults');
-    const pct = Math.round(trainCorrectCount / trainTotalTasks * 100);
-    document.getElementById('trainResultScore').textContent = `${trainCorrectCount} / ${trainTotalTasks} (${pct}%)`;
-    let text;
-    if (pct === 100) text = 'Молодец! Всё верно!';
-    else if (pct >= 80) text = 'Отличный результат!';
-    else if (pct >= 60) text = 'Неплохо, но стоит повторить ошибки.';
-    else text = 'Нужно перечитать теорию и попробовать снова.';
-    document.getElementById('trainResultText').textContent = text;
+    var el = document.getElementById('trainResultScore');
+    var txt = document.getElementById('trainResultText');
+    if (retryRound === 0) {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Всё верно с первого раза! Ты красавчик!';
+    } else if (retryRound === 1) {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Молодец! Разобрался и всё исправил. Так и надо!';
+    } else {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Дошёл до конца — это главное! С каждым разом будет легче.';
+    }
+    localStorage.setItem('chem5-dissociation', JSON.stringify({
+        rounds: retryRound + 1,
+        date: new Date().toLocaleDateString('ru-RU')
+    }));
+}
+
+function pluralRound(n) {
+    if (n === 1) return 'раунд';
+    if (n >= 2 && n <= 4) return 'раунда';
+    return 'раундов';
 }
 </script>
 </body>

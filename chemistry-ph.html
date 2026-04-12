@@ -236,7 +236,7 @@
             <button class="topic-btn" onclick="startTrainer()">
                 <span class="t-label" style="color:#f59e0b">ТРЕНАЖЁР</span>
                 Тренажёр
-                <span class="t-desc">Среда, pH, [H⁺], pOH, индикаторы — 36 задач</span>
+                <span class="t-desc">Среда, pH, [H⁺], pOH, Ka, индикаторы — 44 задачи</span>
             </button>
         </div>
     </div>
@@ -386,6 +386,34 @@
             </table>
         </div>
 
+        <div class="card">
+            <h2>pH слабых кислот и оснований</h2>
+            <p>Для <b>сильных</b> кислот всё просто: [H⁺] = C, и pH = −lgC. Но для <b>слабых</b> нужно учитывать Ka:</p>
+            <div class="formula-box">
+                [H⁺] = √(K<sub>a</sub> · C)
+                <span class="label">Для слабой кислоты с концентрацией C и константой Ka</span>
+            </div>
+            <div class="formula-box">
+                pH = ½ · pK<sub>a</sub> − ½ · lg C
+                <span class="label">pKa = −lg Ka. Это проще, чем кажется!</span>
+            </div>
+            <div class="analogy">
+                <b>Почему не просто pH = −lgC?</b> Потому что слабая кислота диссоциирует лишь частично. Из 0,1 М CH₃COOH только ~1,3% даёт ионы H⁺. Поэтому [H⁺] намного меньше, чем C.
+            </div>
+
+            <h3>Пример: pH 0,1 M CH₃COOH</h3>
+            <div class="step-box"><span class="step-num">1.</span> Ka = 1,75·10⁻⁵, pKa = −lg(1,75·10⁻⁵) ≈ 4,76</div>
+            <div class="step-box"><span class="step-num">2.</span> pH = ½·4,76 − ½·lg(0,1) = 2,38 − (−0,5) = <b>2,88</b></div>
+            <div class="step-box"><span class="step-num">3.</span> Сравни: если бы CH₃COOH была сильной → pH = −lg(0,1) = 1. А на деле pH ≈ 2,88 — гораздо менее кислый!</div>
+
+            <h3>Для слабых оснований</h3>
+            <div class="formula-box">
+                pOH = ½ · pK<sub>b</sub> − ½ · lg C<br>
+                pH = 14 − pOH
+                <span class="label">Kb — константа диссоциации основания</span>
+            </div>
+        </div>
+
         <!-- QUIZ inside formal theory screen -->
         <div class="card" id="quizStartCard">
             <h2>Проверь себя: Квиз</h2>
@@ -457,6 +485,23 @@
     </div>
 
     <!-- ==================== SCREEN 5: RESULTS ==================== -->
+    <!-- ==================== SCREEN: THEORY BEFORE RETRY ==================== -->
+    <div id="trainRetryTheory" class="screen">
+        <h1 style="color:#f59e0b;">Разбор ошибок</h1>
+        <p class="subtitle" id="retryTheorySubtitle"></p>
+        <div id="retryTheoryCards"></div>
+        <div id="aiPanel" style="margin-top:20px;text-align:center;">
+            <button id="askAiBtn" class="btn btn-secondary" style="font-size:0.95em;padding:12px 24px;border-color:rgba(96,165,250,0.4);color:#60a5fa;">Спросить ИИ</button>
+            <div id="aiPicker" style="display:none;margin-top:12px;">
+                <div style="color:#4ade80;font-weight:600;margin-bottom:10px;">Промпт скопирован! Открой любой чат:</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:16px;">
+            <button class="btn btn-primary" onclick="continueRetry()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;font-size:1.1em;padding:16px 32px;">Понял, продолжить &#8594;</button>
+        </div>
+    </div>
+
     <div id="trainResults" class="screen">
         <h1>Результаты</h1>
         <div class="card">
@@ -589,6 +634,18 @@ const quizData = {
             opts: ['Фенолфталеин', 'Лакмус', 'Метилоранж', 'Универсальный'],
             ans: 0,
             explain: '<b>Фенолфталеин</b> — бесцветный в кислой и нейтральной среде, малиновый только в щёлочи.'
+        },
+        {
+            q: 'Для слабой кислоты [H⁺] рассчитывается как:',
+            opts: ['√(Ka · C)', 'Ka · C', 'C (как для сильной)', 'Ka / C'],
+            ans: 0,
+            explain: 'Для слабой кислоты: <b>[H⁺] = √(Ka · C)</b>. Нельзя считать [H⁺] = C — диссоциация неполная!'
+        },
+        {
+            q: 'pH 0,1 M CH₃COOH (Ka = 1,75·10⁻⁵) равен:',
+            opts: ['≈ 2,88', '≈ 1,00', '≈ 4,76', '≈ 7,00'],
+            ans: 0,
+            explain: 'pH = ½·pKa − ½·lgC = ½·4,76 − ½·(−1) = 2,38 + 0,5 = <b>2,88</b>. Если бы кислота была сильной → pH = 1.'
         }
     ],
     hard: [
@@ -627,6 +684,18 @@ const quizData = {
             opts: ['10⁻¹² моль/л', '10⁻² моль/л', '10⁻⁷ моль/л', '12 моль/л'],
             ans: 0,
             explain: 'pH = 2, значит [H⁺] = 10⁻². [OH⁻] = Kw / [H⁺] = 10⁻¹⁴ / 10⁻² = <b>10⁻¹² моль/л</b>.'
+        },
+        {
+            q: 'Почему pH 0,1 M CH₃COOH ≠ 1, хотя C = 0,1?',
+            opts: ['Слабая кислота диссоциирует не полностью', 'Это основание, а не кислота', 'Ошибка в формуле', '0,1 M — слишком мало'],
+            ans: 0,
+            explain: '<b>CH₃COOH — слабая кислота</b>. Только ~1,3% молекул отдают H⁺. Поэтому [H⁺] ≪ C, и pH ≈ 2,88, а не 1.'
+        },
+        {
+            q: 'pH 0,01 M HF (Ka = 6,8·10⁻⁴):',
+            opts: ['≈ 2,58', '≈ 2,00', '≈ 1,00', '≈ 4,00'],
+            ans: 0,
+            explain: '[H⁺] = √(Ka·C) = √(6,8·10⁻⁴·0,01) = √(6,8·10⁻⁶) ≈ 2,6·10⁻³. pH = −lg(2,6·10⁻³) ≈ <b>2,58</b>.'
         }
     ]
 };
@@ -834,12 +903,31 @@ var trainTasks = [
     { type: 'indicator', display: 'Лакмус в растворе KOH (pH = 12)', question: 'Какой цвет лакмуса?', answer: 'Синий', options: ['Синий', 'Красный', 'Фиолетовый', 'Бесцветный'],
       explanation: 'KOH — щёлочь. <b>Лакмус в щёлочи — синий</b>.' },
     { type: 'indicator', display: 'Метилоранж в растворе NaOH (pH = 13)', question: 'Какой цвет метилоранжа?', answer: 'Жёлтый', options: ['Жёлтый', 'Красный/розовый', 'Оранжевый', 'Малиновый'],
-      explanation: 'NaOH — щёлочь. <b>Метилоранж в щёлочи — жёлтый</b>.' }
+      explanation: 'NaOH — щёлочь. <b>Метилоранж в щёлочи — жёлтый</b>.' },
+
+    // TYPE 6: pH слабых кислот и оснований через Ka (8 tasks)
+    { type: 'ph_weak', display: '', question: 'pH 0,1 M CH₃COOH<br>(Ka = 1,75·10⁻⁵, pKa ≈ 4,76)', answer: '≈ 2,88', options: ['≈ 2,88', '≈ 1,00', '≈ 4,76', '≈ 7,00'],
+      explanation: 'pH = ½·pKa − ½·lgC = ½·4,76 − ½·(−1) = 2,38 + 0,5 = <b>2,88</b>.' },
+    { type: 'ph_weak', display: '', question: 'pH 0,01 M HF<br>(Ka = 6,8·10⁻⁴)', answer: '≈ 2,58', options: ['≈ 2,58', '≈ 2,00', '≈ 3,17', '≈ 1,00'],
+      explanation: '[H⁺] = √(Ka·C) = √(6,8·10⁻⁴ · 0,01) = √(6,8·10⁻⁶) ≈ 2,6·10⁻³. pH ≈ <b>2,58</b>.' },
+    { type: 'ph_weak', display: '', question: 'pH 0,001 M HCl<br>(сильная кислота)', answer: '3', options: ['3', '≈ 5', '11', '7'],
+      explanation: 'HCl — <b>сильная</b> кислота, диссоциирует полностью. [H⁺] = C = 10⁻³. pH = <b>3</b>. Формула с Ka не нужна!' },
+    { type: 'ph_weak', display: '', question: '0,01 M NaOH. Чему равен pH?', answer: '12', options: ['12', '2', '7', '10'],
+      explanation: 'NaOH — <b>сильное основание</b>. [OH⁻] = 0,01 = 10⁻². pOH = 2. pH = 14 − 2 = <b>12</b>.' },
+    { type: 'ph_weak', display: '', question: 'Почему pH 0,1 M CH₃COOH ≈ 2,88,<br>а не 1 (как у HCl)?', answer: 'CH₃COOH — слабая, диссоциирует не полностью', options: ['CH₃COOH — слабая, диссоциирует не полностью', 'Ошибка в расчётах', 'CH₃COOH — основание', 'При 0,1 M все кислоты слабые'],
+      explanation: 'CH₃COOH — <b>слабая кислота</b>. Только ~1,3% молекул отдают H⁺. [H⁺] = √(Ka·C) ≪ C.' },
+    { type: 'ph_weak', display: '', question: 'Для расчёта [H⁺] слабой кислоты<br>используют формулу:', answer: '[H⁺] = √(Ka · C)', options: ['[H⁺] = √(Ka · C)', '[H⁺] = C', '[H⁺] = Ka · C', '[H⁺] = Ka / C'],
+      explanation: 'Для слабых: <b>[H⁺] = √(Ka·C)</b>. Для сильных: [H⁺] = C (полная диссоциация).' },
+    { type: 'ph_weak', display: '', question: 'pH 0,1 M CH₃COOH ≈ 2,88.<br>Если разбавить до 0,001 M, pH станет:', answer: '≈ 3,88 (менее кислый)', options: ['≈ 3,88 (менее кислый)', '≈ 1,88 (более кислый)', '≈ 2,88 (не изменится)', '≈ 7 (нейтральный)'],
+      explanation: 'pH = ½·pKa − ½·lgC = 2,38 − ½·(−3) = 2,38 + 1,5 = <b>3,88</b>. При разбавлении pH растёт (раствор менее кислый).' },
+    { type: 'ph_weak', display: '', question: 'pH 0,0001 M HCl:', answer: '4', options: ['4', '≈ 5,5', '10', '7'],
+      explanation: 'HCl — <b>сильная кислота</b>. [H⁺] = C = 10⁻⁴. pH = <b>4</b>.' }
 ];
 
 // ===================== TRAINER ENGINE =====================
 var trainList = [], trainIndex = 0, trainCorrectCount = 0, trainAnswered = false;
 var trainErrors = [], trainRetryMode = false, trainTotalTasks = 0;
+var firstPassPct = null;
 
 function startTrainer() {
     trainList = shuffle(trainTasks);
@@ -848,7 +936,96 @@ function startTrainer() {
     trainAnswered = false;
     trainErrors = [];
     trainRetryMode = false;
+    firstPassPct = null;
+    retryRound = 0;
     trainTotalTasks = trainList.length;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+var retryRound = 0;
+var pendingRetryErrors = [];
+
+function stripHtml(s) { var d = document.createElement('div'); d.innerHTML = s; return d.textContent || ''; }
+
+var AI_SERVICES = [
+    {name: 'ChatGPT',  url: 'https://chat.openai.com/'},
+    {name: 'DeepSeek',  url: 'https://chat.deepseek.com/'},
+    {name: 'Claude',    url: 'https://claude.ai/new'},
+    {name: 'Gemini',    url: 'https://gemini.google.com/app'},
+    {name: 'GigaChat',  url: 'https://giga.chat/'},
+    {name: 'Алиса',     url: 'https://a.ya.ru/'}
+];
+
+function setupAiPanel(errors, topicName) {
+    var aiBtn = document.getElementById('askAiBtn');
+    var picker = document.getElementById('aiPicker');
+    if (!aiBtn || !picker) return;
+
+    aiBtn.style.display = '';
+    picker.style.display = 'none';
+
+    var prompt = 'Я учу химию, тема «' + topicName + '». Не понимаю вот эти вещи, объясни простыми словами:\n\n';
+    errors.forEach(function(task, i) {
+        prompt += (i+1) + '. ' + stripHtml(task.question || task.substance || task.reaction || task.ion || '') +
+            '\n   Правильный ответ: ' + task.answer +
+            '\n   Объяснение: ' + stripHtml(task.explanation) + '\n\n';
+    });
+    prompt += 'Объясни каждый пункт как для человека, который видит это впервые. Без сложных слов, с примерами из жизни.';
+
+    aiBtn.onclick = function() {
+        navigator.clipboard.writeText(prompt).then(function() {
+            aiBtn.style.display = 'none';
+            picker.style.display = '';
+            var wrap = picker.querySelector('div:last-child');
+            wrap.innerHTML = '';
+            AI_SERVICES.forEach(function(svc) {
+                var b = document.createElement('a');
+                b.href = svc.url;
+                b.target = '_blank';
+                b.rel = 'noopener';
+                b.textContent = svc.name;
+                b.style.cssText = 'display:inline-block;padding:10px 18px;border-radius:10px;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.3);color:#60a5fa;text-decoration:none;font-weight:600;font-size:0.9em;transition:all 0.2s;';
+                b.onmouseenter = function() { b.style.background = 'rgba(96,165,250,0.25)'; };
+                b.onmouseleave = function() { b.style.background = 'rgba(96,165,250,0.12)'; };
+                wrap.appendChild(b);
+            });
+        });
+    };
+}
+
+function showRetryTheory(errors) {
+    retryRound++;
+    pendingRetryErrors = errors;
+    showScreen('trainRetryTheory');
+    document.getElementById('retryTheorySubtitle').textContent =
+        'Осталось ' + errors.length + ' ' + pluralErr(errors.length) + '. Не страшно! Посмотри, как правильно, и попробуй ещё раз.';
+    var html = '';
+    errors.forEach(function(task, i) {
+        html += '<div class="card" style="margin-bottom:14px;border-left:3px solid #ef4444;padding:18px 20px;">' +
+            '<div style="color:#f59e0b;font-weight:700;margin-bottom:8px;">Ошибка ' + (i+1) + '</div>' +
+            '<div style="color:#aaa;margin-bottom:8px;">' + (task.question || task.substance || task.reaction || task.ion || '') + '</div>' +
+            '<div style="color:#4ade80;font-weight:600;margin-bottom:6px;">Правильный ответ: ' + task.answer + '</div>' +
+            '<div style="color:#ddd;line-height:1.7;">' + task.explanation + '</div>' +
+            '</div>';
+    });
+    document.getElementById('retryTheoryCards').innerHTML = html;
+
+    setupAiPanel(errors, 'pH');
+}
+
+function pluralErr(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return 'ошибка';
+    if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'ошибки';
+    return 'ошибок';
+}
+
+function continueRetry() {
+    trainRetryMode = true;
+    trainList = shuffle([].concat(pendingRetryErrors));
+    pendingRetryErrors = [];
+    trainErrors = [];
+    trainIndex = 0;
     showScreen('trainScreen');
     renderTrainTask();
 }
@@ -856,11 +1033,10 @@ function startTrainer() {
 function renderTrainTask() {
     if (trainIndex >= trainList.length) {
         if (trainErrors.length > 0) {
-            trainRetryMode = true;
-            trainList = shuffle([].concat(trainErrors));
-            trainErrors = [];
-            trainIndex = 0;
-            renderTrainTask();
+            if (firstPassPct === null) {
+                firstPassPct = Math.round(trainCorrectCount / trainTotalTasks * 100);
+            }
+            showRetryTheory(trainErrors);
             return;
         }
         showTrainResults();
@@ -934,14 +1110,28 @@ function nextTrainTask() {
 
 function showTrainResults() {
     showScreen('trainResults');
-    var pct = Math.round(trainCorrectCount / trainTotalTasks * 100);
-    document.getElementById('trainResultScore').textContent = trainCorrectCount + ' / ' + trainTotalTasks + ' (' + pct + '%)';
-    var text;
-    if (pct === 100) text = 'Молодец! Всё верно!';
-    else if (pct >= 80) text = 'Отличный результат!';
-    else if (pct >= 60) text = 'Неплохо, но стоит повторить ошибки.';
-    else text = 'Нужно перечитать теорию и попробовать снова.';
-    document.getElementById('trainResultText').textContent = text;
+    var el = document.getElementById('trainResultScore');
+    var txt = document.getElementById('trainResultText');
+    if (retryRound === 0) {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Всё верно с первого раза! Ты красавчик!';
+    } else if (retryRound === 1) {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Молодец! Разобрался и всё исправил. Так и надо!';
+    } else {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Дошёл до конца — это главное! С каждым разом будет легче.';
+    }
+    localStorage.setItem('chem5-ph', JSON.stringify({
+        rounds: retryRound + 1,
+        date: new Date().toLocaleDateString('ru-RU')
+    }));
+}
+
+function pluralRound(n) {
+    if (n === 1) return 'раунд';
+    if (n >= 2 && n <= 4) return 'раунда';
+    return 'раундов';
 }
 </script>
 </body>

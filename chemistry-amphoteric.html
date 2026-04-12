@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия — Амфотерные соединения</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            text-align: center; font-size: 1.7em; margin-bottom: 6px;
+            background: linear-gradient(90deg, #a78bfa, #f59e0b);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.9em; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .card h2 { font-size: 1.15em; margin-bottom: 14px; color: #fff; }
+        .card h3 { font-size: 1em; margin: 16px 0 8px; color: #a78bfa; }
+        .card p, .card li { line-height: 1.7; margin-bottom: 8px; color: #ccc; }
+        .card ul { padding-left: 20px; }
+        .card .formula-box {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 1.1em;
+            text-align: center; color: #a78bfa;
+        }
+        .card .formula-box .label { font-size: 0.75em; color: #888; font-family: 'Segoe UI', Arial, sans-serif; display: block; margin-top: 6px; }
+        .card .analogy {
+            background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .analogy b { color: #f59e0b; }
+        .card .warning {
+            background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444;
+            border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0;
+            font-size: 0.92em; color: #ddd;
+        }
+        .card .warning b { color: #ef4444; }
+        .card table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .card th, .card td { border: 1px solid rgba(255,255,255,0.15); padding: 8px 12px; text-align: center; font-size: 0.9em; }
+        .card th { background: rgba(167,139,250,0.15); color: #a78bfa; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .topic-btn {
+            display: block; width: 100%;
+            padding: 16px 20px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: left; margin-bottom: 10px; transition: all 0.25s;
+        }
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35);
+            transform: translateX(4px);
+        }
+        .topic-btn .t-label { font-weight: 700; font-size: 0.72em; display: block; margin-bottom: 3px; }
+        .topic-btn .t-desc { color: #aaa; font-size: 0.88em; }
+
+        .btn {
+            display: inline-block; padding: 12px 28px; border: none;
+            border-radius: 10px; font-size: 1em; cursor: pointer;
+            font-weight: 600; transition: all 0.25s; color: #fff;
+        }
+        .btn-primary { background: linear-gradient(135deg, #a78bfa, #f59e0b); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(167,139,250,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-wrap { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+
+        .prog-wrap { margin-bottom: 20px; }
+        .prog-info { display: flex; justify-content: space-between; color: #888; font-size: 0.82em; margin-bottom: 6px; }
+        .prog-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #a78bfa, #f59e0b); border-radius: 10px; transition: width 0.4s; }
+
+        .topic-tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72em; font-weight: 700; margin-bottom: 14px;
+        }
+        .tag-theory { background: rgba(167,139,250,0.2); color: #a78bfa; }
+        .tag-easy { background: rgba(74,222,128,0.2); color: #4ade80; }
+        .tag-medium { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .tag-hard { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+        .quiz-option {
+            display: block; width: 100%; padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+            background: rgba(255,255,255,0.04); color: #e0e0e0;
+            font-size: 0.95em; cursor: pointer; margin-bottom: 8px;
+            text-align: left; transition: all 0.2s;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .quiz-option.correct { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+        .quiz-option.wrong { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+        .quiz-explain {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+            font-size: 0.88em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .quiz-explain b { color: #a78bfa; }
+
+        .dir-buttons {
+            display: flex; gap: 10px; margin: 18px 0; justify-content: center; flex-wrap: wrap;
+        }
+        .dir-btn {
+            flex: 1; min-width: 120px; max-width: 260px; padding: 18px 10px; border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 14px; background: rgba(255,255,255,0.04);
+            color: #e0e0e0; font-size: 1em; cursor: pointer;
+            text-align: center; transition: all 0.2s; font-weight: 700;
+        }
+        .dir-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+        .dir-btn.correct { background: rgba(74,222,128,0.2); border-color: #4ade80; color: #4ade80; }
+        .dir-btn.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #ef4444; }
+
+        .train-explain {
+            padding: 14px 18px; border-radius: 10px; margin: 12px 0;
+            font-size: 0.92em; line-height: 1.7; color: #ddd; display: none;
+        }
+        .train-explain.show-correct {
+            display: block; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
+        }
+        .train-explain.show-wrong {
+            display: block; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+        }
+        .train-explain b { color: #a78bfa; }
+
+        .reaction-display {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.1em; color: #a78bfa; text-align: center;
+            background: rgba(0,0,0,0.3); border-radius: 10px;
+            padding: 16px; margin: 12px 0; line-height: 1.6;
+        }
+        .change-display {
+            text-align: center; font-size: 1.05em; color: #f59e0b;
+            margin: 14px 0; font-weight: 600;
+        }
+        .retry-badge {
+            display: inline-block; background: rgba(239,68,68,0.2); color: #ef4444;
+            padding: 2px 10px; border-radius: 10px; font-size: 0.75em; font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-score {
+            text-align: center; font-size: 2.5em; font-weight: 800;
+            margin: 20px 0 8px;
+            background: linear-gradient(90deg, #a78bfa, #f59e0b);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .result-text { text-align: center; color: #aaa; font-size: 1.1em; margin-bottom: 20px; }
+
+        .error-list { margin-top: 16px; }
+        .error-item {
+            background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+        }
+        .error-item .err-q { color: #e0e0e0; font-weight: 600; margin-bottom: 4px; }
+        .error-item .err-a { color: #4ade80; font-size: 0.88em; }
+
+        .mnemonic-box {
+            background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3);
+            border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+            text-align: center; font-size: 1.15em; font-weight: 700; color: #a78bfa;
+        }
+        .mnemonic-box .mnemonic-sub { font-size: 0.7em; font-weight: 400; color: #888; display: block; margin-top: 4px; }
+
+        .step-box {
+            background: rgba(167,139,250,0.05); border-left: 3px solid #a78bfa;
+            border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 8px 0;
+        }
+        .step-box .step-num { color: #a78bfa; font-weight: 700; }
+
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+        .back-link { display: inline-block; margin-bottom: 8px; color: #a78bfa; text-decoration: none; font-size: 0.82em; opacity: 0.7; transition: opacity 0.2s; }
+        .back-link:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="chemistry-quiz-5.html" class="back-link">&larr; Вся тема 5</a>
+    <a href="index.html" class="back-link">&larr; Все темы</a>
+    <a href="https://ii-perehod.github.io/" class="back-link">&larr; Портфолио</a>
+
+    <!-- ==================== SCREEN 1: MENU ==================== -->
+    <div id="menuScreen" class="screen active">
+        <h1>Амфотерные соединения</h1>
+        <p class="subtitle">Те, кто играет за обе команды</p>
+        <div class="card">
+            <button class="topic-btn" onclick="showScreen('theorySimple')">
+                <span class="t-label" style="color:#4ade80">ТЕОРИЯ</span>
+                Теория на пальцах
+                <span class="t-desc">Аналогии, запоминалка, без зубрёжки</span>
+            </button>
+            <button class="topic-btn" onclick="showScreen('theoryFormal')">
+                <span class="t-label" style="color:#60a5fa">ТЕОРИЯ + КВИЗ</span>
+                Теория по-взрослому
+                <span class="t-desc">Уравнения, таблица, реакции с кислотами и щелочами, тест</span>
+            </button>
+            <button class="topic-btn" onclick="startTrainer()">
+                <span class="t-label" style="color:#f59e0b">ТРЕНАЖЁР</span>
+                Тренажёр
+                <span class="t-desc">Амфотерные или нет? Реакции, продукты, уравнения</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 2: THEORY SIMPLE ==================== -->
+    <div id="theorySimple" class="screen">
+        <h1>На пальцах</h1>
+        <p class="subtitle">Амфотерность без зубрёжки</p>
+
+        <div class="card">
+            <h2>Что такое амфотерность?</h2>
+            <p>Представь, что в школе есть ученик, который дружит <b>и с отличниками, и с хулиганами</b>. С отличниками он ведёт себя как хулиган, а с хулиганами — как отличник.</p>
+            <p>Вот это и есть <b>амфотерность</b> — способность вещества вести себя <b>и как кислота, и как основание</b>, в зависимости от того, с кем оно встретилось.</p>
+            <div class="analogy">
+                <b>Амфотерный</b> — от греч. «amphoteros» = «и тот, и другой». Буквально: «играю за обе команды».
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Кто амфотерный?</h2>
+            <p>Не все вещества так могут. Амфотерные — это <b>особые металлы</b>, которые стоят на границе между типичными металлами и неметаллами.</p>
+            <div class="mnemonic-box">
+                Zn, Be, Sn, Pb, Al, Cr
+                <span class="mnemonic-sub">Цинк, Бериллий, Олово, Свинец, Алюминий, Хром — шестёрка главных</span>
+            </div>
+            <p>У каждого из них есть <b>амфотерный гидроксид</b> и <b>амфотерный оксид</b>:</p>
+            <table>
+                <tr><th>Металл</th><th>Гидроксид</th><th>Оксид</th></tr>
+                <tr><td>Al</td><td>Al(OH)₃</td><td>Al₂O₃</td></tr>
+                <tr><td>Zn</td><td>Zn(OH)₂</td><td>ZnO</td></tr>
+                <tr><td>Cr</td><td>Cr(OH)₃</td><td>Cr₂O₃</td></tr>
+                <tr><td>Be</td><td>Be(OH)₂</td><td>BeO</td></tr>
+                <tr><td>Sn</td><td>Sn(OH)₂</td><td>SnO</td></tr>
+                <tr><td>Pb</td><td>Pb(OH)₂</td><td>PbO</td></tr>
+            </table>
+            <div class="warning">
+                <b>Fe(OH)₃</b> — <b>слабо</b> амфотерный. Реагирует со щелочами только при <b>сплавлении</b> (очень высокая температура), в растворе — нет. На экзамене обычно считается <b>нерастворимым основанием</b>, но знать нужно.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Как это работает?</h2>
+            <p style="color:#f59e0b; font-weight:600;">С кислотой — ведёт себя как основание:</p>
+            <div class="formula-box">
+                Al(OH)₃ + 3HCl → AlCl₃ + 3H₂O
+                <span class="label">Гидроксид алюминия + соляная кислота → соль + вода</span>
+            </div>
+
+            <p style="color:#60a5fa; font-weight:600;">Со щёлочью — ведёт себя как кислота:</p>
+            <div class="formula-box">
+                Al(OH)₃ + NaOH → NaAlO₂ + 2H₂O
+                <span class="label">Гидроксид алюминия + щёлочь → алюминат натрия + вода</span>
+            </div>
+
+            <div class="analogy">
+                <b>Аналогия:</b> Амфотерный гидроксид — как <b>хамелеон</b>. В кислоте он «прикидывается» основанием (отдаёт OH⁻), а в щёлочи — кислотой (отдаёт H⁺).
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Оксиды тоже амфотерные!</h2>
+            <p>Если гидроксид амфотерный, то и оксид — тоже:</p>
+            <div class="formula-box">
+                Al₂O₃ + 6HCl → 2AlCl₃ + 3H₂O
+                <span class="label">С кислотой — как основный оксид</span>
+            </div>
+            <div class="formula-box">
+                Al₂O₃ + 2NaOH → 2NaAlO₂ + H₂O
+                <span class="label">Со щёлочью — как кислотный оксид</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Диссоциация амфотерных гидроксидов</h2>
+            <p>Амфотерный гидроксид может диссоциировать двумя путями:</p>
+            <p style="color:#f59e0b; font-weight:600;">По типу основания (в кислой среде):</p>
+            <div class="formula-box">
+                Zn(OH)₂ ⇌ Zn²⁺ + 2OH⁻
+            </div>
+            <p style="color:#60a5fa; font-weight:600;">По типу кислоты (в щелочной среде):</p>
+            <div class="formula-box">
+                H₂ZnO₂ ⇌ 2H⁺ + ZnO₂²⁻
+                <span class="label">Ту же Zn(OH)₂ можно записать как H₂ZnO₂ — кислотная форма</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Где это встречается?</h2>
+            <ul>
+                <li><b>Алюминий</b> — самый частый в задачах. Алюминиевая кастрюля темнеет и от кислоты, и от щёлочи!</li>
+                <li><b>Цинк</b> — цинковая мазь, оцинкованное железо</li>
+                <li><b>Хром</b> — хромирование деталей, зелёный Cr₂O₃ — пигмент</li>
+                <li><b>Свинец</b> — аккумуляторы, PbO₂ в них</li>
+                <li><b>Качественный анализ:</b> если осадок растворяется и в кислоте, и в избытке щёлочи — значит он амфотерный!</li>
+            </ul>
+        </div>
+
+        <div class="btn-wrap">
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="showScreen('theoryFormal')">Теория по-взрослому →</button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN 3: THEORY FORMAL + QUIZ ==================== -->
+    <div id="theoryFormal" class="screen">
+        <h1>Теория по-взрослому</h1>
+        <p class="subtitle">Определения, уравнения, таблицы</p>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">ОПРЕДЕЛЕНИЕ</span>
+            <h2>Амфотерные соединения</h2>
+            <p><b>Амфотерные</b> — вещества, которые в зависимости от условий проявляют свойства <b>и кислот, и оснований</b>.</p>
+            <p>Типичными амфотерными являются <b>гидроксиды и оксиды</b> элементов с промежуточной электроотрицательностью:</p>
+            <table>
+                <tr><th>Элемент</th><th>Гидроксид</th><th>Оксид</th><th>Соль с кислотой</th><th>Соль со щёлочью</th></tr>
+                <tr><td>Al</td><td>Al(OH)₃</td><td>Al₂O₃</td><td>AlCl₃, Al₂(SO₄)₃</td><td>NaAlO₂, KAlO₂</td></tr>
+                <tr><td>Zn</td><td>Zn(OH)₂</td><td>ZnO</td><td>ZnCl₂, ZnSO₄</td><td>Na₂ZnO₂, K₂ZnO₂</td></tr>
+                <tr><td>Cr</td><td>Cr(OH)₃</td><td>Cr₂O₃</td><td>CrCl₃, Cr₂(SO₄)₃</td><td>NaCrO₂, KCrO₂</td></tr>
+                <tr><td>Be</td><td>Be(OH)₂</td><td>BeO</td><td>BeCl₂, BeSO₄</td><td>Na₂BeO₂</td></tr>
+                <tr><td>Sn</td><td>Sn(OH)₂</td><td>SnO</td><td>SnCl₂, SnSO₄</td><td>Na₂SnO₂</td></tr>
+                <tr><td>Pb</td><td>Pb(OH)₂</td><td>PbO</td><td>PbCl₂, Pb(NO₃)₂</td><td>Na₂PbO₂</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">РЕАКЦИИ</span>
+            <h2>Реакции амфотерных гидроксидов</h2>
+
+            <h3>С кислотами (ведут себя как основания)</h3>
+            <div class="formula-box">Al(OH)₃ + 3HCl → AlCl₃ + 3H₂O</div>
+            <div class="formula-box">Zn(OH)₂ + H₂SO₄ → ZnSO₄ + 2H₂O</div>
+            <div class="formula-box">Cr(OH)₃ + 3HNO₃ → Cr(NO₃)₃ + 3H₂O</div>
+
+            <h3>Со щелочами (ведут себя как кислоты)</h3>
+            <div class="formula-box">Al(OH)₃ + NaOH → NaAlO₂ + 2H₂O</div>
+            <div class="formula-box">Zn(OH)₂ + 2NaOH → Na₂ZnO₂ + 2H₂O</div>
+            <div class="formula-box">Cr(OH)₃ + NaOH → NaCrO₂ + 2H₂O</div>
+            <div class="formula-box">Be(OH)₂ + 2KOH → K₂BeO₂ + 2H₂O</div>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">РЕАКЦИИ</span>
+            <h2>Реакции амфотерных оксидов</h2>
+
+            <h3>С кислотами</h3>
+            <div class="formula-box">Al₂O₃ + 6HCl → 2AlCl₃ + 3H₂O</div>
+            <div class="formula-box">ZnO + 2HCl → ZnCl₂ + H₂O</div>
+
+            <h3>Со щелочами</h3>
+            <div class="formula-box">Al₂O₃ + 2NaOH → 2NaAlO₂ + H₂O</div>
+            <div class="formula-box">ZnO + 2NaOH → Na₂ZnO₂ + H₂O</div>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">ВАЖНО</span>
+            <h2>Fe(OH)₃ — особый случай</h2>
+            <p>Гидроксид железа(III) — <b>слабо амфотерный</b>.</p>
+            <p>С кислотами реагирует нормально:</p>
+            <div class="formula-box">Fe(OH)₃ + 3HCl → FeCl₃ + 3H₂O</div>
+            <p>А со щелочами — <b>только при сплавлении</b> (высокая T°):</p>
+            <div class="formula-box">Fe(OH)₃ + NaOH →<sup>сплавление</sup> NaFeO₂ + 2H₂O</div>
+            <div class="warning">
+                <b>В растворе Fe(OH)₃ со щёлочью НЕ реагирует!</b> В отличие от Al(OH)₃, Zn(OH)₂, которые растворяются в избытке NaOH прямо в пробирке.
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="topic-tag tag-theory">ДИАГНОСТИКА</span>
+            <h2>Как отличить амфотерный гидроксид?</h2>
+            <div class="step-box"><span class="step-num">1.</span> Добавь кислоту — осадок растворяется? Да → может быть основание ИЛИ амфотерный.</div>
+            <div class="step-box"><span class="step-num">2.</span> Добавь избыток щёлочи — осадок растворяется? Да → <b>амфотерный!</b></div>
+            <div class="step-box"><span class="step-num">3.</span> Если растворился только в кислоте, но НЕ в щёлочи → обычное нерастворимое основание (например, Cu(OH)₂, Fe(OH)₂).</div>
+        </div>
+
+        <!-- QUIZ -->
+        <div class="card" id="quizCard" style="display:none;">
+            <span class="topic-tag tag-medium">КВИЗ</span>
+            <div id="quizProgress" style="color:#888;font-size:0.82em;margin-bottom:10px;"></div>
+            <div id="quizQuestion" style="font-size:1.05em;font-weight:600;margin-bottom:14px;line-height:1.6;"></div>
+            <div id="quizOptions"></div>
+            <div class="quiz-explain" id="quizExplain"></div>
+            <div class="btn-wrap" id="quizNextWrap" style="display:none;">
+                <button class="btn btn-primary" onclick="nextQuiz()">Дальше →</button>
+            </div>
+        </div>
+        <div class="btn-wrap" id="startQuizWrap">
+            <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+            <button class="btn btn-primary" onclick="startQuiz()">Начать квиз (14 вопросов) →</button>
+        </div>
+
+        <!-- Quiz results -->
+        <div id="quizResults" style="display:none;">
+            <div class="result-score" id="quizResultScore"></div>
+            <div class="result-text" id="quizResultText"></div>
+            <div class="error-list" id="quizErrorList"></div>
+            <div class="btn-wrap" id="quizResultBtns"></div>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN: TRAINER ==================== -->
+    <div id="trainScreen" class="screen" style="position:relative;">
+        <button style="position:absolute;top:12px;right:16px;background:none;border:1px solid rgba(255,255,255,0.2);color:#888;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:0.82em;" onclick="showScreen('menuScreen')">✕ Выйти</button>
+        <h1>Тренажёр</h1>
+        <p class="subtitle">Амфотерные соединения</p>
+
+        <div class="prog-wrap">
+            <div class="prog-info">
+                <span id="trainProgress">Задание 1 / 30</span>
+                <span id="trainScore">0 правильных</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="trainBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card" id="trainCard">
+            <div id="trainRetryBadge"></div>
+            <div class="reaction-display" id="trainReaction"></div>
+            <div class="change-display" id="trainChange"></div>
+            <div class="dir-buttons" id="trainButtons"></div>
+            <div class="train-explain" id="trainExplain"></div>
+            <div class="btn-wrap" id="trainNextWrap" style="display:none">
+                <button class="btn btn-primary" onclick="nextTrainTask()">Дальше →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN: THEORY BEFORE RETRY ==================== -->
+    <div id="trainRetryTheory" class="screen">
+        <h1 style="color:#f59e0b;">Разбор ошибок</h1>
+        <p class="subtitle" id="retryTheorySubtitle"></p>
+        <div id="retryTheoryCards"></div>
+        <div id="aiPanel" style="margin-top:20px;text-align:center;">
+            <button id="askAiBtn" class="btn btn-secondary" style="font-size:0.95em;padding:12px 24px;border-color:rgba(96,165,250,0.4);color:#60a5fa;">Спросить ИИ</button>
+            <div id="aiPicker" style="display:none;margin-top:12px;">
+                <div style="color:#4ade80;font-weight:600;margin-bottom:10px;">Промпт скопирован! Открой любой чат:</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:16px;">
+            <button class="btn btn-primary" onclick="continueRetry()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;font-size:1.1em;padding:16px 32px;">Понял, продолжить →</button>
+        </div>
+    </div>
+
+    <!-- ==================== SCREEN: RESULTS ==================== -->
+    <div id="trainResults" class="screen">
+        <h1>Результаты</h1>
+        <div class="card">
+            <div class="result-score" id="trainResultScore"></div>
+            <div class="result-text" id="trainResultText"></div>
+            <div class="btn-wrap">
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">← Меню</button>
+                <button class="btn btn-primary" onclick="startTrainer()">Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===================== NAVIGATION =====================
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ===================== SHUFFLE =====================
+function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+}
+
+// ===================== QUIZ DATA =====================
+var quizQuestions = [
+    { q: 'Что значит «амфотерный»?', answer: 'Проявляет свойства и кислоты, и основания',
+      options: ['Проявляет свойства и кислоты, и основания', 'Растворяется только в воде', 'Не проводит ток', 'Реагирует только с металлами'],
+      explain: '<b>Амфотерный</b> — от греч. «и тот, и другой». Может вести себя как кислота (со щёлочью) и как основание (с кислотой).' },
+    { q: 'Какой из этих гидроксидов амфотерный?', answer: 'Zn(OH)₂',
+      options: ['Zn(OH)₂', 'NaOH', 'Cu(OH)₂', 'Fe(OH)₂'],
+      explain: '<b>Zn(OH)₂</b> — классический амфотерный гидроксид. NaOH — щёлочь, Cu(OH)₂ и Fe(OH)₂ — обычные нерастворимые основания.' },
+    { q: 'Что образуется при реакции Al(OH)₃ + NaOH?', answer: 'NaAlO₂ + H₂O',
+      options: ['NaAlO₂ + H₂O', 'AlCl₃ + H₂O', 'Al₂O₃ + NaCl', 'Na₃AlO₃ + H₂'],
+      explain: 'Со щёлочью Al(OH)₃ ведёт себя как <b>кислота</b> → образуется соль — <b>алюминат натрия NaAlO₂</b> + вода.' },
+    { q: 'Что образуется при реакции Al(OH)₃ + 3HCl?', answer: 'AlCl₃ + 3H₂O',
+      options: ['AlCl₃ + 3H₂O', 'NaAlO₂ + H₂O', 'Al₂O₃ + HCl', 'AlOH + Cl₂'],
+      explain: 'С кислотой Al(OH)₃ ведёт себя как <b>основание</b> → образуется соль <b>AlCl₃</b> + вода.' },
+    { q: 'Какие 6 металлов образуют типичные амфотерные гидроксиды?', answer: 'Zn, Be, Sn, Pb, Al, Cr',
+      options: ['Zn, Be, Sn, Pb, Al, Cr', 'Na, K, Ca, Mg, Ba, Li', 'Fe, Cu, Ni, Co, Mn, Ti', 'Si, P, S, Cl, N, C'],
+      explain: 'Запоминалка: <b>Zn, Be, Sn, Pb, Al, Cr</b> — цинк, бериллий, олово, свинец, алюминий, хром.' },
+    { q: 'Fe(OH)₃ реагирует со щёлочью...', answer: 'Только при сплавлении (высокая T°)',
+      options: ['Только при сплавлении (высокая T°)', 'Легко, в растворе', 'Не реагирует вообще', 'Только в вакууме'],
+      explain: 'Fe(OH)₃ — <b>слабо</b> амфотерный. В растворе со щёлочью не реагирует, только при <b>сплавлении</b>.' },
+    { q: 'Как отличить амфотерный гидроксид от обычного основания?', answer: 'Амфотерный растворяется и в кислоте, и в избытке щёлочи',
+      options: ['Амфотерный растворяется и в кислоте, и в избытке щёлочи', 'Амфотерный не растворяется вообще', 'Амфотерный растворяется только в воде', 'По цвету осадка'],
+      explain: 'Диагностический тест: осадок растворяется в кислоте? Да. В избытке щёлочи тоже? Значит <b>амфотерный</b>.' },
+    { q: 'ZnO — это...', answer: 'Амфотерный оксид',
+      options: ['Амфотерный оксид', 'Основный оксид', 'Кислотный оксид', 'Несолеобразующий оксид'],
+      explain: 'Если гидроксид Zn(OH)₂ амфотерный, то и оксид <b>ZnO тоже амфотерный</b> — реагирует и с кислотами, и со щелочами.' },
+    { q: 'Что такое NaAlO₂?', answer: 'Алюминат натрия — соль, где Al в составе кислотного остатка',
+      options: ['Алюминат натрия — соль, где Al в составе кислотного остатка', 'Оксид алюминия-натрия', 'Алюминиевая щёлочь', 'Двойная соль алюминия'],
+      explain: 'Когда Al(OH)₃ реагирует со щёлочью, алюминий оказывается <b>в составе аниона</b> (AlO₂⁻). NaAlO₂ — <b>алюминат натрия</b>.' },
+    { q: 'Что образуется при реакции Zn(OH)₂ + 2NaOH?', answer: 'Na₂ZnO₂ + 2H₂O',
+      options: ['Na₂ZnO₂ + 2H₂O', 'ZnCl₂ + NaOH', 'NaOH + Zn', 'ZnO + Na₂O + H₂O'],
+      explain: 'Zn(OH)₂ + 2NaOH → <b>Na₂ZnO₂</b> (цинкат натрия) + 2H₂O. Цинк оказался в аниона: ZnO₂²⁻.' },
+    { q: 'Cu(OH)₂ — амфотерный?', answer: 'Нет, это обычное нерастворимое основание',
+      options: ['Нет, это обычное нерастворимое основание', 'Да, типичный амфотерный', 'Да, но только слабо', 'Это щёлочь'],
+      explain: 'Cu(OH)₂ — обычное <b>нерастворимое основание</b>. Растворяется в кислоте, но НЕ в щёлочи. Амфотерные: Zn, Be, Sn, Pb, Al, Cr.' },
+    { q: 'Cr₂O₃ + 2NaOH → ?', answer: '2NaCrO₂ + H₂O',
+      options: ['2NaCrO₂ + H₂O', 'Cr(OH)₃ + Na₂O', 'CrCl₃ + NaOH', 'Na₂CrO₄ + H₂'],
+      explain: 'Cr₂O₃ — амфотерный оксид. Со щёлочью: Cr₂O₃ + 2NaOH → <b>2NaCrO₂</b> (хромит натрия) + H₂O.' },
+    { q: 'По какому типу диссоциирует Zn(OH)₂ в кислой среде?', answer: 'По типу основания: Zn(OH)₂ ⇌ Zn²⁺ + 2OH⁻',
+      options: ['По типу основания: Zn(OH)₂ ⇌ Zn²⁺ + 2OH⁻', 'По типу кислоты: H₂ZnO₂ ⇌ 2H⁺ + ZnO₂²⁻', 'Не диссоциирует', 'Только по типу соли'],
+      explain: 'В <b>кислой</b> среде амфотерный гидроксид диссоциирует <b>по типу основания</b>: Zn(OH)₂ ⇌ Zn²⁺ + 2OH⁻.' },
+    { q: 'Be(OH)₂ + 2KOH → ?', answer: 'K₂BeO₂ + 2H₂O',
+      options: ['K₂BeO₂ + 2H₂O', 'BeK₂ + O₂ + H₂O', 'KBeO₃ + H₂', 'Be(OH)₂ не реагирует со щёлочью'],
+      explain: 'Be(OH)₂ — амфотерный. Со щёлочью: Be(OH)₂ + 2KOH → <b>K₂BeO₂</b> (бериллат калия) + 2H₂O.' }
+];
+
+var quizList = [], quizIndex = 0, quizCorrect = 0, quizErrors = [], quizAnswered = false, quizTotalAsked = 0;
+
+function startQuiz() {
+    quizList = shuffle(quizQuestions).slice(0, 14);
+    quizIndex = 0; quizCorrect = 0; quizErrors = []; quizAnswered = false; quizTotalAsked = 14;
+    document.getElementById('startQuizWrap').style.display = 'none';
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('quizCard').style.display = '';
+    renderQuiz();
+}
+
+function renderQuiz() {
+    if (quizIndex >= quizList.length) { showQuizResults(); return; }
+    quizAnswered = false;
+    var q = quizList[quizIndex];
+    document.getElementById('quizProgress').textContent = 'Вопрос ' + (quizIndex+1) + ' из ' + quizList.length;
+    document.getElementById('quizQuestion').innerHTML = q.q;
+    var opts = shuffle(q.options);
+    var html = '';
+    opts.forEach(function(o) {
+        html += '<button class="quiz-option" onclick="answerQuiz(this,\'' + o.replace(/'/g, "\\'") + '\')">' + o + '</button>';
+    });
+    document.getElementById('quizOptions').innerHTML = html;
+    document.getElementById('quizExplain').style.display = 'none';
+    document.getElementById('quizNextWrap').style.display = 'none';
+}
+
+function answerQuiz(btn, choice) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    var q = quizList[quizIndex];
+    var isCorrect = choice === q.answer;
+    var btns = document.querySelectorAll('#quizOptions .quiz-option');
+    btns.forEach(function(b) {
+        b.style.pointerEvents = 'none';
+        if (b.textContent === q.answer) b.classList.add('correct');
+        if (b === btn && !isCorrect) b.classList.add('wrong');
+    });
+    if (isCorrect) { quizCorrect++; } else { quizErrors.push(q); }
+    var el = document.getElementById('quizExplain');
+    el.innerHTML = (isCorrect ? '✓ ' : '✗ ') + q.explain;
+    el.style.display = 'block';
+    document.getElementById('quizNextWrap').style.display = 'flex';
+}
+
+function nextQuiz() { quizIndex++; renderQuiz(); }
+
+function showQuizResults() {
+    document.getElementById('quizCard').style.display = 'none';
+    var pct = Math.round(quizCorrect / quizTotalAsked * 100);
+    document.getElementById('quizResultScore').textContent = quizCorrect + ' / ' + quizTotalAsked;
+    var text = pct === 100 ? 'Всё верно! Ты красавчик!' : pct >= 75 ? 'Хороший результат!' : pct >= 50 ? 'Неплохо, ещё разок закрепить.' : 'Перечитай теорию и попробуй снова.';
+    document.getElementById('quizResultText').textContent = text;
+    var errHtml = '';
+    if (quizErrors.length) {
+        errHtml = '<h3 style="color:#ef4444;margin-bottom:10px;">Ошибки:</h3>';
+        quizErrors.forEach(function(e) {
+            errHtml += '<div class="error-item"><div class="err-q">' + e.q + '</div><div class="err-a">→ ' + e.answer + '</div></div>';
+        });
+    }
+    document.getElementById('quizErrorList').innerHTML = errHtml;
+    var btnsHtml = '<button class="btn btn-secondary" onclick="showScreen(\'menuScreen\')">← Меню</button>';
+    if (quizErrors.length) {
+        btnsHtml += '<button class="btn btn-primary" onclick="retryQuizErrors()" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:pulse 2s infinite;">Повторить ошибки (' + quizErrors.length + ')</button>';
+    }
+    btnsHtml += '<button class="btn btn-primary" onclick="startQuiz()">Заново</button>';
+    document.getElementById('quizResultBtns').innerHTML = btnsHtml;
+    document.getElementById('quizResults').style.display = '';
+}
+
+function retryQuizErrors() {
+    quizList = shuffle(quizErrors.slice());
+    quizIndex = 0; quizErrors = []; quizAnswered = false;
+    document.getElementById('quizResults').style.display = 'none';
+    document.getElementById('quizCard').style.display = '';
+    renderQuiz();
+}
+
+// ===================== TRAINER DATA =====================
+var trainTasks = [
+    // === Амфотерный или нет? ===
+    { question: 'Al(OH)₃ — амфотерный?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>Al(OH)₃</b> — классический амфотерный гидроксид. Реагирует и с кислотами, и со щелочами.' },
+    { question: 'NaOH — амфотерный?', answer: 'Нет', options: ['Да', 'Нет'],
+      explanation: '<b>NaOH</b> — щёлочь (сильное основание). Реагирует только с кислотами, не с другими основаниями.' },
+    { question: 'Zn(OH)₂ — амфотерный?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>Zn(OH)₂</b> — амфотерный. Растворяется и в кислоте, и в избытке щёлочи.' },
+    { question: 'Cu(OH)₂ — амфотерный?', answer: 'Нет', options: ['Да', 'Нет'],
+      explanation: '<b>Cu(OH)₂</b> — обычное нерастворимое основание. В щёлочи не растворяется.' },
+    { question: 'Cr(OH)₃ — амфотерный?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>Cr(OH)₃</b> — амфотерный. Растворяется и в HCl, и в NaOH.' },
+    { question: 'Be(OH)₂ — амфотерный?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>Be(OH)₂</b> — амфотерный. Бериллий — один из шестёрки (Zn, Be, Sn, Pb, Al, Cr).' },
+    { question: 'Ca(OH)₂ — амфотерный?', answer: 'Нет', options: ['Да', 'Нет'],
+      explanation: '<b>Ca(OH)₂</b> — щёлочь (основание щёлочноземельного металла). Не амфотерный.' },
+    { question: 'Pb(OH)₂ — амфотерный?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>Pb(OH)₂</b> — амфотерный. Свинец входит в шестёрку.' },
+    { question: 'Sn(OH)₂ — амфотерный?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>Sn(OH)₂</b> — амфотерный. Олово (станнум) входит в шестёрку.' },
+    { question: 'Fe(OH)₂ — амфотерный?', answer: 'Нет', options: ['Да', 'Нет'],
+      explanation: '<b>Fe(OH)₂</b> — обычное нерастворимое основание. А вот Fe(OH)₃ — слабо амфотерный (только при сплавлении).' },
+    { question: 'Fe(OH)₃ — амфотерный?', answer: 'Слабо (только при сплавлении)', options: ['Да, в растворе', 'Нет', 'Слабо (только при сплавлении)'],
+      explanation: '<b>Fe(OH)₃</b> — слабо амфотерный. В растворе со щёлочью НЕ реагирует, только при <b>сплавлении</b>.' },
+    { question: 'Al₂O₃ — амфотерный оксид?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>Al₂O₃</b> — амфотерный оксид. Реагирует и с кислотами (как основный), и со щелочами (как кислотный).' },
+    { question: 'CaO — амфотерный оксид?', answer: 'Нет', options: ['Да', 'Нет'],
+      explanation: '<b>CaO</b> — основный оксид. Реагирует с кислотами и водой, но НЕ со щелочами.' },
+    { question: 'ZnO — амфотерный оксид?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>ZnO</b> — амфотерный. Если гидроксид амфотерный, то и оксид тоже.' },
+    { question: 'Cr₂O₃ — амфотерный оксид?', answer: 'Да', options: ['Да', 'Нет'],
+      explanation: '<b>Cr₂O₃</b> — амфотерный оксид хрома(III). Реагирует и с HCl, и с NaOH.' },
+
+    // === Продукты реакций ===
+    { question: 'Al(OH)₃ + 3HCl → ?', answer: 'AlCl₃ + 3H₂O', options: ['AlCl₃ + 3H₂O', 'NaAlO₂ + 2H₂O', 'Al₂O₃ + 3HCl', 'AlOH + Cl₂'],
+      explanation: 'С кислотой Al(OH)₃ — как основание: <b>AlCl₃ + 3H₂O</b>.' },
+    { question: 'Al(OH)₃ + NaOH → ?', answer: 'NaAlO₂ + 2H₂O', options: ['NaAlO₂ + 2H₂O', 'AlCl₃ + 3H₂O', 'Al(OH)₃ + NaCl', 'Na₃AlO₃ + H₂'],
+      explanation: 'Со щёлочью Al(OH)₃ — как кислота: <b>NaAlO₂</b> (алюминат натрия) + 2H₂O.' },
+    { question: 'Zn(OH)₂ + 2NaOH → ?', answer: 'Na₂ZnO₂ + 2H₂O', options: ['Na₂ZnO₂ + 2H₂O', 'ZnCl₂ + 2NaOH', 'ZnO + Na₂O', 'NaZnO₂ + H₂O'],
+      explanation: 'Zn(OH)₂ + 2NaOH → <b>Na₂ZnO₂</b> (цинкат натрия) + 2H₂O.' },
+    { question: 'Zn(OH)₂ + H₂SO₄ → ?', answer: 'ZnSO₄ + 2H₂O', options: ['ZnSO₄ + 2H₂O', 'Na₂ZnO₂ + H₂O', 'ZnO + SO₃', 'Zn + H₂SO₄'],
+      explanation: 'С кислотой Zn(OH)₂ — как основание: <b>ZnSO₄ + 2H₂O</b>.' },
+    { question: 'Cr(OH)₃ + 3HNO₃ → ?', answer: 'Cr(NO₃)₃ + 3H₂O', options: ['Cr(NO₃)₃ + 3H₂O', 'NaCrO₂ + H₂O', 'CrO₃ + HNO₃', 'Cr₂O₃ + NO₂'],
+      explanation: 'С кислотой Cr(OH)₃ — как основание: <b>Cr(NO₃)₃ + 3H₂O</b>.' },
+    { question: 'Cr(OH)₃ + NaOH → ?', answer: 'NaCrO₂ + 2H₂O', options: ['NaCrO₂ + 2H₂O', 'Cr(NO₃)₃ + H₂O', 'Cr₂O₃ + NaCl', 'Na₂CrO₄ + H₂O'],
+      explanation: 'Со щёлочью Cr(OH)₃ — как кислота: <b>NaCrO₂</b> (хромит натрия) + 2H₂O.' },
+    { question: 'Al₂O₃ + 6HCl → ?', answer: '2AlCl₃ + 3H₂O', options: ['2AlCl₃ + 3H₂O', '2NaAlO₂ + H₂O', 'AlCl₃ + Al₂O₃', 'Al + HClO₃'],
+      explanation: 'Амфотерный оксид с кислотой — как основный: <b>2AlCl₃ + 3H₂O</b>.' },
+    { question: 'Al₂O₃ + 2NaOH → ?', answer: '2NaAlO₂ + H₂O', options: ['2NaAlO₂ + H₂O', '2AlCl₃ + 3H₂O', 'Al(OH)₃ + Na₂O', 'NaOH + Al'],
+      explanation: 'Амфотерный оксид со щёлочью — как кислотный: <b>2NaAlO₂ + H₂O</b>.' },
+    { question: 'ZnO + 2HCl → ?', answer: 'ZnCl₂ + H₂O', options: ['ZnCl₂ + H₂O', 'Na₂ZnO₂ + H₂O', 'Zn + Cl₂', 'ZnO₂ + HCl'],
+      explanation: 'ZnO с кислотой — как основный оксид: <b>ZnCl₂ + H₂O</b>.' },
+    { question: 'ZnO + 2NaOH → ?', answer: 'Na₂ZnO₂ + H₂O', options: ['Na₂ZnO₂ + H₂O', 'ZnCl₂ + H₂O', 'Zn(OH)₂ + Na₂O', 'NaOH + ZnO'],
+      explanation: 'ZnO со щёлочью — как кислотный оксид: <b>Na₂ZnO₂ + H₂O</b>.' },
+    { question: 'Be(OH)₂ + 2KOH → ?', answer: 'K₂BeO₂ + 2H₂O', options: ['K₂BeO₂ + 2H₂O', 'BeCl₂ + KOH', 'BeO + K₂O', 'KBeO₂ + H₂O'],
+      explanation: 'Be(OH)₂ + 2KOH → <b>K₂BeO₂</b> (бериллат калия) + 2H₂O.' },
+    { question: 'Be(OH)₂ + 2HCl → ?', answer: 'BeCl₂ + 2H₂O', options: ['BeCl₂ + 2H₂O', 'K₂BeO₂ + H₂O', 'BeO + Cl₂', 'Be + HClO'],
+      explanation: 'С кислотой Be(OH)₂ — как основание: <b>BeCl₂ + 2H₂O</b>.' },
+
+    // === Понимание ===
+    { question: 'Осадок растворился в кислоте, но НЕ в щёлочи. Это...', answer: 'Обычное нерастворимое основание',
+      options: ['Обычное нерастворимое основание', 'Амфотерный гидроксид', 'Щёлочь', 'Кислота'],
+      explanation: 'Амфотерный растворился бы <b>и в кислоте, и в щёлочи</b>. Только в кислоте — обычное основание (напр. Cu(OH)₂).' },
+    { question: 'Осадок растворился и в HCl, и в избытке NaOH. Это...', answer: 'Амфотерный гидроксид',
+      options: ['Амфотерный гидроксид', 'Обычное нерастворимое основание', 'Щёлочь', 'Нерастворимая соль'],
+      explanation: 'Растворяется <b>в обоих</b> — значит <b>амфотерный</b>! Это главный диагностический признак.' },
+    { question: 'Почему алюминиевую кастрюлю нельзя чистить содой (щёлочью)?', answer: 'Al₂O₃ на поверхности растворяется в щёлочи — алюминий разрушается',
+      options: ['Al₂O₃ на поверхности растворяется в щёлочи — алюминий разрушается', 'Сода окрашивает алюминий', 'Алюминий взрывается от щёлочи', 'Кастрюля становится тяжелее'],
+      explanation: 'Защитная плёнка <b>Al₂O₃</b> — амфотерная! Щёлочь её растворяет, и алюминий начинает разрушаться.' },
+    { question: 'Pb(OH)₂ + 2HNO₃ → ?', answer: 'Pb(NO₃)₂ + 2H₂O',
+      options: ['Pb(NO₃)₂ + 2H₂O', 'Na₂PbO₂ + H₂O', 'PbO + NO₂', 'Pb + HNO₃'],
+      explanation: 'С кислотой Pb(OH)₂ — как основание: <b>Pb(NO₃)₂ + 2H₂O</b>.' },
+    { question: 'Sn(OH)₂ + 2NaOH → ?', answer: 'Na₂SnO₂ + 2H₂O',
+      options: ['Na₂SnO₂ + 2H₂O', 'SnCl₂ + NaOH', 'SnO + Na₂O', 'NaSnO₂ + H₂O'],
+      explanation: 'Sn(OH)₂ + 2NaOH → <b>Na₂SnO₂</b> (станнат натрия) + 2H₂O.' },
+];
+
+// ===================== TRAINER ENGINE =====================
+var trainList = [], trainIndex = 0, trainCorrectCount = 0, trainAnswered = false;
+var trainErrors = [], trainRetryMode = false, trainTotalTasks = 0;
+var firstPassPct = null;
+var retryRound = 0;
+var pendingRetryErrors = [];
+
+function startTrainer() {
+    trainList = shuffle(trainTasks);
+    trainIndex = 0;
+    trainCorrectCount = 0;
+    trainAnswered = false;
+    trainErrors = [];
+    trainRetryMode = false;
+    firstPassPct = null;
+    retryRound = 0;
+    trainTotalTasks = trainList.length;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+function stripHtml(s) { var d = document.createElement('div'); d.innerHTML = s; return d.textContent || ''; }
+
+var AI_SERVICES = [
+    {name: 'ChatGPT',  url: 'https://chat.openai.com/'},
+    {name: 'DeepSeek',  url: 'https://chat.deepseek.com/'},
+    {name: 'Claude',    url: 'https://claude.ai/new'},
+    {name: 'Gemini',    url: 'https://gemini.google.com/app'},
+    {name: 'GigaChat',  url: 'https://giga.chat/'},
+    {name: 'Алиса',     url: 'https://a.ya.ru/'}
+];
+
+function setupAiPanel(errors, topicName) {
+    var aiBtn = document.getElementById('askAiBtn');
+    var picker = document.getElementById('aiPicker');
+    if (!aiBtn || !picker) return;
+
+    aiBtn.style.display = '';
+    picker.style.display = 'none';
+
+    var prompt = 'Я учу химию, тема «' + topicName + '». Не понимаю вот эти вещи, объясни простыми словами:\n\n';
+    errors.forEach(function(task, i) {
+        prompt += (i+1) + '. ' + stripHtml(task.question || '') +
+            '\n   Правильный ответ: ' + task.answer +
+            '\n   Объяснение: ' + stripHtml(task.explanation) + '\n\n';
+    });
+    prompt += 'Объясни каждый пункт как для человека, который видит это впервые. Без сложных слов, с примерами из жизни.';
+
+    aiBtn.onclick = function() {
+        navigator.clipboard.writeText(prompt).then(function() {
+            aiBtn.style.display = 'none';
+            picker.style.display = '';
+            var wrap = picker.querySelector('div:last-child');
+            wrap.innerHTML = '';
+            AI_SERVICES.forEach(function(svc) {
+                var b = document.createElement('a');
+                b.href = svc.url;
+                b.target = '_blank';
+                b.rel = 'noopener';
+                b.textContent = svc.name;
+                b.style.cssText = 'display:inline-block;padding:10px 18px;border-radius:10px;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.3);color:#60a5fa;text-decoration:none;font-weight:600;font-size:0.9em;transition:all 0.2s;';
+                b.onmouseenter = function() { b.style.background = 'rgba(96,165,250,0.25)'; };
+                b.onmouseleave = function() { b.style.background = 'rgba(96,165,250,0.12)'; };
+                wrap.appendChild(b);
+            });
+        });
+    };
+}
+
+function showRetryTheory(errors) {
+    retryRound++;
+    pendingRetryErrors = errors;
+    showScreen('trainRetryTheory');
+    document.getElementById('retryTheorySubtitle').textContent =
+        'Осталось ' + errors.length + ' ' + pluralErr(errors.length) + '. Не страшно! Посмотри, как правильно, и попробуй ещё раз.';
+    var html = '';
+    errors.forEach(function(task, i) {
+        html += '<div class="card" style="margin-bottom:14px;border-left:3px solid #ef4444;padding:18px 20px;">' +
+            '<div style="color:#f59e0b;font-weight:700;margin-bottom:8px;">Ошибка ' + (i+1) + '</div>' +
+            '<div style="color:#aaa;margin-bottom:8px;">' + (task.question || '') + '</div>' +
+            '<div style="color:#4ade80;font-weight:600;margin-bottom:6px;">Правильный ответ: ' + task.answer + '</div>' +
+            '<div style="color:#ddd;line-height:1.7;">' + task.explanation + '</div>' +
+            '</div>';
+    });
+    document.getElementById('retryTheoryCards').innerHTML = html;
+    setupAiPanel(errors, 'Амфотерные соединения');
+}
+
+function pluralErr(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return 'ошибка';
+    if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'ошибки';
+    return 'ошибок';
+}
+
+function continueRetry() {
+    trainRetryMode = true;
+    trainList = shuffle([].concat(pendingRetryErrors));
+    pendingRetryErrors = [];
+    trainErrors = [];
+    trainIndex = 0;
+    showScreen('trainScreen');
+    renderTrainTask();
+}
+
+function renderTrainTask() {
+    if (trainIndex >= trainList.length) {
+        if (trainErrors.length > 0) {
+            if (firstPassPct === null) {
+                firstPassPct = Math.round(trainCorrectCount / trainTotalTasks * 100);
+            }
+            showRetryTheory(trainErrors);
+            return;
+        }
+        showTrainResults();
+        return;
+    }
+
+    trainAnswered = false;
+    var task = trainList[trainIndex];
+
+    document.getElementById('trainRetryBadge').innerHTML = trainRetryMode ? '<span class="retry-badge">&#8635; Повтор ошибок</span>' : '';
+
+    document.getElementById('trainReaction').innerHTML = '';
+    document.getElementById('trainChange').innerHTML = task.question;
+
+    var label = trainRetryMode ? '&#8635; Повтор ' + (trainIndex + 1) + ' / ' + trainList.length : 'Задание ' + (trainIndex + 1) + ' / ' + trainList.length;
+    document.getElementById('trainProgress').innerHTML = label;
+    document.getElementById('trainScore').textContent = trainCorrectCount + ' правильных';
+
+    var pct = (trainIndex) / trainList.length * 100;
+    document.getElementById('trainBar').style.width = pct + '%';
+
+    var btnsDiv = document.getElementById('trainButtons');
+    btnsDiv.innerHTML = '';
+    var shuffledOpts = shuffle(task.options);
+    shuffledOpts.forEach(function(opt) {
+        var btn = document.createElement('button');
+        btn.className = 'dir-btn';
+        btn.innerHTML = opt;
+        btn.onclick = function() { answerTrain(opt, btn); };
+        btnsDiv.appendChild(btn);
+    });
+
+    document.getElementById('trainExplain').className = 'train-explain';
+    document.getElementById('trainExplain').style.display = 'none';
+    document.getElementById('trainNextWrap').style.display = 'none';
+}
+
+function answerTrain(choice, clickedBtn) {
+    if (trainAnswered) return;
+    trainAnswered = true;
+
+    var task = trainList[trainIndex];
+    var isCorrect = choice === task.answer;
+
+    var btns = document.querySelectorAll('#trainButtons .dir-btn');
+    btns.forEach(function(b) {
+        b.style.pointerEvents = 'none';
+        if (b.innerHTML === task.answer) b.classList.add('correct');
+        if (b === clickedBtn && !isCorrect) b.classList.add('wrong');
+    });
+
+    if (isCorrect) {
+        trainCorrectCount++;
+    } else {
+        trainErrors.push(task);
+    }
+
+    var el = document.getElementById('trainExplain');
+    el.innerHTML = (isCorrect ? '&#10003; Верно! ' : '&#10007; Неверно. ') + task.explanation;
+    el.className = 'train-explain ' + (isCorrect ? 'show-correct' : 'show-wrong');
+    el.style.display = 'block';
+
+    document.getElementById('trainScore').textContent = trainCorrectCount + ' правильных';
+    document.getElementById('trainNextWrap').style.display = 'flex';
+}
+
+function nextTrainTask() {
+    trainIndex++;
+    renderTrainTask();
+}
+
+function showTrainResults() {
+    showScreen('trainResults');
+    var el = document.getElementById('trainResultScore');
+    var txt = document.getElementById('trainResultText');
+    if (retryRound === 0) {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Всё верно с первого раза! Ты красавчик!';
+    } else if (retryRound === 1) {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Молодец! Разобрался и всё исправил. Так и надо!';
+    } else {
+        el.textContent = trainTotalTasks + ' из ' + trainTotalTasks;
+        txt.innerHTML = 'Дошёл до конца — это главное! С каждым разом будет легче.';
+    }
+    localStorage.setItem('chem5-amphoteric', JSON.stringify({
+        rounds: retryRound + 1,
+        date: new Date().toLocaleDateString('ru-RU')
+    }));
+}
+
+function pluralRound(n) {
+    if (n === 1) return 'раунд';
+    if (n >= 2 && n <= 4) return 'раунда';
+    return 'раундов';
+}
+</script>
+</body>
+</html>

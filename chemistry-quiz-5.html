@@ -84,10 +84,61 @@
         .btn-dissociation { border-left: 4px solid #4ade80; }
         .btn-hydrolysis { border-left: 4px solid #fb923c; }
         .btn-ph { border-left: 4px solid #fbbf24; }
+        .btn-amphoteric { border-left: 4px solid #a78bfa; }
 
         .btn-dissociation .t-name { color: #4ade80; }
         .btn-hydrolysis .t-name { color: #fb923c; }
         .btn-ph .t-name { color: #fbbf24; }
+        .btn-amphoteric .t-name { color: #a78bfa; }
+
+        /* Progress dashboard */
+        .progress-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .progress-card h2 {
+            font-size: 1em; color: #888; margin-bottom: 14px;
+            font-weight: 600; text-align: center;
+        }
+        .prog-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .prog-row:last-child { border-bottom: none; }
+        .prog-label { flex: 1; font-size: 0.92em; font-weight: 600; }
+        .prog-bar-wrap {
+            flex: 2; background: rgba(255,255,255,0.08); border-radius: 8px;
+            height: 10px; overflow: hidden; position: relative;
+        }
+        .prog-bar-fill {
+            height: 100%; border-radius: 8px; transition: width 0.6s ease;
+        }
+        .prog-score {
+            width: 60px; text-align: right; font-size: 0.85em; font-weight: 700;
+        }
+        .prog-verdict {
+            width: 24px; text-align: center; font-size: 1.1em;
+        }
+        .prog-empty {
+            text-align: center; color: #666; font-size: 0.88em;
+            padding: 12px 0;
+        }
+        .prog-tip {
+            margin-top: 14px; padding: 12px 16px;
+            border-radius: 10px; font-size: 0.88em; line-height: 1.6;
+        }
+        .tip-good { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); color: #4ade80; }
+        .tip-work { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); color: #f59e0b; }
+        .tip-start { background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2); color: #60a5fa; }
+        .prog-reset {
+            display: block; margin: 12px auto 0; background: none; border: 1px solid rgba(255,255,255,0.1);
+            color: #666; padding: 4px 14px; border-radius: 8px; font-size: 0.75em; cursor: pointer;
+        }
+        .prog-reset:hover { color: #aaa; border-color: rgba(255,255,255,0.25); }
 
         @media (max-width: 500px) {
             .topic-btn { padding: 18px 16px; }
@@ -100,38 +151,136 @@
     <h1>Растворы и электролиты</h1>
     <div class="subtitle">Тема 5 &nbsp;&middot;&nbsp; теория на пальцах &rarr; квиз &rarr; тренажёр</div>
 
+    <!-- Progress dashboard -->
+    <div class="progress-card" id="progressCard"></div>
+
     <a href="chemistry-dissociation.html" class="topic-btn btn-dissociation">
         <span class="t-name">Диссоциация</span>
-        <span class="t-desc">Электролиты и неэлектролиты, сильные и слабые, ионные уравнения</span>
+        <span class="t-desc">Электролиты, сильные и слабые, Ka, ионные уравнения, закон Оствальда</span>
         <div class="t-contents">
             <span class="t-badge badge-theory">Теория</span>
-            <span class="t-badge badge-quiz">Квиз 26 вопросов</span>
-            <span class="t-badge badge-trainer">Тренажёр 33 задачи</span>
+            <span class="t-badge badge-quiz">Квиз 33 вопроса</span>
+            <span class="t-badge badge-trainer">Тренажёр 52 задачи</span>
         </div>
     </a>
 
     <a href="chemistry-hydrolysis.html" class="topic-btn btn-hydrolysis">
         <span class="t-name">Гидролиз</span>
-        <span class="t-desc">Среда раствора, гидролиз по катиону и аниону, полный гидролиз</span>
+        <span class="t-desc">Среда раствора, типы гидролиза, K<sub>г</sub>, степень гидролиза, pH солей</span>
         <div class="t-contents">
             <span class="t-badge badge-theory">Теория</span>
-            <span class="t-badge badge-quiz">Квиз 12 вопросов</span>
-            <span class="t-badge badge-trainer">Тренажёр 33 задачи</span>
+            <span class="t-badge badge-quiz">Квиз 27 вопросов</span>
+            <span class="t-badge badge-trainer">Тренажёр 40 задач</span>
         </div>
     </a>
 
     <a href="chemistry-ph.html" class="topic-btn btn-ph">
         <span class="t-name">pH</span>
-        <span class="t-desc">Водородный показатель, ионное произведение воды, индикаторы</span>
+        <span class="t-desc">Водородный показатель, Kw, индикаторы, pH слабых кислот через Ka</span>
         <div class="t-contents">
             <span class="t-badge badge-theory">Теория</span>
-            <span class="t-badge badge-quiz">Квиз 12 вопросов</span>
-            <span class="t-badge badge-trainer">Тренажёр 36 задач</span>
+            <span class="t-badge badge-quiz">Квиз 27 вопросов</span>
+            <span class="t-badge badge-trainer">Тренажёр 44 задачи</span>
+        </div>
+    </a>
+
+    <a href="chemistry-amphoteric.html" class="topic-btn btn-amphoteric">
+        <span class="t-name">Амфотерные соединения</span>
+        <span class="t-desc">Zn, Be, Sn, Pb, Al, Cr — реакции с кислотами и щелочами, оксиды, Fe(OH)₃</span>
+        <div class="t-contents">
+            <span class="t-badge badge-theory">Теория</span>
+            <span class="t-badge badge-quiz">Квиз 14 вопросов</span>
+            <span class="t-badge badge-trainer">Тренажёр 31 задача</span>
         </div>
     </a>
 
     <a href="index.html" class="home-link">&larr; Все темы</a>
     <a href="https://ii-perehod.github.io/" class="home-link">&larr; Портфолио</a>
 </div>
+
+<script>
+// ===================== PROGRESS DASHBOARD =====================
+var topics = [
+    { key: 'chem5-dissociation', name: 'Диссоциация', color: '#4ade80' },
+    { key: 'chem5-hydrolysis', name: 'Гидролиз', color: '#fb923c' },
+    { key: 'chem5-ph', name: 'pH', color: '#fbbf24' },
+    { key: 'chem5-amphoteric', name: 'Амфотерные', color: '#a78bfa' }
+];
+
+function pluralRound(n) {
+    if (n === 1) return 'раунд';
+    if (n >= 2 && n <= 4) return 'раунда';
+    return 'раундов';
+}
+
+function renderProgress() {
+    var card = document.getElementById('progressCard');
+    var anyData = false;
+    var rows = '';
+    var results = [];
+
+    topics.forEach(function(t) {
+        var raw = localStorage.getItem(t.key);
+        if (!raw) {
+            results.push(null);
+            return;
+        }
+        try {
+            var d = JSON.parse(raw);
+            anyData = true;
+            var rounds = d.rounds || 1;
+            results.push({rounds: rounds, date: d.date});
+            var barColor = '#4ade80';
+            var icon = rounds === 1 ? '&#9733;' : '&#10003;';
+            var roundText = rounds === 1 ? 'с первого раза!' : 'пройдено';
+            var dateStr = d.date ? '<span style="color:#555;font-size:0.75em;margin-left:6px">' + d.date + '</span>' : '';
+            rows += '<div class="prog-row">' +
+                '<div class="prog-verdict" style="color:' + barColor + '">' + icon + '</div>' +
+                '<div class="prog-label" style="color:' + t.color + '">' + t.name + dateStr + '</div>' +
+                '<div class="prog-score" style="color:' + barColor + '">' + roundText + '</div>' +
+                '</div>';
+        } catch(e) { results.push(null); }
+    });
+
+    if (!anyData) {
+        card.innerHTML = '<h2>Мой прогресс</h2>' +
+            '<div class="prog-empty">Пока нет результатов. Пройди любой тренажёр!</div>' +
+            '<div class="prog-tip tip-start"><b>С чего начать?</b> Открой Диссоциацию &rarr; Теория на пальцах. Прочти, потом попробуй тренажёр.</div>';
+        return;
+    }
+
+    var tip = '';
+    var allDone = true;
+    var notDone = null;
+    for (var i = 0; i < results.length; i++) {
+        if (results[i] === null) {
+            allDone = false;
+            if (!notDone) notDone = topics[i].name;
+        }
+    }
+
+    if (allDone) {
+        tip = '<div class="prog-tip tip-good"><b>Все темы пройдены! Молодец!</b></div>';
+    } else if (notDone) {
+        var done = results.filter(function(r) { return r !== null; }).length;
+        if (done > 0) {
+            tip = '<div class="prog-tip tip-start"><b>' + done + ' из 4 готово!</b> Следующая: <b>' + notDone + '</b>. Ты справишься!</div>';
+        } else {
+            tip = '<div class="prog-tip tip-start"><b>С чего начать?</b> Открой Диссоциацию &rarr; Теория на пальцах. Прочти, потом попробуй тренажёр.</div>';
+        }
+    }
+
+    card.innerHTML = '<h2>Мой прогресс</h2>' + rows + tip +
+        '<button class="prog-reset" onclick="resetProgress()">Сбросить прогресс</button>';
+}
+
+function resetProgress() {
+    if (!confirm('Сбросить все результаты?')) return;
+    topics.forEach(function(t) { localStorage.removeItem(t.key); });
+    renderProgress();
+}
+
+renderProgress();
+</script>
 </body>
 </html>
